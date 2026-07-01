@@ -4,7 +4,6 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   type Lead,
   esEstadoComercial,
-  formatAscensor,
   formatFecha,
   formatFechaHora,
   formatRangoPrecio,
@@ -13,10 +12,11 @@ import {
   textoODash,
 } from "@/lib/leads";
 import EstadoPill from "@/components/admin/EstadoPill";
-import EditLeadForm from "./EditLeadForm";
+import EditLeadForm, { type LeadInicial } from "./EditLeadForm";
 import PresupuestoPanel, {
   type PresupuestoGuardado,
 } from "./PresupuestoPanel";
+import { type DatosCliente } from "./PresupuestoForm";
 
 export default async function LeadDetailPage({
   params,
@@ -70,6 +70,30 @@ export default async function LeadDetailPage({
     destino_ascensor: Boolean(lead.destino_ascensor),
   };
 
+  // Valores editables actuales de la ficha (para el formulario editable).
+  const inicial: LeadInicial = {
+    nombre: lead.nombre ?? "",
+    telefono: lead.telefono ?? "",
+    email: lead.email ?? "",
+    origen_direccion: lead.origen_direccion ?? "",
+    origen_planta: lead.origen_planta ?? "",
+    origen_ascensor: Boolean(lead.origen_ascensor),
+    destino_direccion: lead.destino_direccion ?? "",
+    destino_planta: lead.destino_planta ?? "",
+    destino_ascensor: Boolean(lead.destino_ascensor),
+    estado_comercial: estadoInicial,
+    notas: lead.notas ?? "",
+  };
+
+  // Valores crudos del lead para el botón "Usar datos del cliente" del
+  // presupuesto (null = vacío -> ese campo se deja como esté).
+  const datosCliente: DatosCliente = {
+    origen_planta: lead.origen_planta ?? null,
+    origen_ascensor: lead.origen_ascensor ?? null,
+    destino_planta: lead.destino_planta ?? null,
+    destino_ascensor: lead.destino_ascensor ?? null,
+  };
+
   return (
     <div className="mx-auto max-w-[900px]">
       <div className="mb-6">
@@ -86,30 +110,14 @@ export default async function LeadDetailPage({
         <EstadoPill estado={lead.estado_comercial} />
       </div>
 
+      {/* Ficha editable: contacto + origen + destino + gestión, un solo Guardar */}
+      <div className="mb-8">
+        <EditLeadForm id={lead.id} inicial={inicial} />
+      </div>
+
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* Datos del lead (solo lectura) */}
+        {/* Datos derivados (solo lectura) */}
         <div className="flex flex-col gap-6">
-          <Section title="Contacto">
-            <Field label="Nombre" value={textoODash(lead.nombre)} />
-            <Field label="Teléfono" value={textoODash(lead.telefono)} />
-            <Field label="Email" value={textoODash(lead.email)} />
-          </Section>
-
-          <Section title="Origen">
-            <Field label="Dirección" value={textoODash(lead.origen_direccion)} />
-            <Field label="Planta" value={textoODash(lead.origen_planta)} />
-            <Field label="Ascensor" value={formatAscensor(lead.origen_ascensor)} />
-          </Section>
-
-          <Section title="Destino">
-            <Field label="Dirección" value={textoODash(lead.destino_direccion)} />
-            <Field label="Planta" value={textoODash(lead.destino_planta)} />
-            <Field
-              label="Ascensor"
-              value={formatAscensor(lead.destino_ascensor)}
-            />
-          </Section>
-
           <Section title="Detalles de la mudanza">
             <Field label="Fecha deseada" value={formatFecha(lead.fecha_deseada)} />
             <Field label="Tamaño aproximado" value={textoODash(lead.tamano_aprox)} />
@@ -135,20 +143,13 @@ export default async function LeadDetailPage({
           </Section>
         </div>
 
-        {/* Gestión (editable) + marcadores de fases siguientes */}
+        {/* Presupuesto + marcadores de fases siguientes */}
         <div className="flex flex-col gap-6">
-          <Section title="Gestión">
-            <EditLeadForm
-              id={lead.id}
-              estadoInicial={estadoInicial}
-              notasInicial={lead.notas ?? ""}
-            />
-          </Section>
-
           <Section title="Presupuesto">
             <PresupuestoPanel
               leadId={lead.id}
               accesosDefault={accesosDefault}
+              datosCliente={datosCliente}
               presupuestos={presupuestos}
             />
           </Section>

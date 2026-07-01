@@ -6,6 +6,7 @@ import { formatPrecio, formatFechaHora } from "@/lib/leads";
 import EstadoPill from "@/components/admin/EstadoPill";
 import PresupuestoForm, {
   type AccesosDefault,
+  type DatosCliente,
   type PresupuestoPayload,
 } from "./PresupuestoForm";
 
@@ -22,10 +23,12 @@ export type PresupuestoGuardado = {
 export default function PresupuestoPanel({
   leadId,
   accesosDefault,
+  datosCliente,
   presupuestos,
 }: {
   leadId: string;
   accesosDefault: AccesosDefault;
+  datosCliente: DatosCliente;
   presupuestos: PresupuestoGuardado[];
 }) {
   const router = useRouter();
@@ -109,6 +112,7 @@ export default function PresupuestoPanel({
         key={formKey}
         leadId={leadId}
         accesosDefault={accesosDefault}
+        datosCliente={datosCliente}
         initial={initial}
         presupuestoId={editId}
         onSaved={onSaved}

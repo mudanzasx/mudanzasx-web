@@ -13,7 +13,7 @@ import {
   type ProductoBusqueda,
   type ProductoLinea,
 } from "@/lib/presupuesto";
-import { formatPrecio } from "@/lib/leads";
+import { formatPrecio, parsePlantaNum } from "@/lib/leads";
 import {
   buscarObjetos,
   buscarProductos,
@@ -55,6 +55,14 @@ export type AccesosDefault = {
   destino_ascensor: boolean;
 };
 
+// Valores crudos del lead para "Usar datos del cliente" (null = vacío).
+export type DatosCliente = {
+  origen_planta: string | null;
+  origen_ascensor: boolean | null;
+  destino_planta: string | null;
+  destino_ascensor: boolean | null;
+};
+
 const SWITCHES: { key: keyof Interruptores; label: string }[] = [
   { key: "desmontaje", label: "Desmontaje" },
   { key: "montaje", label: "Montaje" },
@@ -71,12 +79,14 @@ function n(value: string): number {
 export default function PresupuestoForm({
   leadId,
   accesosDefault,
+  datosCliente,
   initial,
   presupuestoId,
   onSaved,
 }: {
   leadId: string;
   accesosDefault: AccesosDefault;
+  datosCliente: DatosCliente;
   initial: PresupuestoPayload | null;
   presupuestoId: string | null;
   onSaved: (id: string) => void;
@@ -250,6 +260,18 @@ export default function PresupuestoForm({
   }
   function quitarProd(id: string | number) {
     setProductos((prev) => prev.filter((l) => String(l.id) !== String(id)));
+    invalidar();
+  }
+
+  // Copia los accesos del lead al formulario. Campo vacío en el lead → se deja.
+  function usarDatosCliente() {
+    const d = datosCliente;
+    if (d.origen_planta != null && d.origen_planta.trim() !== "")
+      setOrigenPlanta(String(parsePlantaNum(d.origen_planta)));
+    if (d.origen_ascensor != null) setOrigenAscensor(d.origen_ascensor);
+    if (d.destino_planta != null && d.destino_planta.trim() !== "")
+      setDestinoPlanta(String(parsePlantaNum(d.destino_planta)));
+    if (d.destino_ascensor != null) setDestinoAscensor(d.destino_ascensor);
     invalidar();
   }
 
@@ -494,7 +516,18 @@ export default function PresupuestoForm({
       </div>
 
       {/* ===== Accesos ===== */}
-      <div className="grid grid-cols-2 gap-3">
+      <div>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <p className={labelClass}>Accesos</p>
+          <button
+            type="button"
+            onClick={usarDatosCliente}
+            className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium hover:bg-gris"
+          >
+            Usar datos del cliente
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
         <div>
           <label className={labelClass}>Planta origen</label>
           <input type="number" value={origenPlanta} onChange={(e) => { setOrigenPlanta(e.target.value); invalidar(); }} className={`mt-2 ${fieldClass}`} />
@@ -522,6 +555,7 @@ export default function PresupuestoForm({
         <div className="col-span-2">
           <label className={labelClass}>Permisos de estacionamiento necesarios</label>
           <input type="number" min={0} value={permisos} onChange={(e) => { setPermisos(e.target.value); invalidar(); }} className={`mt-2 ${fieldClass}`} />
+        </div>
         </div>
       </div>
 
