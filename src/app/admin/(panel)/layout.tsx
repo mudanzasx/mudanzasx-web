@@ -31,7 +31,7 @@ export default async function PanelLayout({
           <form action="/admin/logout" method="post">
             <button
               type="submit"
-              className="rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-black transition-colors hover:bg-gris"
+              className="rounded-full border border-white px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
             >
               Cerrar sesión
             </button>
