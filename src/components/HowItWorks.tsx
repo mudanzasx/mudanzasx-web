@@ -30,25 +30,45 @@ export default function HowItWorks() {
   const ref = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
 
-  // Revela la sección una sola vez al entrar en pantalla.
+  // Revela la sección una sola vez. Robusto: si ya está en el viewport al montar,
+  // dispara de inmediato; si no, usa IntersectionObserver con threshold bajo.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (typeof IntersectionObserver === "undefined") {
+
+    // Respeta prefers-reduced-motion SOLO si está activo: todo visible, sin animación.
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
       setVisible(true);
       return;
     }
+
+    let done = false;
+    // Fuerza que el estado inicial oculto se pinte un frame antes de revelar,
+    // para que la transición tenga siempre un estado "desde" y se reproduzca.
+    const reveal = () => {
+      if (done) return;
+      done = true;
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setVisible(true))
+      );
+    };
+
+    const rect = el.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+
+    if (inView || typeof IntersectionObserver === "undefined") {
+      reveal();
+      return;
+    }
+
     const io = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setVisible(true);
-            io.disconnect();
-            break;
-          }
+        if (entries.some((entry) => entry.isIntersecting)) {
+          reveal();
+          io.disconnect();
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -79,7 +99,7 @@ export default function HowItWorks() {
                 <div
                   key={paso.titulo}
                   className="hiw-step group flex flex-col md:items-center md:text-center"
-                  style={{ "--d": `${i * 90}ms` } as CSSProperties}
+                  style={{ "--d": `${i * 100}ms` } as CSSProperties}
                 >
                   <div className="hiw-icon relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-black/15 bg-white text-black md:mx-auto">
                     <Icon size={26} trace />
