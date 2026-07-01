@@ -29,15 +29,13 @@ export default function QuoteForm() {
   const [error, setError] = useState<string | null>(null);
 
   // Referencias en orden para enfocar el primer campo vacío tras el prefill.
-  const refs = {
-    origen: useRef<HTMLInputElement>(null),
-    destino: useRef<HTMLInputElement>(null),
-    tamano: useRef<HTMLSelectElement>(null),
-    fecha: useRef<HTMLInputElement>(null),
-    nombre: useRef<HTMLInputElement>(null),
-    telefono: useRef<HTMLInputElement>(null),
-    email: useRef<HTMLInputElement>(null),
-  };
+  const origenRef = useRef<HTMLInputElement>(null);
+  const destinoRef = useRef<HTMLInputElement>(null);
+  const tamanoRef = useRef<HTMLSelectElement>(null);
+  const fechaRef = useRef<HTMLInputElement>(null);
+  const nombreRef = useRef<HTMLInputElement>(null);
+  const telefonoRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
 
   // Cuando el hero pulsa "Calcular presupuesto": rellena, hace scroll y enfoca.
   useEffect(() => {
@@ -47,6 +45,9 @@ export default function QuoteForm() {
       origen: prefill.origen,
       destino: prefill.destino,
     };
+    // El prefill del hero es un evento externo puntual (un clic que cambia el
+    // nonce); sincronizarlo aquí no encadena renders. Falso positivo de la regla.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm((prev) => ({ ...prev, ...next }));
 
     sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -54,18 +55,18 @@ export default function QuoteForm() {
     // Enfoca el primer campo vacío una vez actualizado el estado.
     requestAnimationFrame(() => {
       const merged = { ...form, ...next };
-      const order: (keyof typeof refs)[] = [
-        "origen",
-        "destino",
-        "tamano",
-        "fecha",
-        "nombre",
-        "telefono",
-        "email",
+      const orden: { valor: unknown; enfocar: () => void }[] = [
+        { valor: merged.origen, enfocar: () => origenRef.current?.focus() },
+        { valor: merged.destino, enfocar: () => destinoRef.current?.focus() },
+        { valor: merged.tamano, enfocar: () => tamanoRef.current?.focus() },
+        { valor: merged.fecha, enfocar: () => fechaRef.current?.focus() },
+        { valor: merged.nombre, enfocar: () => nombreRef.current?.focus() },
+        { valor: merged.telefono, enfocar: () => telefonoRef.current?.focus() },
+        { valor: merged.email, enfocar: () => emailRef.current?.focus() },
       ];
-      for (const key of order) {
-        if (!String(merged[key] ?? "").trim()) {
-          refs[key].current?.focus();
+      for (const campo of orden) {
+        if (!String(campo.valor ?? "").trim()) {
+          campo.enfocar();
           break;
         }
       }
@@ -128,7 +129,7 @@ export default function QuoteForm() {
               </label>
               <input
                 id="origen"
-                ref={refs.origen}
+                ref={origenRef}
                 type="text"
                 value={form.origen}
                 onChange={update("origen")}
@@ -143,7 +144,7 @@ export default function QuoteForm() {
               </label>
               <input
                 id="destino"
-                ref={refs.destino}
+                ref={destinoRef}
                 type="text"
                 value={form.destino}
                 onChange={update("destino")}
@@ -158,7 +159,7 @@ export default function QuoteForm() {
               </label>
               <select
                 id="tamano"
-                ref={refs.tamano}
+                ref={tamanoRef}
                 value={form.tamano}
                 onChange={update("tamano")}
                 required
@@ -181,7 +182,7 @@ export default function QuoteForm() {
               </label>
               <input
                 id="fecha"
-                ref={refs.fecha}
+                ref={fechaRef}
                 type="date"
                 value={form.fecha}
                 onChange={update("fecha")}
@@ -196,7 +197,7 @@ export default function QuoteForm() {
               </label>
               <input
                 id="nombre"
-                ref={refs.nombre}
+                ref={nombreRef}
                 type="text"
                 value={form.nombre}
                 onChange={update("nombre")}
@@ -211,7 +212,7 @@ export default function QuoteForm() {
               </label>
               <input
                 id="telefono"
-                ref={refs.telefono}
+                ref={telefonoRef}
                 type="tel"
                 value={form.telefono}
                 onChange={update("telefono")}
@@ -226,7 +227,7 @@ export default function QuoteForm() {
               </label>
               <input
                 id="email"
-                ref={refs.email}
+                ref={emailRef}
                 type="email"
                 value={form.email}
                 onChange={update("email")}

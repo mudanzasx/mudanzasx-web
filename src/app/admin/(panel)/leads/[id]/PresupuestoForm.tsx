@@ -157,6 +157,9 @@ export default function PresupuestoForm({
   useEffect(() => {
     if (tObj.current) clearTimeout(tObj.current);
     if (qObj.trim().length < 2) {
+      // Limpia resultados obsoletos al quedar la consulta demasiado corta; es un
+      // reset puntual, no un ciclo de renders. Falso positivo de la regla.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResObj([]);
       return;
     }
@@ -170,6 +173,9 @@ export default function PresupuestoForm({
   useEffect(() => {
     if (tProd.current) clearTimeout(tProd.current);
     if (qProd.trim().length < 1) {
+      // Limpia resultados obsoletos al quedar la consulta demasiado corta; es un
+      // reset puntual, no un ciclo de renders. Falso positivo de la regla.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResProd([]);
       return;
     }
@@ -341,7 +347,6 @@ export default function PresupuestoForm({
   const ajuste = useMemo(() => {
     if (!resultado) return null;
     return margenAjustado(n(precioAjustado), resultado.coste_base, ivaRate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [precioAjustado, resultado, ivaRate]);
 
   const porSala = useMemo(() => {
