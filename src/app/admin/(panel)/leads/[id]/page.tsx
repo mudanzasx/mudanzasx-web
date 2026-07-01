@@ -7,7 +7,6 @@ import {
   formatAscensor,
   formatFecha,
   formatFechaHora,
-  formatPrecio,
   formatRangoPrecio,
   formatVolumen,
   parsePlantaNum,
@@ -15,7 +14,9 @@ import {
 } from "@/lib/leads";
 import EstadoPill from "@/components/admin/EstadoPill";
 import EditLeadForm from "./EditLeadForm";
-import PresupuestoForm from "./PresupuestoForm";
+import PresupuestoPanel, {
+  type PresupuestoGuardado,
+} from "./PresupuestoPanel";
 
 export default async function LeadDetailPage({
   params,
@@ -53,13 +54,14 @@ export default async function LeadDetailPage({
     : "Nuevo";
 
   // Presupuestos ya guardados de este cliente (más nuevos primero).
-  const { data: presupuestos } = await supabase
+  const { data: presupuestosData } = await supabase
     .from("presupuestos")
     .select(
-      "id,creado_en,volumen_m3,vehiculo,operarios,horas,precio_final,estado"
+      "id,creado_en,precio_final,vehiculo,operarios,estado,detalle_objetos"
     )
     .eq("lead_id", id)
     .order("creado_en", { ascending: false });
+  const presupuestos = (presupuestosData ?? []) as PresupuestoGuardado[];
 
   const accesosDefault = {
     origen_planta: parsePlantaNum(lead.origen_planta),
@@ -144,28 +146,11 @@ export default async function LeadDetailPage({
           </Section>
 
           <Section title="Presupuesto">
-            {presupuestos && presupuestos.length > 0 && (
-              <div className="mb-5 flex flex-col gap-2">
-                {presupuestos.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-black/10 px-3 py-2 text-sm"
-                  >
-                    <div className="min-w-0">
-                      <p className="font-medium tabular-nums">
-                        {formatPrecio(p.precio_final)}
-                      </p>
-                      <p className="text-xs text-black/50">
-                        {formatFechaHora(p.creado_en)} · {textoODash(p.vehiculo)} ·{" "}
-                        {p.operarios ?? "—"} operarios
-                      </p>
-                    </div>
-                    <EstadoPill estado={p.estado} />
-                  </div>
-                ))}
-              </div>
-            )}
-            <PresupuestoForm leadId={lead.id} accesosDefault={accesosDefault} />
+            <PresupuestoPanel
+              leadId={lead.id}
+              accesosDefault={accesosDefault}
+              presupuestos={presupuestos}
+            />
           </Section>
           <PlaceholderSection title="Pago" />
           <PlaceholderSection title="Planificación" />

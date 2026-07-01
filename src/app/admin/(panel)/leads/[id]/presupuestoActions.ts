@@ -7,39 +7,55 @@ import {
   round2,
   type AccesosInput,
   type ConfigPrecios,
+  type Interruptores,
   type ObjetoBusqueda,
   type ObjetoLinea,
+  type ProductoBusqueda,
+  type ProductoLinea,
   type PresupuestoResultado,
   type VehiculoCalc,
 } from "@/lib/presupuesto";
 
-// --- Tipos de entrada/salida de las acciones ---
+// --- Tipos de entrada/salida ---
 
-export type LineaSeleccionada = { id: string | number; cantidad: number };
+export type LineaObjetoInput = {
+  id: string | number;
+  cantidad: number;
+  interruptores: Interruptores;
+};
+export type LineaProductoInput = { id: string | number; cantidad: number };
 
 export type CalcularInput = {
-  lineas: LineaSeleccionada[];
+  objetos: LineaObjetoInput[];
+  productos: LineaProductoInput[];
   accesos: AccesosInput;
 };
 
 export type CalcularResultado =
-  | { ok: true; resultado: PresupuestoResultado; detalle: ObjetoLinea[] }
+  | {
+      ok: true;
+      resultado: PresupuestoResultado;
+      detalleObjetos: ObjetoLinea[];
+      detalleProductos: ProductoLinea[];
+    }
   | { ok: false; error: string };
 
 export type GuardarInput = CalcularInput & {
   leadId: string;
+  presupuestoId: string | null;
   precioFinalAjustado: number | null;
 };
 
-export type GuardarResultado = { ok: true } | { ok: false; error: string };
+export type GuardarResultado = { ok: true; id: string } | { ok: false; error: string };
 
-// --- Helpers internos ---
+// --- Config ---
 
 const CLAVES_CONFIG: (keyof ConfigPrecios)[] = [
   "margen",
   "iva",
   "factor_manejo_h_m3",
   "horas_desmontaje_por_objeto",
+  "horas_montaje_por_objeto",
   "velocidad_media_kmh",
   "buffer_operativo_h",
   "jornada_h",
@@ -51,6 +67,11 @@ const CLAVES_CONFIG: (keyof ConfigPrecios)[] = [
   "recargo_urgencia_pct",
   "permiso_estacionamiento",
   "recargo_objeto_riesgo_alto",
+  "metros_film_por_m3",
+  "precio_film_metro",
+  "metros_burbujas_por_m3",
+  "precio_burbujas_metro",
+  "coste_punto_limpio",
 ];
 
 function aNumero(valor: unknown): number {
@@ -65,9 +86,10 @@ async function requireUser() {
   return { supabase, user };
 }
 
-// Lee config_precios y valida que estén todas las claves necesarias.
+type SupabaseServer = Awaited<ReturnType<typeof createSupabaseServerClient>>;
+
 async function leerConfig(
-  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>
+  supabase: SupabaseServer
 ): Promise<{ config: ConfigPrecios } | { error: string }> {
   const { data, error } = await supabase
     .from("config_precios")
@@ -75,9 +97,7 @@ async function leerConfig(
   if (error) return { error: "No se pudo leer la configuración de precios." };
 
   const mapa = new Map<string, number>();
-  for (const fila of data ?? []) {
-    mapa.set(String(fila.clave), aNumero(fila.valor));
-  }
+  for (const fila of data ?? []) mapa.set(String(fila.clave), aNumero(fila.valor));
 
   const faltan: string[] = [];
   const config = {} as ConfigPrecios;
@@ -86,14 +106,13 @@ async function leerConfig(
     if (v === undefined || Number.isNaN(v)) faltan.push(clave);
     else config[clave] = v;
   }
-  if (faltan.length > 0) {
+  if (faltan.length > 0)
     return { error: `Faltan parámetros en config_precios: ${faltan.join(", ")}.` };
-  }
   return { config };
 }
 
 async function leerVehiculos(
-  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>
+  supabase: SupabaseServer
 ): Promise<{ vehiculos: VehiculoCalc[] } | { error: string }> {
   const { data, error } = await supabase
     .from("vehiculos")
@@ -102,32 +121,29 @@ async function leerVehiculos(
     );
   if (error || !data || data.length === 0)
     return { error: "No se pudieron leer los vehículos." };
-
-  const vehiculos: VehiculoCalc[] = data.map((v) => ({
-    tipo: String(v.tipo),
-    capacidad_util_m3: aNumero(v.capacidad_util_m3),
-    tarifa_dia: aNumero(v.tarifa_dia),
-    precio_km_extra: aNumero(v.precio_km_extra),
-    precio_km_combustible: aNumero(v.precio_km_combustible),
-    disponible: v.disponible,
-  }));
-  return { vehiculos };
+  return {
+    vehiculos: data.map((v) => ({
+      tipo: String(v.tipo),
+      capacidad_util_m3: aNumero(v.capacidad_util_m3),
+      tarifa_dia: aNumero(v.tarifa_dia),
+      precio_km_extra: aNumero(v.precio_km_extra),
+      precio_km_combustible: aNumero(v.precio_km_combustible),
+      disponible: v.disponible,
+    })),
+  };
 }
 
-// Re-lee los objetos por id desde la base (autoridad del servidor sobre
-// volúmenes/atributos; el cliente solo aporta id + cantidad).
-async function construirDetalle(
-  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
-  lineas: LineaSeleccionada[]
+// Re-lee objetos por id (autoridad del servidor sobre volúmenes/atributos).
+// Los interruptores vienen del cliente (el operario los ajusta).
+async function construirDetalleObjetos(
+  supabase: SupabaseServer,
+  lineas: LineaObjetoInput[]
 ): Promise<{ detalle: ObjetoLinea[] } | { error: string }> {
+  if (lineas.length === 0) return { detalle: [] };
   const ids = lineas.map((l) => l.id);
-  if (ids.length === 0) return { error: "Añade al menos un objeto." };
-
   const { data, error } = await supabase
     .from("objetos")
-    .select(
-      "id,sala,objeto,volumen_m3,volumen_desmontado_m3,se_desmonta,riesgo,necesita_embalaje"
-    )
+    .select("id,sala,objeto,volumen_m3,volumen_desmontado_m3,riesgo")
     .in("id", ids);
   if (error) return { error: "No se pudieron leer los objetos seleccionados." };
 
@@ -136,29 +152,60 @@ async function construirDetalle(
   for (const linea of lineas) {
     const o = porId.get(String(linea.id));
     if (!o) continue;
-    const cantidad = Math.max(1, Math.floor(Number(linea.cantidad) || 1));
     detalle.push({
       id: o.id,
       objeto: String(o.objeto),
       sala: o.sala ?? null,
-      cantidad,
+      cantidad: Math.max(1, Math.floor(Number(linea.cantidad) || 1)),
       volumen_m3: aNumero(o.volumen_m3),
       volumen_desmontado_m3:
         o.volumen_desmontado_m3 == null ? null : aNumero(o.volumen_desmontado_m3),
-      se_desmonta: Boolean(o.se_desmonta),
-      necesita_embalaje: Boolean(o.necesita_embalaje),
       riesgo: o.riesgo == null ? null : aNumero(o.riesgo),
+      interruptores: {
+        desmontaje: Boolean(linea.interruptores?.desmontaje),
+        montaje: Boolean(linea.interruptores?.montaje),
+        film: Boolean(linea.interruptores?.film),
+        burbujas: Boolean(linea.interruptores?.burbujas),
+        punto_limpio: Boolean(linea.interruptores?.punto_limpio),
+      },
     });
   }
-  if (detalle.length === 0)
-    return { error: "Los objetos seleccionados ya no existen." };
   return { detalle };
 }
 
-// Normaliza los accesos que llegan del cliente a números/booleanos seguros.
+async function construirDetalleProductos(
+  supabase: SupabaseServer,
+  lineas: LineaProductoInput[]
+): Promise<{ detalle: ProductoLinea[] } | { error: string }> {
+  if (lineas.length === 0) return { detalle: [] };
+  const ids = lineas.map((l) => l.id);
+  const { data, error } = await supabase
+    .from("productos")
+    .select("id,nombre,coste_unitario,volumen_m3")
+    .in("id", ids);
+  if (error) return { error: "No se pudieron leer los productos seleccionados." };
+
+  const porId = new Map(data?.map((p) => [String(p.id), p]) ?? []);
+  const detalle: ProductoLinea[] = [];
+  for (const linea of lineas) {
+    const p = porId.get(String(linea.id));
+    if (!p) continue;
+    detalle.push({
+      id: p.id,
+      nombre: String(p.nombre),
+      cantidad: Math.max(1, Math.floor(Number(linea.cantidad) || 1)),
+      coste_unitario: aNumero(p.coste_unitario),
+      volumen_m3: aNumero(p.volumen_m3),
+    });
+  }
+  return { detalle };
+}
+
 function normalizarAccesos(a: AccesosInput): AccesosInput {
   return {
-    km_ida: Math.max(0, Number(a.km_ida) || 0),
+    km_base_origen: Math.max(0, Number(a.km_base_origen) || 0),
+    km_origen_destino: Math.max(0, Number(a.km_origen_destino) || 0),
+    km_destino_base: Math.max(0, Number(a.km_destino_base) || 0),
     origen_planta: Math.floor(Number(a.origen_planta) || 0),
     origen_ascensor: Boolean(a.origen_ascensor),
     destino_planta: Math.floor(Number(a.destino_planta) || 0),
@@ -169,25 +216,19 @@ function normalizarAccesos(a: AccesosInput): AccesosInput {
   };
 }
 
-// --- Acciones públicas ---
+// --- Buscadores ---
 
-// Buscador del inventario por nombre de objeto.
 export async function buscarObjetos(query: string): Promise<ObjetoBusqueda[]> {
   const { supabase, user } = await requireUser();
   if (!user) return [];
-
   const term = (query ?? "").trim();
   let q = supabase
     .from("objetos")
-    .select("id,sala,categoria,objeto,volumen_m3")
+    .select("id,sala,categoria,objeto,volumen_m3,se_desmonta,necesita_embalaje,riesgo")
     .order("sala", { ascending: true })
     .order("objeto", { ascending: true })
     .limit(40);
-
-  if (term) {
-    const safe = term.replace(/[%,()]/g, " ");
-    q = q.ilike("objeto", `%${safe}%`);
-  }
+  if (term) q = q.ilike("objeto", `%${term.replace(/[%,()]/g, " ")}%`);
 
   const { data, error } = await q;
   if (error || !data) return [];
@@ -197,7 +238,69 @@ export async function buscarObjetos(query: string): Promise<ObjetoBusqueda[]> {
     sala: o.sala ?? null,
     categoria: o.categoria ?? null,
     volumen_m3: aNumero(o.volumen_m3),
+    se_desmonta: Boolean(o.se_desmonta),
+    necesita_embalaje: Boolean(o.necesita_embalaje),
+    riesgo: o.riesgo == null ? null : aNumero(o.riesgo),
   }));
+}
+
+export async function buscarProductos(query: string): Promise<ProductoBusqueda[]> {
+  const { supabase, user } = await requireUser();
+  if (!user) return [];
+  const term = (query ?? "").trim();
+  let q = supabase
+    .from("productos")
+    .select("id,nombre,coste_unitario,volumen_m3")
+    .order("nombre", { ascending: true })
+    .limit(40);
+  if (term) q = q.ilike("nombre", `%${term.replace(/[%,()]/g, " ")}%`);
+
+  const { data, error } = await q;
+  if (error || !data) return [];
+  return data.map((p) => ({
+    id: p.id,
+    nombre: String(p.nombre),
+    coste_unitario: aNumero(p.coste_unitario),
+    volumen_m3: aNumero(p.volumen_m3),
+  }));
+}
+
+// --- Cálculo ---
+
+async function calcularInterno(
+  supabase: SupabaseServer,
+  input: CalcularInput
+): Promise<CalcularResultado> {
+  if (input.objetos.length === 0 && input.productos.length === 0)
+    return { ok: false, error: "Añade al menos un objeto o producto." };
+
+  const dObj = await construirDetalleObjetos(supabase, input.objetos);
+  if ("error" in dObj) return { ok: false, error: dObj.error };
+  const dProd = await construirDetalleProductos(supabase, input.productos);
+  if ("error" in dProd) return { ok: false, error: dProd.error };
+
+  if (dObj.detalle.length === 0 && dProd.detalle.length === 0)
+    return { ok: false, error: "Los elementos seleccionados ya no existen." };
+
+  const cfg = await leerConfig(supabase);
+  if ("error" in cfg) return { ok: false, error: cfg.error };
+  const veh = await leerVehiculos(supabase);
+  if ("error" in veh) return { ok: false, error: veh.error };
+
+  const accesos = normalizarAccesos(input.accesos);
+  const resultado = calcularPresupuesto(
+    dObj.detalle,
+    dProd.detalle,
+    accesos,
+    cfg.config,
+    veh.vehiculos
+  );
+  return {
+    ok: true,
+    resultado,
+    detalleObjetos: dObj.detalle,
+    detalleProductos: dProd.detalle,
+  };
 }
 
 export async function calcularPresupuestoAction(
@@ -205,25 +308,10 @@ export async function calcularPresupuestoAction(
 ): Promise<CalcularResultado> {
   const { supabase, user } = await requireUser();
   if (!user) return { ok: false, error: "Sesión no válida." };
-
-  const det = await construirDetalle(supabase, input.lineas);
-  if ("error" in det) return { ok: false, error: det.error };
-
-  const cfg = await leerConfig(supabase);
-  if ("error" in cfg) return { ok: false, error: cfg.error };
-
-  const veh = await leerVehiculos(supabase);
-  if ("error" in veh) return { ok: false, error: veh.error };
-
-  const accesos = normalizarAccesos(input.accesos);
-  const resultado = calcularPresupuesto(
-    det.detalle,
-    accesos,
-    cfg.config,
-    veh.vehiculos
-  );
-  return { ok: true, resultado, detalle: det.detalle };
+  return calcularInterno(supabase, input);
 }
+
+// --- Guardado (insert o update) + actualización del lead ---
 
 export async function guardarPresupuestoAction(
   input: GuardarInput
@@ -232,19 +320,11 @@ export async function guardarPresupuestoAction(
   if (!user) return { ok: false, error: "Sesión no válida." };
 
   // Recalcula en el servidor: nunca se confía en números del cliente.
-  const det = await construirDetalle(supabase, input.lineas);
-  if ("error" in det) return { ok: false, error: det.error };
-
-  const cfg = await leerConfig(supabase);
-  if ("error" in cfg) return { ok: false, error: cfg.error };
-
-  const veh = await leerVehiculos(supabase);
-  if ("error" in veh) return { ok: false, error: veh.error };
-
+  const calc = await calcularInterno(supabase, input);
+  if (!calc.ok) return { ok: false, error: calc.error };
+  const r = calc.resultado;
   const accesos = normalizarAccesos(input.accesos);
-  const r = calcularPresupuesto(det.detalle, accesos, cfg.config, veh.vehiculos);
 
-  // Precio final: el ajustado a mano si es válido, si no el calculado.
   const ajustado =
     input.precioFinalAjustado != null &&
     Number.isFinite(input.precioFinalAjustado) &&
@@ -252,11 +332,20 @@ export async function guardarPresupuestoAction(
       ? input.precioFinalAjustado
       : null;
   const precio_final = round2(ajustado ?? r.precio_final);
+  const volumen_m3 = round2(r.volumen_total_m3);
 
-  const { error } = await supabase.from("presupuestos").insert({
+  // Snapshot completo para reabrir el presupuesto (Cambio 6).
+  const detalle_objetos = {
+    version: 2,
+    objetos: calc.detalleObjetos,
+    productos: calc.detalleProductos,
+    accesos,
+  };
+
+  const fila = {
     lead_id: input.leadId,
-    detalle_objetos: det.detalle,
-    volumen_m3: round2(r.volumen_total_m3),
+    detalle_objetos,
+    volumen_m3,
     vehiculo: r.viajes > 1 ? `${r.vehiculo} ×${r.viajes}` : r.vehiculo,
     operarios: r.operarios,
     horas: round2(r.horas_totales),
@@ -268,13 +357,36 @@ export async function guardarPresupuestoAction(
     margen: round2(r.margen_eur),
     iva: round2(r.iva_eur),
     precio_final,
-    estado: "borrador",
-  });
+  };
 
-  if (error) {
-    return { ok: false, error: "No se pudo guardar el presupuesto." };
+  let presupuestoId = input.presupuestoId;
+  if (presupuestoId) {
+    const { error } = await supabase
+      .from("presupuestos")
+      .update(fila)
+      .eq("id", presupuestoId);
+    if (error) return { ok: false, error: "No se pudo actualizar el presupuesto." };
+  } else {
+    const { data, error } = await supabase
+      .from("presupuestos")
+      .insert({ ...fila, estado: "borrador" })
+      .select("id")
+      .single();
+    if (error || !data)
+      return { ok: false, error: "No se pudo guardar el presupuesto." };
+    presupuestoId = String(data.id);
   }
 
+  // Cambio 5: refleja volumen y precio en la ficha del cliente.
+  await supabase
+    .from("leads")
+    .update({
+      volumen_estimado_m3: volumen_m3,
+      precio_aprox_min: precio_final,
+      precio_aprox_max: precio_final,
+    })
+    .eq("id", input.leadId);
+
   revalidatePath(`/admin/leads/${input.leadId}`);
-  return { ok: true };
+  return { ok: true, id: presupuestoId };
 }

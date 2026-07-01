@@ -1,16 +1,22 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import {
+  interruptoresPorDefecto,
   margenAjustado,
   round2,
+  type AccesosInput,
+  type Interruptores,
   type ObjetoBusqueda,
+  type ObjetoLinea,
   type PresupuestoResultado,
+  type ProductoBusqueda,
+  type ProductoLinea,
 } from "@/lib/presupuesto";
 import { formatPrecio } from "@/lib/leads";
 import {
   buscarObjetos,
+  buscarProductos,
   calcularPresupuestoAction,
   guardarPresupuestoAction,
 } from "./presupuestoActions";
@@ -19,7 +25,28 @@ const fieldClass =
   "w-full rounded-lg bg-gris px-3 py-2 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors focus:border-black";
 const labelClass = "block text-xs font-medium text-black/60";
 
-type LineaUI = { objeto: ObjetoBusqueda; cantidad: number };
+type ObjLineaUI = {
+  id: string | number;
+  objeto: string;
+  sala: string | null;
+  volumen_m3: number;
+  cantidad: number;
+  sw: Interruptores;
+};
+type ProdLineaUI = {
+  id: string | number;
+  nombre: string;
+  volumen_m3: number;
+  coste_unitario: number;
+  cantidad: number;
+};
+
+export type PresupuestoPayload = {
+  version: number;
+  objetos: ObjetoLinea[];
+  productos: ProductoLinea[];
+  accesos: AccesosInput;
+};
 
 export type AccesosDefault = {
   origen_planta: number;
@@ -27,6 +54,14 @@ export type AccesosDefault = {
   destino_planta: number;
   destino_ascensor: boolean;
 };
+
+const SWITCHES: { key: keyof Interruptores; label: string }[] = [
+  { key: "desmontaje", label: "Desmontaje" },
+  { key: "montaje", label: "Montaje" },
+  { key: "film", label: "Film" },
+  { key: "burbujas", label: "Burbujas" },
+  { key: "punto_limpio", label: "Punto limpio" },
+];
 
 function n(value: string): number {
   const x = Number(value.replace(",", "."));
@@ -36,27 +71,68 @@ function n(value: string): number {
 export default function PresupuestoForm({
   leadId,
   accesosDefault,
+  initial,
+  presupuestoId,
+  onSaved,
 }: {
   leadId: string;
   accesosDefault: AccesosDefault;
+  initial: PresupuestoPayload | null;
+  presupuestoId: string | null;
+  onSaved: (id: string) => void;
 }) {
-  const router = useRouter();
+  // --- Estado sembrado desde `initial` (o vacío). El remount por key lo resetea. ---
+  const [lineas, setLineas] = useState<ObjLineaUI[]>(() =>
+    initial
+      ? initial.objetos.map((o) => ({
+          id: o.id,
+          objeto: o.objeto,
+          sala: o.sala,
+          volumen_m3: o.volumen_m3,
+          cantidad: o.cantidad,
+          sw: o.interruptores,
+        }))
+      : []
+  );
+  const [productos, setProductos] = useState<ProdLineaUI[]>(() =>
+    initial
+      ? initial.productos.map((p) => ({
+          id: p.id,
+          nombre: p.nombre,
+          volumen_m3: p.volumen_m3,
+          coste_unitario: p.coste_unitario,
+          cantidad: p.cantidad,
+        }))
+      : []
+  );
 
-  // Selección de objetos
-  const [query, setQuery] = useState("");
-  const [resultadosBusqueda, setResultadosBusqueda] = useState<ObjetoBusqueda[]>([]);
-  const [buscando, setBuscando] = useState(false);
-  const [lineas, setLineas] = useState<LineaUI[]>([]);
+  const a = initial?.accesos;
+  const [kmBaseOrigen, setKmBaseOrigen] = useState(a ? String(a.km_base_origen) : "");
+  const [kmOrigenDestino, setKmOrigenDestino] = useState(
+    a ? String(a.km_origen_destino) : ""
+  );
+  const [kmDestinoBase, setKmDestinoBase] = useState(a ? String(a.km_destino_base) : "");
+  const [origenPlanta, setOrigenPlanta] = useState(
+    String(a ? a.origen_planta : accesosDefault.origen_planta)
+  );
+  const [origenAscensor, setOrigenAscensor] = useState(
+    a ? a.origen_ascensor : accesosDefault.origen_ascensor
+  );
+  const [destinoPlanta, setDestinoPlanta] = useState(
+    String(a ? a.destino_planta : accesosDefault.destino_planta)
+  );
+  const [destinoAscensor, setDestinoAscensor] = useState(
+    a ? a.destino_ascensor : accesosDefault.destino_ascensor
+  );
+  const [accesoDificil, setAccesoDificil] = useState(a ? a.acceso_dificil : false);
+  const [urgencia, setUrgencia] = useState(a ? a.urgencia : false);
+  const [permisos, setPermisos] = useState(String(a ? a.permisos : 0));
 
-  // Accesos y distancia
-  const [kmIda, setKmIda] = useState("");
-  const [origenPlanta, setOrigenPlanta] = useState(String(accesosDefault.origen_planta));
-  const [origenAscensor, setOrigenAscensor] = useState(accesosDefault.origen_ascensor);
-  const [destinoPlanta, setDestinoPlanta] = useState(String(accesosDefault.destino_planta));
-  const [destinoAscensor, setDestinoAscensor] = useState(accesosDefault.destino_ascensor);
-  const [accesoDificil, setAccesoDificil] = useState(false);
-  const [urgencia, setUrgencia] = useState(false);
-  const [permisos, setPermisos] = useState("0");
+  // Buscadores
+  const [qObj, setQObj] = useState("");
+  const [resObj, setResObj] = useState<ObjetoBusqueda[]>([]);
+  const [qProd, setQProd] = useState("");
+  const [resProd, setResProd] = useState<ProductoBusqueda[]>([]);
 
   // Resultado
   const [resultado, setResultado] = useState<PresupuestoResultado | null>(null);
@@ -66,62 +142,121 @@ export default function PresupuestoForm({
   const [calculando, startCalculo] = useTransition();
   const [guardando, startGuardado] = useTransition();
 
-  // --- Buscador con debounce ---
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // --- Buscadores con debounce ---
+  const tObj = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (query.trim().length < 2) {
-      setResultadosBusqueda([]);
+    if (tObj.current) clearTimeout(tObj.current);
+    if (qObj.trim().length < 2) {
+      setResObj([]);
       return;
     }
-    setBuscando(true);
-    debounceRef.current = setTimeout(async () => {
-      const res = await buscarObjetos(query);
-      setResultadosBusqueda(res);
-      setBuscando(false);
-    }, 250);
+    tObj.current = setTimeout(async () => setResObj(await buscarObjetos(qObj)), 250);
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (tObj.current) clearTimeout(tObj.current);
     };
-  }, [query]);
+  }, [qObj]);
 
-  function anadir(objeto: ObjetoBusqueda) {
-    setLineas((prev) => {
-      const i = prev.findIndex((l) => String(l.objeto.id) === String(objeto.id));
-      if (i >= 0) {
-        const copia = [...prev];
-        copia[i] = { ...copia[i], cantidad: copia[i].cantidad + 1 };
-        return copia;
-      }
-      return [...prev, { objeto, cantidad: 1 }];
-    });
-    invalidar();
-  }
+  const tProd = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (tProd.current) clearTimeout(tProd.current);
+    if (qProd.trim().length < 1) {
+      setResProd([]);
+      return;
+    }
+    tProd.current = setTimeout(async () => setResProd(await buscarProductos(qProd)), 250);
+    return () => {
+      if (tProd.current) clearTimeout(tProd.current);
+    };
+  }, [qProd]);
 
-  function cambiarCantidad(id: string | number, cantidad: number) {
-    setLineas((prev) =>
-      prev.map((l) =>
-        String(l.objeto.id) === String(id)
-          ? { ...l, cantidad: Math.max(1, cantidad) }
-          : l
-      )
-    );
-    invalidar();
-  }
-
-  function quitar(id: string | number) {
-    setLineas((prev) => prev.filter((l) => String(l.objeto.id) !== String(id)));
-    invalidar();
-  }
-
-  // Cualquier cambio de entrada invalida el resultado previo.
   function invalidar() {
     setResultado(null);
     setGuardado(false);
   }
 
-  const accesosPayload = () => ({
-    km_ida: n(kmIda),
+  // --- Objetos ---
+  function anadirObjeto(o: ObjetoBusqueda) {
+    setLineas((prev) => {
+      const i = prev.findIndex((l) => String(l.id) === String(o.id));
+      if (i >= 0) {
+        const c = [...prev];
+        c[i] = { ...c[i], cantidad: c[i].cantidad + 1 };
+        return c;
+      }
+      return [
+        ...prev,
+        {
+          id: o.id,
+          objeto: o.objeto,
+          sala: o.sala,
+          volumen_m3: o.volumen_m3,
+          cantidad: 1,
+          sw: interruptoresPorDefecto(o),
+        },
+      ];
+    });
+    invalidar();
+  }
+  function setCantidadObj(id: string | number, cantidad: number) {
+    setLineas((prev) =>
+      prev.map((l) =>
+        String(l.id) === String(id) ? { ...l, cantidad: Math.max(1, cantidad) } : l
+      )
+    );
+    invalidar();
+  }
+  function toggleSw(id: string | number, key: keyof Interruptores) {
+    setLineas((prev) =>
+      prev.map((l) =>
+        String(l.id) === String(id) ? { ...l, sw: { ...l.sw, [key]: !l.sw[key] } } : l
+      )
+    );
+    invalidar();
+  }
+  function quitarObj(id: string | number) {
+    setLineas((prev) => prev.filter((l) => String(l.id) !== String(id)));
+    invalidar();
+  }
+
+  // --- Productos ---
+  function anadirProducto(p: ProductoBusqueda) {
+    setProductos((prev) => {
+      const i = prev.findIndex((l) => String(l.id) === String(p.id));
+      if (i >= 0) {
+        const c = [...prev];
+        c[i] = { ...c[i], cantidad: c[i].cantidad + 1 };
+        return c;
+      }
+      return [
+        ...prev,
+        {
+          id: p.id,
+          nombre: p.nombre,
+          volumen_m3: p.volumen_m3,
+          coste_unitario: p.coste_unitario,
+          cantidad: 1,
+        },
+      ];
+    });
+    invalidar();
+  }
+  function setCantidadProd(id: string | number, cantidad: number) {
+    setProductos((prev) =>
+      prev.map((l) =>
+        String(l.id) === String(id) ? { ...l, cantidad: Math.max(1, cantidad) } : l
+      )
+    );
+    invalidar();
+  }
+  function quitarProd(id: string | number) {
+    setProductos((prev) => prev.filter((l) => String(l.id) !== String(id)));
+    invalidar();
+  }
+
+  const accesosPayload = (): AccesosInput => ({
+    km_base_origen: n(kmBaseOrigen),
+    km_origen_destino: n(kmOrigenDestino),
+    km_destino_base: n(kmDestinoBase),
     origen_planta: Math.floor(n(origenPlanta)),
     origen_ascensor: origenAscensor,
     destino_planta: Math.floor(n(destinoPlanta)),
@@ -134,13 +269,14 @@ export default function PresupuestoForm({
   function calcular() {
     setError(null);
     setGuardado(false);
-    if (lineas.length === 0) {
-      setError("Añade al menos un objeto al presupuesto.");
+    if (lineas.length === 0 && productos.length === 0) {
+      setError("Añade al menos un objeto o producto.");
       return;
     }
     startCalculo(async () => {
       const res = await calcularPresupuestoAction({
-        lineas: lineas.map((l) => ({ id: l.objeto.id, cantidad: l.cantidad })),
+        objetos: lineas.map((l) => ({ id: l.id, cantidad: l.cantidad, interruptores: l.sw })),
+        productos: productos.map((l) => ({ id: l.id, cantidad: l.cantidad })),
         accesos: accesosPayload(),
       });
       if (res.ok) {
@@ -160,62 +296,60 @@ export default function PresupuestoForm({
       const parsed = n(precioAjustado);
       const res = await guardarPresupuestoAction({
         leadId,
-        lineas: lineas.map((l) => ({ id: l.objeto.id, cantidad: l.cantidad })),
+        presupuestoId,
+        objetos: lineas.map((l) => ({ id: l.id, cantidad: l.cantidad, interruptores: l.sw })),
+        productos: productos.map((l) => ({ id: l.id, cantidad: l.cantidad })),
         accesos: accesosPayload(),
         precioFinalAjustado: parsed > 0 ? round2(parsed) : null,
       });
       if (res.ok) {
         setGuardado(true);
-        router.refresh();
+        onSaved(res.id);
       } else {
         setError(res.error);
       }
     });
   }
 
-  // --- Margen en vivo del precio ajustado ---
-  const ivaRate = resultado && resultado.subtotal_con_margen > 0
-    ? resultado.iva_eur / resultado.subtotal_con_margen
-    : 0;
+  // Margen en vivo del precio ajustado (base = coste base, sin punto limpio).
+  const ivaRate =
+    resultado && resultado.subtotal_pre_iva > 0
+      ? resultado.iva_eur / resultado.subtotal_pre_iva
+      : 0;
   const ajuste = useMemo(() => {
     if (!resultado) return null;
     return margenAjustado(n(precioAjustado), resultado.coste_base, ivaRate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [precioAjustado, resultado, ivaRate]);
 
-  // Agrupar resultados de búsqueda por sala.
   const porSala = useMemo(() => {
-    const grupos = new Map<string, ObjetoBusqueda[]>();
-    for (const o of resultadosBusqueda) {
-      const key = o.sala?.trim() || "Otros";
-      if (!grupos.has(key)) grupos.set(key, []);
-      grupos.get(key)!.push(o);
+    const g = new Map<string, ObjetoBusqueda[]>();
+    for (const o of resObj) {
+      const k = o.sala?.trim() || "Otros";
+      if (!g.has(k)) g.set(k, []);
+      g.get(k)!.push(o);
     }
-    return [...grupos.entries()];
-  }, [resultadosBusqueda]);
+    return [...g.entries()];
+  }, [resObj]);
 
   return (
     <div className="flex flex-col gap-6">
-      {/* --- Selector de objetos --- */}
+      {/* ===== Inventario (el cliente ya lo tiene) ===== */}
       <div>
-        <label htmlFor="buscar-objeto" className={labelClass}>
-          Objetos del inventario
-        </label>
+        <p className={labelClass}>Inventario del cliente — cosas que YA tiene</p>
+        <p className="mb-2 text-[11px] text-black/40">
+          Solo cuentan como volumen. No se cobran.
+        </p>
         <input
-          id="buscar-objeto"
           type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={qObj}
+          onChange={(e) => setQObj(e.target.value)}
           placeholder="Buscar objeto (ej. sofá, armario, caja)…"
-          className={`mt-2 ${fieldClass}`}
+          className={fieldClass}
         />
-
-        {query.trim().length >= 2 && (
+        {qObj.trim().length >= 2 && (
           <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-black/10">
-            {buscando && (
-              <p className="px-3 py-2 text-sm text-black/50">Buscando…</p>
-            )}
-            {!buscando && resultadosBusqueda.length === 0 && (
+            {resObj.length === 0 && (
               <p className="px-3 py-2 text-sm text-black/50">Sin resultados.</p>
             )}
             {porSala.map(([sala, objetos]) => (
@@ -227,13 +361,11 @@ export default function PresupuestoForm({
                   <button
                     key={String(o.id)}
                     type="button"
-                    onClick={() => anadir(o)}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-gris"
+                    onClick={() => anadirObjeto(o)}
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gris"
                   >
                     <span>{o.objeto}</span>
-                    <span className="text-xs text-black/50">
-                      {o.volumen_m3} m³ · Añadir +
-                    </span>
+                    <span className="text-xs text-black/50">{o.volumen_m3} m³ · Añadir +</span>
                   </button>
                 ))}
               </div>
@@ -241,32 +373,106 @@ export default function PresupuestoForm({
           </div>
         )}
 
-        {/* Lista de objetos añadidos */}
         {lineas.length > 0 && (
           <div className="mt-3 flex flex-col gap-2">
             {lineas.map((l) => (
+              <div key={String(l.id)} className="rounded-lg border border-black/10 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                    {l.objeto}
+                    <span className="ml-2 text-xs font-normal text-black/40">
+                      {l.volumen_m3} m³
+                    </span>
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Stepper
+                      value={l.cantidad}
+                      onChange={(v) => setCantidadObj(l.id, v)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => quitarObj(l.id)}
+                      className="ml-1 rounded px-2 py-1 text-xs text-black/50 hover:bg-gris hover:text-black"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                  {SWITCHES.map((s) => (
+                    <label
+                      key={s.key}
+                      className="flex items-center gap-1.5 text-xs text-black/70"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={l.sw[s.key]}
+                        onChange={() => toggleSw(l.id, s.key)}
+                        className="h-3.5 w-3.5 accent-black"
+                      />
+                      {s.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ===== Productos (los vendemos) ===== */}
+      <div className="rounded-lg border border-black/10 bg-gris/30 p-3">
+        <p className={labelClass}>Productos — los vendemos nosotros</p>
+        <p className="mb-2 text-[11px] text-black/40">
+          Suman volumen y se cobran (coste × cantidad, con margen e IVA).
+        </p>
+        <input
+          type="search"
+          value={qProd}
+          onChange={(e) => setQProd(e.target.value)}
+          placeholder="Buscar producto (ej. caja, bolsa)…"
+          className={`${fieldClass} bg-white`}
+        />
+        {qProd.trim().length >= 1 && (
+          <div className="mt-2 max-h-44 overflow-y-auto rounded-lg border border-black/10 bg-white">
+            {resProd.length === 0 && (
+              <p className="px-3 py-2 text-sm text-black/50">Sin resultados.</p>
+            )}
+            {resProd.map((p) => (
+              <button
+                key={String(p.id)}
+                type="button"
+                onClick={() => anadirProducto(p)}
+                className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-gris"
+              >
+                <span>{p.nombre}</span>
+                <span className="text-xs text-black/50">
+                  {formatPrecio(p.coste_unitario)} · {p.volumen_m3} m³ · Añadir +
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {productos.length > 0 && (
+          <div className="mt-3 flex flex-col gap-2">
+            {productos.map((l) => (
               <div
-                key={String(l.objeto.id)}
-                className="flex items-center justify-between gap-3 rounded-lg border border-black/10 px-3 py-2"
+                key={String(l.id)}
+                className="flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white px-3 py-2"
               >
                 <span className="min-w-0 flex-1 truncate text-sm">
-                  {l.objeto.objeto}
+                  {l.nombre}
                   <span className="ml-2 text-xs text-black/40">
-                    {l.objeto.volumen_m3} m³
+                    {formatPrecio(l.coste_unitario)} · {l.volumen_m3} m³
                   </span>
                 </span>
                 <div className="flex items-center gap-1">
-                  <Stepper
-                    onDec={() => cambiarCantidad(l.objeto.id, l.cantidad - 1)}
-                    onInc={() => cambiarCantidad(l.objeto.id, l.cantidad + 1)}
-                    value={l.cantidad}
-                    onChange={(v) => cambiarCantidad(l.objeto.id, v)}
-                  />
+                  <Stepper value={l.cantidad} onChange={(v) => setCantidadProd(l.id, v)} />
                   <button
                     type="button"
-                    onClick={() => quitar(l.objeto.id)}
+                    onClick={() => quitarProd(l.id)}
                     className="ml-1 rounded px-2 py-1 text-xs text-black/50 hover:bg-gris hover:text-black"
-                    aria-label={`Quitar ${l.objeto.objeto}`}
                   >
                     Quitar
                   </button>
@@ -277,122 +483,45 @@ export default function PresupuestoForm({
         )}
       </div>
 
-      {/* --- Distancia y accesos --- */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
-          <label htmlFor="km" className={labelClass}>
-            Kilómetros de ida (origen → destino)
-          </label>
-          <input
-            id="km"
-            type="number"
-            min={0}
-            value={kmIda}
-            onChange={(e) => {
-              setKmIda(e.target.value);
-              invalidar();
-            }}
-            placeholder="0"
-            className={`mt-2 ${fieldClass}`}
-          />
+      {/* ===== Distancia (tres tramos) ===== */}
+      <div>
+        <p className={labelClass}>Distancia (base en Canovelles, Barcelona)</p>
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          <KmField label="Base → Origen" value={kmBaseOrigen} onChange={(v) => { setKmBaseOrigen(v); invalidar(); }} />
+          <KmField label="Origen → Destino" value={kmOrigenDestino} onChange={(v) => { setKmOrigenDestino(v); invalidar(); }} />
+          <KmField label="Destino → Base" value={kmDestinoBase} onChange={(v) => { setKmDestinoBase(v); invalidar(); }} />
         </div>
+      </div>
 
+      {/* ===== Accesos ===== */}
+      <div className="grid grid-cols-2 gap-3">
         <div>
-          <label htmlFor="op" className={labelClass}>
-            Planta origen
-          </label>
-          <input
-            id="op"
-            type="number"
-            value={origenPlanta}
-            onChange={(e) => {
-              setOrigenPlanta(e.target.value);
-              invalidar();
-            }}
-            className={`mt-2 ${fieldClass}`}
-          />
+          <label className={labelClass}>Planta origen</label>
+          <input type="number" value={origenPlanta} onChange={(e) => { setOrigenPlanta(e.target.value); invalidar(); }} className={`mt-2 ${fieldClass}`} />
         </div>
         <label className="flex items-end gap-2 pb-2 text-sm">
-          <input
-            type="checkbox"
-            checked={origenAscensor}
-            onChange={(e) => {
-              setOrigenAscensor(e.target.checked);
-              invalidar();
-            }}
-            className="h-4 w-4 accent-black"
-          />
+          <input type="checkbox" checked={origenAscensor} onChange={(e) => { setOrigenAscensor(e.target.checked); invalidar(); }} className="h-4 w-4 accent-black" />
           Ascensor en origen
         </label>
-
         <div>
-          <label htmlFor="dp" className={labelClass}>
-            Planta destino
-          </label>
-          <input
-            id="dp"
-            type="number"
-            value={destinoPlanta}
-            onChange={(e) => {
-              setDestinoPlanta(e.target.value);
-              invalidar();
-            }}
-            className={`mt-2 ${fieldClass}`}
-          />
+          <label className={labelClass}>Planta destino</label>
+          <input type="number" value={destinoPlanta} onChange={(e) => { setDestinoPlanta(e.target.value); invalidar(); }} className={`mt-2 ${fieldClass}`} />
         </div>
         <label className="flex items-end gap-2 pb-2 text-sm">
-          <input
-            type="checkbox"
-            checked={destinoAscensor}
-            onChange={(e) => {
-              setDestinoAscensor(e.target.checked);
-              invalidar();
-            }}
-            className="h-4 w-4 accent-black"
-          />
+          <input type="checkbox" checked={destinoAscensor} onChange={(e) => { setDestinoAscensor(e.target.checked); invalidar(); }} className="h-4 w-4 accent-black" />
           Ascensor en destino
         </label>
-
         <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={accesoDificil}
-            onChange={(e) => {
-              setAccesoDificil(e.target.checked);
-              invalidar();
-            }}
-            className="h-4 w-4 accent-black"
-          />
+          <input type="checkbox" checked={accesoDificil} onChange={(e) => { setAccesoDificil(e.target.checked); invalidar(); }} className="h-4 w-4 accent-black" />
           Acceso difícil
         </label>
         <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={urgencia}
-            onChange={(e) => {
-              setUrgencia(e.target.checked);
-              invalidar();
-            }}
-            className="h-4 w-4 accent-black"
-          />
+          <input type="checkbox" checked={urgencia} onChange={(e) => { setUrgencia(e.target.checked); invalidar(); }} className="h-4 w-4 accent-black" />
           Urgencia
         </label>
-
         <div className="col-span-2">
-          <label htmlFor="permisos" className={labelClass}>
-            Permisos de estacionamiento necesarios
-          </label>
-          <input
-            id="permisos"
-            type="number"
-            min={0}
-            value={permisos}
-            onChange={(e) => {
-              setPermisos(e.target.value);
-              invalidar();
-            }}
-            className={`mt-2 ${fieldClass}`}
-          />
+          <label className={labelClass}>Permisos de estacionamiento necesarios</label>
+          <input type="number" min={0} value={permisos} onChange={(e) => { setPermisos(e.target.value); invalidar(); }} className={`mt-2 ${fieldClass}`} />
         </div>
       </div>
 
@@ -411,7 +540,6 @@ export default function PresupuestoForm({
         </p>
       )}
 
-      {/* --- Resultado --- */}
       {resultado && (
         <Resultado
           r={resultado}
@@ -424,8 +552,33 @@ export default function PresupuestoForm({
           onGuardar={guardar}
           guardando={guardando}
           guardado={guardado}
+          editando={Boolean(presupuestoId)}
         />
       )}
+    </div>
+  );
+}
+
+function KmField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <label className="block text-[11px] text-black/50">{label}</label>
+      <input
+        type="number"
+        min={0}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="0"
+        className="mt-1 w-full rounded-lg bg-gris px-2 py-2 text-sm outline-none border border-transparent focus:border-black"
+      />
     </div>
   );
 }
@@ -433,22 +586,13 @@ export default function PresupuestoForm({
 function Stepper({
   value,
   onChange,
-  onInc,
-  onDec,
 }: {
   value: number;
   onChange: (v: number) => void;
-  onInc: () => void;
-  onDec: () => void;
 }) {
   return (
     <div className="flex items-center overflow-hidden rounded-md border border-black/15">
-      <button
-        type="button"
-        onClick={onDec}
-        className="px-2 py-1 text-sm hover:bg-gris"
-        aria-label="Menos"
-      >
+      <button type="button" onClick={() => onChange(value - 1)} className="px-2 py-1 text-sm hover:bg-gris" aria-label="Menos">
         −
       </button>
       <input
@@ -458,12 +602,7 @@ function Stepper({
         onChange={(e) => onChange(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
         className="w-12 border-x border-black/15 bg-white px-1 py-1 text-center text-sm outline-none"
       />
-      <button
-        type="button"
-        onClick={onInc}
-        className="px-2 py-1 text-sm hover:bg-gris"
-        aria-label="Más"
-      >
+      <button type="button" onClick={() => onChange(value + 1)} className="px-2 py-1 text-sm hover:bg-gris" aria-label="Más">
         +
       </button>
     </div>
@@ -479,6 +618,15 @@ function Linea({ label, value }: { label: string; value: string }) {
   );
 }
 
+function Dato({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="py-1">
+      <p className="text-[11px] uppercase tracking-wide text-black/40">{label}</p>
+      <p className="text-sm font-medium">{value}</p>
+    </div>
+  );
+}
+
 function Resultado({
   r,
   precioAjustado,
@@ -487,6 +635,7 @@ function Resultado({
   onGuardar,
   guardando,
   guardado,
+  editando,
 }: {
   r: PresupuestoResultado;
   precioAjustado: string;
@@ -495,49 +644,47 @@ function Resultado({
   onGuardar: () => void;
   guardando: boolean;
   guardado: boolean;
+  editando: boolean;
 }) {
   const num = (x: number, d = 2) =>
     x.toLocaleString("es-ES", { maximumFractionDigits: d });
 
   return (
     <div className="rounded-lg border border-black/10 bg-gris/40 p-4">
-      {/* Resumen operativo */}
       <div className="grid grid-cols-2 gap-x-4 sm:grid-cols-4">
         <Dato label="Volumen" value={`${num(r.volumen_total_m3, 2)} m³`} />
-        <Dato
-          label="Vehículo"
-          value={r.viajes > 1 ? `${r.vehiculo} ×${r.viajes}` : r.vehiculo}
-        />
+        <Dato label="Vehículo" value={r.viajes > 1 ? `${r.vehiculo} ×${r.viajes}` : r.vehiculo} />
         <Dato label="Operarios" value={String(r.operarios)} />
         <Dato label="Días" value={String(r.dias)} />
       </div>
       <p className="mt-2 text-xs text-black/50">
-        Horas estimadas: {num(r.horas_totales, 1)} h (manejo {num(r.horas_manejo, 1)} ·
-        desmontaje {num(r.horas_desmontaje, 1)} · trayecto {num(r.horas_trayecto, 1)} +
-        buffer) · {num(r.km_totales, 0)} km totales
+        Volumen: objetos {num(r.volumen_objetos_m3, 2)} m³ + productos{" "}
+        {num(r.volumen_productos_m3, 2)} m³ · Horas {num(r.horas_totales, 1)} h (manejo{" "}
+        {num(r.horas_manejo, 1)} · desmontaje {num(r.horas_desmontaje, 1)} · montaje{" "}
+        {num(r.horas_montaje, 1)} · trayecto {num(r.horas_trayecto, 1)} + buffer) ·{" "}
+        {num(r.km_totales, 0)} km
       </p>
 
-      {/* Desglose de costes */}
       <div className="mt-4 border-t border-black/10 pt-3">
         <Linea label="Vehículo" value={formatPrecio(round2(r.coste_vehiculo))} />
         <Linea label="Distancia" value={formatPrecio(round2(r.coste_distancia))} />
         <Linea label="Personal" value={formatPrecio(round2(r.coste_personal))} />
         <Linea label="Embalaje" value={formatPrecio(round2(r.coste_embalaje))} />
+        <Linea label="Productos" value={formatPrecio(round2(r.coste_productos))} />
         <Linea label="Extras (accesos)" value={formatPrecio(round2(r.coste_extras))} />
         {r.recargo_urgencia_eur > 0 && (
-          <Linea
-            label="Recargo urgencia"
-            value={formatPrecio(round2(r.recargo_urgencia_eur))}
-          />
+          <Linea label="Recargo urgencia" value={formatPrecio(round2(r.recargo_urgencia_eur))} />
         )}
         <div className="mt-1 border-t border-black/10 pt-1">
           <Linea label="Coste base" value={formatPrecio(round2(r.coste_base))} />
         </div>
         <Linea label="Margen" value={formatPrecio(round2(r.margen_eur))} />
+        {r.cargo_punto_limpio > 0 && (
+          <Linea label="Punto limpio (sin margen)" value={formatPrecio(round2(r.cargo_punto_limpio))} />
+        )}
         <Linea label="IVA" value={formatPrecio(round2(r.iva_eur))} />
       </div>
 
-      {/* Precio final destacado */}
       <div className="mt-4 flex items-baseline justify-between border-t border-black/10 pt-3">
         <span className="text-sm font-medium">Precio final</span>
         <span className="text-2xl font-semibold tabular-nums">
@@ -545,7 +692,6 @@ function Resultado({
         </span>
       </div>
 
-      {/* Ajuste manual */}
       <div className="mt-4 rounded-lg border border-black/10 bg-white p-3">
         <label htmlFor="ajustado" className="block text-xs font-medium text-black/60">
           Precio final ajustado (negociación)
@@ -568,8 +714,7 @@ function Resultado({
             <p>
               Margen real:{" "}
               <span className="font-medium tabular-nums">
-                {formatPrecio(round2(ajuste.margen_eur))} (
-                {num(ajuste.margen_pct, 1)}%)
+                {formatPrecio(round2(ajuste.margen_eur))} ({num(ajuste.margen_pct, 1)}%)
               </span>
             </p>
             {ajuste.bajo_coste ? (
@@ -592,7 +737,11 @@ function Resultado({
           disabled={guardando}
           className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-40"
         >
-          {guardando ? "Guardando…" : "Guardar presupuesto"}
+          {guardando
+            ? "Guardando…"
+            : editando
+            ? "Actualizar presupuesto"
+            : "Guardar presupuesto"}
         </button>
         {guardado && (
           <span className="text-sm text-black/60" role="status">
@@ -600,15 +749,6 @@ function Resultado({
           </span>
         )}
       </div>
-    </div>
-  );
-}
-
-function Dato({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="py-1">
-      <p className="text-[11px] uppercase tracking-wide text-black/40">{label}</p>
-      <p className="text-sm font-medium">{value}</p>
     </div>
   );
 }
