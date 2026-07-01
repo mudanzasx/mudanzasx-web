@@ -21,17 +21,17 @@ export default async function PanelLayout({
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <header className="sticky top-0 z-10 border-b border-black/10 bg-white">
+      <header className="sticky top-0 z-10 border-b border-white/10 bg-black">
         <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-4 sm:px-6">
           <Link href="/admin" className="flex items-center" aria-label="Mudanzas X · Panel">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-black.svg" alt="Mudanzas X" className="h-5 w-auto" />
+            <img src="/logo-white.svg" alt="Mudanzas X" className="h-5 w-auto" />
           </Link>
 
           <form action="/admin/logout" method="post">
             <button
               type="submit"
-              className="rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium text-black transition-colors hover:bg-gris"
+              className="rounded-full border border-white/30 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
             >
               Cerrar sesión
             </button>

@@ -16,14 +16,10 @@ export default async function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4 text-black">
       <div className="w-full max-w-[360px]">
-        <div className="mb-10 flex justify-center">
+        <div className="mb-12 flex justify-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-black.svg" alt="Mudanzas X" className="h-6 w-auto" />
+          <img src="/icon-black.svg" alt="Mudanzas X" className="h-14 w-auto" />
         </div>
-        <h1 className="mb-1 text-center text-lg font-medium">Panel interno</h1>
-        <p className="mb-8 text-center text-sm text-black/50">
-          Acceso solo para el equipo.
-        </p>
         <LoginForm />
       </div>
     </div>
