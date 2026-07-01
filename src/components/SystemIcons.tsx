@@ -1,10 +1,34 @@
 // Familia propia de iconos monolínea (trazo 2px sobre rejilla 24, geométricos).
 // Coherentes entre "Cómo funciona", "Servicios" y la banda de confianza.
-import type { SVGProps } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+  type SVGProps,
+} from "react";
 
-type IconProps = SVGProps<SVGSVGElement> & { size?: number };
+// `trace`: normaliza la longitud de cada trazo (pathLength=1) para poder animar
+// el dibujado con stroke-dasharray/stroke-dashoffset de forma uniforme.
+type IconProps = SVGProps<SVGSVGElement> & { size?: number; trace?: boolean };
 
-function Icon({ size = 28, children, ...props }: IconProps & { children: React.ReactNode }) {
+function Icon({
+  size = 28,
+  trace,
+  children,
+  ...props
+}: IconProps & { children: ReactNode }) {
+  const content = trace
+    ? Children.map(children, (child) =>
+        isValidElement(child)
+          ? cloneElement(child as ReactElement<{ pathLength?: number }>, {
+              pathLength: 1,
+            })
+          : child
+      )
+    : children;
+
   return (
     <svg
       width={size}
@@ -18,7 +42,7 @@ function Icon({ size = 28, children, ...props }: IconProps & { children: React.R
       aria-hidden
       {...props}
     >
-      {children}
+      {content}
     </svg>
   );
 }
