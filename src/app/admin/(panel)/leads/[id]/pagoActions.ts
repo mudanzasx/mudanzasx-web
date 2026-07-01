@@ -25,10 +25,6 @@ export type CrearEnlaceResult =
   | { ok: true; url: string; pago: Pago }
   | { ok: false; error: string };
 
-export type MarcarPagadoResult =
-  | { ok: true; pago: Pago }
-  | { ok: false; error: string };
-
 // Importes de cobro, SIEMPRE a partir del precio_final guardado.
 // - reserva50: 50% ahora, el resto pendiente.
 // - total: 95% ahora (5% de descuento), 0 pendiente.
@@ -184,43 +180,4 @@ export async function crearEnlacePago(
 
   revalidatePath(`/admin/leads/${leadId}`);
   return { ok: true, url: session.url, pago: pagoRow as Pago };
-}
-
-// Prueba manual mientras no está el webhook (fase 3b). Marca el pago cobrado.
-export async function marcarPagadoPrueba(
-  pagoId: string
-): Promise<MarcarPagadoResult> {
-  const { supabase, user } = await requireUser();
-  if (!user) return { ok: false, error: "Sesión no válida." };
-
-  const { data: pago, error } = await supabase
-    .from("pagos")
-    .select("id,lead_id,importe_total,tipo")
-    .eq("id", pagoId)
-    .maybeSingle();
-  if (error || !pago) return { ok: false, error: "No se encontró el pago." };
-
-  const tipo: TipoCobro = pago.tipo === "total" ? "total" : "reserva50";
-  const importeTotal = Number(pago.importe_total) || 0;
-  const { importe_a_cobrar, importe_pendiente } = calcularImportes(
-    importeTotal,
-    tipo
-  );
-  const estado = tipo === "total" ? "Pagado 100%" : "Reserva 50%";
-
-  const { data, error: eUpd } = await supabase
-    .from("pagos")
-    .update({
-      importe_pagado: importe_a_cobrar,
-      importe_pendiente,
-      estado,
-    })
-    .eq("id", pagoId)
-    .select(SELECT_PAGO)
-    .single();
-  if (eUpd || !data)
-    return { ok: false, error: "No se pudo actualizar el pago." };
-
-  revalidatePath(`/admin/leads/${String(pago.lead_id)}`);
-  return { ok: true, pago: data as Pago };
 }

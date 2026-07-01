@@ -4,12 +4,7 @@ import { useState, useTransition } from "react";
 import { formatPrecio } from "@/lib/leads";
 import { round2 } from "@/lib/presupuesto";
 import EstadoPill from "@/components/admin/EstadoPill";
-import {
-  crearEnlacePago,
-  marcarPagadoPrueba,
-  type Pago,
-  type TipoCobro,
-} from "./pagoActions";
+import { crearEnlacePago, type Pago, type TipoCobro } from "./pagoActions";
 
 function tipoLabel(tipo: string | null): string {
   if (tipo === "total") return "Total (100% con 5% dto)";
@@ -31,7 +26,6 @@ export default function PagoPresupuesto({
   const [error, setError] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [creando, startCrear] = useTransition();
-  const [marcando, startMarcar] = useTransition();
 
   const precio = precioFinal ?? 0;
   const importeReserva = round2(precio * 0.5);
@@ -52,16 +46,6 @@ export default function PagoPresupuesto({
     });
   }
 
-  function marcarPagado() {
-    if (!pago) return;
-    setError(null);
-    startMarcar(async () => {
-      const res = await marcarPagadoPrueba(pago.id);
-      if (res.ok) setPago(res.pago);
-      else setError(res.error);
-    });
-  }
-
   async function copiar() {
     if (!url) return;
     try {
@@ -72,8 +56,6 @@ export default function PagoPresupuesto({
       setCopiado(false);
     }
   }
-
-  const pagado = pago != null && (pago.importe_pagado ?? 0) > 0;
 
   return (
     <div className="mt-2 rounded-lg bg-gris/50 p-3">
@@ -150,20 +132,6 @@ export default function PagoPresupuesto({
               Abrir enlace
             </a>
           </div>
-        </div>
-      )}
-
-      {/* Prueba manual (se quitará con el webhook, fase 3b) */}
-      {pago && !pagado && (
-        <div className="mt-3">
-          <button
-            type="button"
-            onClick={marcarPagado}
-            disabled={marcando}
-            className="text-xs text-black/50 underline underline-offset-2 hover:text-black disabled:opacity-40"
-          >
-            {marcando ? "Marcando…" : "Marcar como pagado (prueba)"}
-          </button>
         </div>
       )}
     </div>
