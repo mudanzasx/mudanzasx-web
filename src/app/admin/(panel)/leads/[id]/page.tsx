@@ -128,8 +128,8 @@ export default async function LeadDetailPage({
 
       {pagoParam === "ok" && (
         <div className="mb-6 rounded-lg border border-black/15 bg-gris px-4 py-3 text-sm">
-          Pago completado en Stripe. El estado se confirmará automáticamente
-          cuando el webhook esté activo (fase 3b).
+          Pago recibido. La reserva se ha confirmado y el cliente está marcado
+          como Reservado.
         </div>
       )}
       {pagoParam === "cancelado" && (

@@ -27,6 +27,21 @@ export default function EditLeadForm({
     { tipo: "ok" | "error"; texto: string } | null
   >(null);
 
+  // Fuente de verdad = el servidor. Si el lead recién leído (props `inicial`)
+  // difiere del último snapshot que sincronizamos, reinicializamos el formulario
+  // con esos valores. Así, tras un pago, cuando el webhook deja el estado en
+  // 'Reservado' en la base de datos y la página se recarga, el desplegable
+  // refleja el valor real igual que la etiqueta de arriba (no un valor cacheado).
+  const [snapshot, setSnapshot] = useState<LeadInicial>(inicial);
+  const servidorCambio = (Object.keys(inicial) as (keyof LeadInicial)[]).some(
+    (k) => inicial[k] !== snapshot[k]
+  );
+  if (servidorCambio) {
+    setSnapshot(inicial);
+    setF(inicial);
+    setMensaje(null);
+  }
+
   const sinCambios = (Object.keys(inicial) as (keyof LeadInicial)[]).every(
     (k) => f[k] === inicial[k]
   );
