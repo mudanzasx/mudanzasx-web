@@ -23,10 +23,26 @@ export default async function PanelLayout({
     <div className="min-h-screen bg-white text-black">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-black">
         <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-4 sm:px-6">
-          <Link href="/admin" className="flex items-center" aria-label="Mudanzas X · Panel">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-white.svg" alt="Mudanzas X" className="h-5 w-auto" />
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link href="/admin" className="flex items-center" aria-label="Mudanzas X · Panel">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-white.svg" alt="Mudanzas X" className="h-5 w-auto" />
+            </Link>
+            <nav className="flex items-center gap-1 text-sm">
+              <Link
+                href="/admin"
+                className="rounded-full px-3 py-1.5 font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                Clientes
+              </Link>
+              <Link
+                href="/admin/calendario"
+                className="rounded-full px-3 py-1.5 font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                Calendario
+              </Link>
+            </nav>
+          </div>
 
           <form action="/admin/logout" method="post">
             <button

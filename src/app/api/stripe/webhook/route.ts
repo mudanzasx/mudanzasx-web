@@ -123,9 +123,101 @@ async function procesarPagoCompletado(session: Stripe.Checkout.Session) {
     if (eLead) {
       throw new Error(`No se pudo actualizar el lead: ${eLead.message}`);
     }
+
+    // Y se crea su operación en el calendario. Es un extra sobre la confirmación
+    // del pago: si algo falla lo registramos, pero NO propagamos el error (no
+    // queremos que Stripe reintente ni que el pago quede sin confirmar por esto).
+    const presupuestoId = metadata.presupuesto_id ?? null;
+    try {
+      await crearOperacionSiNoExiste(supabase, leadObjetivo, presupuestoId);
+    } catch (err) {
+      console.error(
+        `[stripe webhook] No se pudo crear la operación para lead=${leadObjetivo}:`,
+        err
+      );
+    }
   }
 
   console.log(
     `[stripe webhook] Pago confirmado (${estado}) para stripe_id=${session.id}, lead=${leadObjetivo}.`
   );
+}
+
+// Crea la operación (mudanza planificable) de un lead recién reservado, salvo
+// que ya exista una para ese lead. La comprobación previa por lead_id evita
+// duplicados si Stripe reintenta el evento o si el mismo lead paga dos veces.
+type SupabaseAdmin = ReturnType<typeof getSupabaseAdmin>;
+
+async function crearOperacionSiNoExiste(
+  supabase: SupabaseAdmin,
+  leadId: string,
+  presupuestoId: string | null
+) {
+  const { data: existente, error: eExiste } = await supabase
+    .from("operaciones")
+    .select("id")
+    .eq("lead_id", leadId)
+    .limit(1)
+    .maybeSingle();
+  if (eExiste) {
+    throw new Error(`No se pudo comprobar operaciones existentes: ${eExiste.message}`);
+  }
+  if (existente) {
+    console.log(
+      `[stripe webhook] La operación para lead=${leadId} ya existe (${existente.id}); no se duplica.`
+    );
+    return;
+  }
+
+  // Fecha y volumen parten del lead; el volumen del presupuesto (si hay) manda.
+  const { data: lead } = await supabase
+    .from("leads")
+    .select("fecha_deseada,volumen_estimado_m3")
+    .eq("id", leadId)
+    .maybeSingle();
+
+  let volumen: number | null = lead?.volumen_estimado_m3 ?? null;
+  let vehiculoTexto: string | null = null;
+
+  if (presupuestoId) {
+    const { data: presu } = await supabase
+      .from("presupuestos")
+      .select("vehiculo,volumen_m3")
+      .eq("id", presupuestoId)
+      .maybeSingle();
+    if (presu) {
+      if (presu.volumen_m3 !== null && presu.volumen_m3 !== undefined) {
+        volumen = presu.volumen_m3;
+      }
+      vehiculoTexto = presu.vehiculo ?? null;
+    }
+  }
+
+  // Casa el tipo de vehículo del presupuesto (texto) con la tabla vehiculos.
+  let vehiculoId: string | null = null;
+  if (vehiculoTexto) {
+    const { data: veh } = await supabase
+      .from("vehiculos")
+      .select("id")
+      .eq("tipo", vehiculoTexto)
+      .limit(1)
+      .maybeSingle();
+    vehiculoId = veh?.id ?? null;
+  }
+
+  const { error: eIns } = await supabase.from("operaciones").insert({
+    lead_id: leadId,
+    fecha: lead?.fecha_deseada ?? null,
+    hora: null,
+    vehiculo_id: vehiculoId,
+    operarios_ids: [],
+    estado_operativo: "Sin planificar",
+    volumen_m3: volumen,
+    notas: null,
+  });
+  if (eIns) {
+    throw new Error(`No se pudo insertar la operación: ${eIns.message}`);
+  }
+
+  console.log(`[stripe webhook] Operación creada para lead=${leadId}.`);
 }

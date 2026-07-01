@@ -1,0 +1,207 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { formatVolumen, textoODash } from "@/lib/leads";
+import OperacionForm, {
+  type OperacionInicial,
+  type OtraOperacion,
+  type VehiculoOpcion,
+  type OperarioOpcion,
+} from "./OperacionForm";
+
+type OperacionDetalle = {
+  id: string;
+  lead_id: string | null;
+  fecha: string | null;
+  hora: string | null;
+  vehiculo_id: string | null;
+  operarios_ids: string[] | null;
+  estado_operativo: string | null;
+  volumen_m3: number | null;
+  notas: string | null;
+};
+
+type LeadResumen = {
+  id: string;
+  nombre: string | null;
+  telefono: string | null;
+  origen_direccion: string | null;
+  destino_direccion: string | null;
+};
+
+export default async function OperacionDetallePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const supabase = await createSupabaseServerClient();
+
+  const { data, error } = await supabase
+    .from("operaciones")
+    .select(
+      "id,lead_id,fecha,hora,vehiculo_id,operarios_ids,estado_operativo,volumen_m3,notas"
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-black/10 bg-gris px-4 py-6 text-sm text-black/70">
+        No se pudo cargar la operación.{" "}
+        <Link href="/admin/calendario" className="underline underline-offset-2">
+          Volver al calendario
+        </Link>
+        .
+      </div>
+    );
+  }
+
+  if (!data) {
+    notFound();
+  }
+
+  const op = data as OperacionDetalle;
+
+  // Cliente de la operación (consulta aparte por id).
+  let lead: LeadResumen | null = null;
+  if (op.lead_id) {
+    const { data: leadData } = await supabase
+      .from("leads")
+      .select("id,nombre,telefono,origen_direccion,destino_direccion")
+      .eq("id", op.lead_id)
+      .maybeSingle();
+    lead = (leadData as LeadResumen | null) ?? null;
+  }
+
+  // Catálogos para los selectores.
+  const { data: vehiculosData } = await supabase
+    .from("vehiculos")
+    .select("id,tipo")
+    .order("tipo", { ascending: true });
+  const vehiculos = (vehiculosData ?? []) as VehiculoOpcion[];
+
+  const { data: operariosData } = await supabase
+    .from("operarios")
+    .select("id,nombre,rol")
+    .order("nombre", { ascending: true });
+  const operarios = (operariosData ?? []) as OperarioOpcion[];
+
+  // Resto de operaciones (con fecha) para detectar solapes de vehículo/operarios.
+  // Se calcula en cliente contra la fecha/asignación elegida en el formulario.
+  const { data: otrasData } = await supabase
+    .from("operaciones")
+    .select("id,fecha,vehiculo_id,operarios_ids,lead_id")
+    .neq("id", id)
+    .not("fecha", "is", null);
+  const otrasFilas = (otrasData ?? []) as Array<{
+    id: string;
+    fecha: string | null;
+    vehiculo_id: string | null;
+    operarios_ids: string[] | null;
+    lead_id: string | null;
+  }>;
+
+  // Nombres de los clientes de esas otras operaciones (una consulta).
+  const otrosLeadIds = [
+    ...new Set(
+      otrasFilas
+        .map((o) => o.lead_id)
+        .filter((x): x is string => typeof x === "string" && x.length > 0)
+    ),
+  ];
+  const nombrePorLead = new Map<string, string | null>();
+  if (otrosLeadIds.length > 0) {
+    const { data: nombresData } = await supabase
+      .from("leads")
+      .select("id,nombre")
+      .in("id", otrosLeadIds);
+    for (const l of nombresData ?? []) nombrePorLead.set(l.id, l.nombre ?? null);
+  }
+
+  const otras = otrasFilas.map(
+    (o): OtraOperacion => ({
+      id: o.id,
+      fecha: o.fecha,
+      vehiculo_id: o.vehiculo_id,
+      operarios_ids: o.operarios_ids ?? [],
+      cliente:
+        (o.lead_id ? nombrePorLead.get(o.lead_id)?.trim() : "") ||
+        "otra operación",
+    })
+  );
+
+  const inicial: OperacionInicial = {
+    fecha: op.fecha ?? "",
+    hora: (op.hora ?? "").slice(0, 5),
+    vehiculo_id: op.vehiculo_id ?? "",
+    operarios_ids: op.operarios_ids ?? [],
+    estado_operativo: op.estado_operativo ?? "Sin planificar",
+    notas: op.notas ?? "",
+  };
+
+  return (
+    <div className="mx-auto max-w-[900px]">
+      <div className="mb-6">
+        <Link
+          href="/admin/calendario"
+          className="text-sm text-black/60 underline-offset-2 hover:underline"
+        >
+          ← Volver al calendario
+        </Link>
+      </div>
+
+      <h1 className="mb-8 text-2xl font-medium">
+        {textoODash(lead?.nombre)}
+      </h1>
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {/* Cliente (solo lectura) */}
+        <section className="rounded-lg border border-black/10 p-5">
+          <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-black/50">
+            Cliente
+          </h2>
+          <div className="flex flex-col gap-3">
+            <Campo label="Nombre" valor={textoODash(lead?.nombre)} />
+            <Campo label="Teléfono" valor={textoODash(lead?.telefono)} />
+            <Campo
+              label="Origen"
+              valor={textoODash(lead?.origen_direccion)}
+            />
+            <Campo
+              label="Destino"
+              valor={textoODash(lead?.destino_direccion)}
+            />
+            <Campo label="Volumen" valor={formatVolumen(op.volumen_m3)} />
+            {lead?.id && (
+              <Link
+                href={`/admin/leads/${lead.id}`}
+                className="mt-1 text-sm text-black/60 underline underline-offset-2 hover:text-black"
+              >
+                Ver ficha del cliente →
+              </Link>
+            )}
+          </div>
+        </section>
+
+        {/* Planificación (editable) */}
+        <OperacionForm
+          id={op.id}
+          inicial={inicial}
+          vehiculos={vehiculos}
+          operarios={operarios}
+          otras={otras}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Campo({ label, valor }: { label: string; valor: string }) {
+  return (
+    <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
+      <span className="text-sm text-black/50">{label}</span>
+      <span className="text-sm text-black sm:text-right">{valor}</span>
+    </div>
+  );
+}
