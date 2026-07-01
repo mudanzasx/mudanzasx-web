@@ -1,0 +1,101 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+
+const PREGUNTAS = [
+  {
+    q: "¿Desde dónde y hasta dónde hacéis mudanzas?",
+    a: "Desde Barcelona a cualquier punto de la península, y de cualquier punto de la península a Barcelona. Uno de los dos extremos siempre es Barcelona.",
+  },
+  {
+    q: "¿Cómo se calcula el precio?",
+    a: "Con datos reales: volumen de lo que mueves, distancia entre origen y destino, número de operarios y horas. No trabajamos con estimaciones a ojo.",
+  },
+  {
+    q: "¿El precio de la web es el definitivo?",
+    a: "La web te da un precio de referencia. El precio cerrado se confirma cuando validamos los datos exactos (planta, ascensor, acceso). Sin sorpresas después.",
+  },
+  {
+    q: "¿Qué necesito pagar para reservar?",
+    a: "El 50% para bloquear fecha y equipo. Si pagas el 100% por adelantado, aplicamos un 5% de descuento. El resto se abona el día de la mudanza.",
+  },
+  {
+    q: "¿Desmontáis y montáis los muebles?",
+    a: "Sí: desmontaje, embalaje, carga, transporte, descarga y montaje. También gestionamos permisos de estacionamiento si hacen falta.",
+  },
+  {
+    q: "¿Trabajáis fines de semana o festivos?",
+    a: "La operativa funciona 24 horas, 365 días al año. La atención comercial es de lunes a viernes de 9:00 a 21:00 y sábados de 9:00 a 17:00.",
+  },
+  {
+    q: "¿Estáis asegurados?",
+    a: "Sí. Tenemos seguro de responsabilidad civil y seguro de las mercancías transportadas y manipuladas.",
+  },
+  {
+    q: "¿Cuánto tardáis en darme el presupuesto?",
+    a: "El de referencia es inmediato desde la web. Para cerrarlo, te contactamos el mismo día laborable.",
+  },
+  {
+    q: "¿Puedo comprar cajas y material de embalaje?",
+    a: "Sí: cajas de cartón, cajas armario y bolsas de mudanza. Se incluye en el presupuesto si lo necesitas.",
+  },
+  {
+    q: "¿Hacéis mudanzas de larga distancia?",
+    a: "Sí, es nuestra especialidad: rutas nacionales desde Barcelona a cualquier punto de la península.",
+  },
+];
+
+export default function Faq() {
+  const [abierta, setAbierta] = useState<number | null>(null);
+
+  return (
+    <section id="faq" className="w-full border-t border-black/10">
+      <div className="mx-auto max-w-[820px] px-6 py-14 md:py-24">
+        <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
+          Preguntas frecuentes
+        </h2>
+
+        <div className="mt-10 border-t border-black/10">
+          {PREGUNTAS.map((item, i) => {
+            const open = abierta === i;
+            return (
+              <div key={item.q} className="border-b border-black/10">
+                <button
+                  type="button"
+                  onClick={() => setAbierta(open ? null : i)}
+                  aria-expanded={open}
+                  className="flex w-full items-center justify-between gap-6 py-5 text-left"
+                >
+                  <span className="text-base font-medium tracking-tight text-black md:text-lg">
+                    {item.q}
+                  </span>
+                  <ChevronDown
+                    size={20}
+                    strokeWidth={1.5}
+                    className={`shrink-0 text-black transition-transform duration-200 ${
+                      open ? "rotate-180" : "rotate-0"
+                    }`}
+                  />
+                </button>
+                <div
+                  className={`grid transition-all duration-200 ease-out ${
+                    open
+                      ? "grid-rows-[1fr] opacity-100"
+                      : "grid-rows-[0fr] opacity-0"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <p className="pb-5 pr-8 text-[15px] leading-[1.6] text-black/70">
+                      {item.a}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
