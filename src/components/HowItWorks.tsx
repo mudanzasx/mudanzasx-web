@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { IconRoute, IconData, IconLock, IconTruck } from "./SystemIcons";
 
 const PASOS = [
@@ -27,59 +24,8 @@ const PASOS = [
 ];
 
 export default function HowItWorks() {
-  const ref = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  // Revela la sección una sola vez. Robusto: si ya está en el viewport al montar,
-  // dispara de inmediato; si no, usa IntersectionObserver con threshold bajo.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    // Respeta prefers-reduced-motion SOLO si está activo: todo visible, sin animación.
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
-      setVisible(true);
-      return;
-    }
-
-    let done = false;
-    // Fuerza que el estado inicial oculto se pinte un frame antes de revelar,
-    // para que la transición tenga siempre un estado "desde" y se reproduzca.
-    const reveal = () => {
-      if (done) return;
-      done = true;
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => setVisible(true))
-      );
-    };
-
-    const rect = el.getBoundingClientRect();
-    const inView = rect.top < window.innerHeight && rect.bottom > 0;
-
-    if (inView || typeof IntersectionObserver === "undefined") {
-      reveal();
-      return;
-    }
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          reveal();
-          io.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
   return (
-    <section
-      ref={ref}
-      id="como-funciona"
-      className={`hiw w-full border-t border-black/10 ${visible ? "is-visible" : ""}`}
-    >
+    <section id="como-funciona" className="w-full border-t border-black/10">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
         <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
           Cómo funciona
@@ -89,7 +35,7 @@ export default function HowItWorks() {
           {/* Línea de progresión (escritorio): une el centro de los 4 nodos. */}
           <div
             aria-hidden
-            className="hiw-line absolute top-7 left-[12.5%] right-[12.5%] hidden h-px bg-black/15 md:block"
+            className="absolute top-7 left-[12.5%] right-[12.5%] hidden h-px bg-black/15 md:block"
           />
 
           <div className="grid grid-cols-1 gap-y-14 md:grid-cols-4 md:gap-x-8">
@@ -98,13 +44,12 @@ export default function HowItWorks() {
               return (
                 <div
                   key={paso.titulo}
-                  className="hiw-step group flex flex-col md:items-center md:text-center"
-                  style={{ "--d": `${i * 100}ms` } as CSSProperties}
+                  className="flex flex-col md:items-center md:text-center"
                 >
-                  <div className="hiw-icon relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-black/15 bg-white text-black md:mx-auto">
-                    <Icon size={26} trace />
+                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-black/15 bg-white text-black md:mx-auto">
+                    <Icon size={26} />
                   </div>
-                  <span className="hiw-num mt-5 inline-block text-sm font-medium tabular-nums tracking-[0.15em] text-black/40">
+                  <span className="mt-5 inline-block text-sm font-medium tabular-nums tracking-[0.15em] text-black/40">
                     0{i + 1}
                   </span>
                   <h3 className="mt-1 text-lg font-medium tracking-tight text-black">
