@@ -100,6 +100,17 @@ export function formatAscensor(value: boolean | null | undefined): string {
   return value ? "Sí" : "No";
 }
 
+// Extrae el número de planta de un texto libre ("3", "planta 3", "bajo"...).
+// "bajo"/"baja"/vacío → 0. Sin número reconocible → 0.
+export function parsePlantaNum(value: string | null | undefined): number {
+  const v = (value ?? "").toLowerCase();
+  if (/\bbaj[oa]\b/.test(v) || v.trim() === "") return 0;
+  const m = v.match(/-?\d+/);
+  if (!m) return 0;
+  const n = parseInt(m[0], 10);
+  return Number.isFinite(n) ? Math.max(0, n) : 0;
+}
+
 export function textoODash(value: string | null | undefined): string {
   const v = (value ?? "").trim();
   return v.length > 0 ? v : "—";

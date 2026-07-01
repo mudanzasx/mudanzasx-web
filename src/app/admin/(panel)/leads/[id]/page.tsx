@@ -7,12 +7,15 @@ import {
   formatAscensor,
   formatFecha,
   formatFechaHora,
+  formatPrecio,
   formatRangoPrecio,
   formatVolumen,
+  parsePlantaNum,
   textoODash,
 } from "@/lib/leads";
 import EstadoPill from "@/components/admin/EstadoPill";
 import EditLeadForm from "./EditLeadForm";
+import PresupuestoForm from "./PresupuestoForm";
 
 export default async function LeadDetailPage({
   params,
@@ -48,6 +51,22 @@ export default async function LeadDetailPage({
   const estadoInicial = esEstadoComercial(lead.estado_comercial)
     ? lead.estado_comercial
     : "Nuevo";
+
+  // Presupuestos ya guardados de este cliente (más nuevos primero).
+  const { data: presupuestos } = await supabase
+    .from("presupuestos")
+    .select(
+      "id,creado_en,volumen_m3,vehiculo,operarios,horas,precio_final,estado"
+    )
+    .eq("lead_id", id)
+    .order("creado_en", { ascending: false });
+
+  const accesosDefault = {
+    origen_planta: parsePlantaNum(lead.origen_planta),
+    origen_ascensor: Boolean(lead.origen_ascensor),
+    destino_planta: parsePlantaNum(lead.destino_planta),
+    destino_ascensor: Boolean(lead.destino_ascensor),
+  };
 
   return (
     <div className="mx-auto max-w-[900px]">
@@ -124,7 +143,30 @@ export default async function LeadDetailPage({
             />
           </Section>
 
-          <PlaceholderSection title="Presupuesto" />
+          <Section title="Presupuesto">
+            {presupuestos && presupuestos.length > 0 && (
+              <div className="mb-5 flex flex-col gap-2">
+                {presupuestos.map((p) => (
+                  <div
+                    key={p.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border border-black/10 px-3 py-2 text-sm"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium tabular-nums">
+                        {formatPrecio(p.precio_final)}
+                      </p>
+                      <p className="text-xs text-black/50">
+                        {formatFechaHora(p.creado_en)} · {textoODash(p.vehiculo)} ·{" "}
+                        {p.operarios ?? "—"} operarios
+                      </p>
+                    </div>
+                    <EstadoPill estado={p.estado} />
+                  </div>
+                ))}
+              </div>
+            )}
+            <PresupuestoForm leadId={lead.id} accesosDefault={accesosDefault} />
+          </Section>
           <PlaceholderSection title="Pago" />
           <PlaceholderSection title="Planificación" />
         </div>
