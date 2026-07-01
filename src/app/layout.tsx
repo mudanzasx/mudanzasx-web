@@ -13,6 +13,13 @@ export const metadata: Metadata = {
   title: "Mudanzas X · Mudanzas desde Barcelona a toda la península",
   description:
     "Un sistema que calcula tu mudanza con datos reales: volumen, distancia y equipo. Precio claro antes de reservar.",
+  icons: {
+    icon: [
+      { url: "/icon-black.svg", type: "image/svg+xml", media: "(prefers-color-scheme: light)" },
+      { url: "/icon-white.svg", type: "image/svg+xml", media: "(prefers-color-scheme: dark)" },
+    ],
+    apple: [{ url: "/icon-black.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({

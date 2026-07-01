@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { MapPin, Mail, Clock } from "lucide-react";
 import {
   FacebookIcon,
@@ -28,8 +29,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-4">
           {/* Empresa */}
           <div>
-            <p className="text-xl font-medium tracking-tight">Mudanzas X</p>
-            <p className="mt-4 flex items-start gap-2 text-sm leading-[1.6] text-white/70">
+            <Image
+              src="/logo-white.svg"
+              alt="Mudanzas X"
+              width={2453}
+              height={512}
+              unoptimized
+              className="h-7 w-auto"
+            />
+            <p className="mt-5 flex items-start gap-2 text-sm leading-[1.6] text-white/70">
               <MapPin size={16} strokeWidth={1.5} className="mt-0.5 shrink-0" />
               Calle Unió, 15, 08420 Canovelles, Barcelona
             </p>

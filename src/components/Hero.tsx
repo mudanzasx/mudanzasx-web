@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Circle, Square } from "lucide-react";
 import { useQuote } from "./QuoteContext";
 
 export default function Hero() {
   const { requestQuote } = useQuote();
-  const [origen, setOrigen] = useState("Barcelona");
+  const [origen, setOrigen] = useState("");
   const [destino, setDestino] = useState("");
 
   const handleCalcular = () => {
@@ -28,46 +27,44 @@ export default function Hero() {
 
         {/* Bloque Origen/Destino estilo Uber */}
         <div className="mt-10 max-w-xl">
-          <div className="relative rounded-2xl bg-gris p-4 md:p-6">
-            {/* Línea vertical que conecta los dos marcadores */}
+          <div className="relative rounded-2xl bg-gris px-4 py-2 md:px-5">
+            {/*
+              Carril izquierdo de 20px (columna del grid). Cada fila mide 56px (h-14),
+              así el centro del marcador de Origen queda a 8+28=36px y el de Destino a
+              8+56+28=92px. La línea conecta exactamente ambos centros: top 36px, alto 56px.
+            */}
             <div
               aria-hidden
-              className="absolute left-[30px] top-[38px] h-[calc(100%-76px)] w-px bg-black/25 md:left-[38px] md:top-[46px] md:h-[calc(100%-92px)]"
+              className="pointer-events-none absolute top-[36px] left-[26px] h-[56px] w-px -translate-x-1/2 bg-black/30 md:left-[30px]"
             />
 
-            <label className="relative flex items-center gap-4">
-              <Circle
-                size={12}
-                strokeWidth={0}
-                className="shrink-0 fill-black"
-                aria-hidden
-              />
+            {/* Fila Origen */}
+            <label className="grid h-14 grid-cols-[20px_1fr] items-center">
+              <span className="flex items-center justify-center">
+                <span className="block h-2.5 w-2.5 rounded-full bg-black" />
+              </span>
               <span className="sr-only">Origen</span>
               <input
                 type="text"
                 value={origen}
                 onChange={(e) => setOrigen(e.target.value)}
-                placeholder="Origen"
-                className="w-full bg-transparent py-3 text-base text-black placeholder-black/40 outline-none"
+                placeholder="¿Desde dónde?"
+                className="col-start-2 w-full border-b border-black/10 bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
               />
             </label>
 
-            <div className="ml-[26px] h-px bg-black/10 md:ml-[34px]" />
-
-            <label className="relative flex items-center gap-4">
-              <Square
-                size={11}
-                strokeWidth={0}
-                className="shrink-0 fill-black"
-                aria-hidden
-              />
+            {/* Fila Destino */}
+            <label className="grid h-14 grid-cols-[20px_1fr] items-center">
+              <span className="flex items-center justify-center">
+                <span className="block h-2.5 w-2.5 bg-black" />
+              </span>
               <span className="sr-only">Destino</span>
               <input
                 type="text"
                 value={destino}
                 onChange={(e) => setDestino(e.target.value)}
-                placeholder="Destino"
-                className="w-full bg-transparent py-3 text-base text-black placeholder-black/40 outline-none"
+                placeholder="¿Hasta dónde?"
+                className="col-start-2 w-full bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
               />
             </label>
           </div>

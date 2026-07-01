@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Phone } from "lucide-react";
 import { TELEFONO } from "@/lib/config";
 
@@ -21,11 +22,16 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
-        <a
-          href="#top"
-          className="text-2xl font-medium tracking-tight text-black"
-        >
-          Mudanzas X
+        <a href="#top" className="flex items-center" aria-label="Mudanzas X — inicio">
+          <Image
+            src="/logo-black.svg"
+            alt="Mudanzas X"
+            width={2453}
+            height={512}
+            priority
+            unoptimized
+            className="h-7 w-auto md:h-8"
+          />
         </a>
         <a
           href={`tel:${TELEFONO}`}

@@ -1,23 +1,23 @@
-import { ClipboardList, Calculator, CalendarCheck, Truck } from "lucide-react";
+import { IconRoute, IconData, IconLock, IconTruck } from "./SystemIcons";
 
 const PASOS = [
   {
-    icon: ClipboardList,
+    Icon: IconRoute,
     titulo: "Cuéntanos tu mudanza",
     texto: "Origen, destino y qué mueves. Un minuto.",
   },
   {
-    icon: Calculator,
+    Icon: IconData,
     titulo: "Recibe tu precio real",
     texto: "Calculado con volumen, distancia y equipo. Sin estimaciones a ojo.",
   },
   {
-    icon: CalendarCheck,
+    Icon: IconLock,
     titulo: "Reserva con el 50%",
     texto: "Bloqueas fecha y equipo. Paga el 100% y ahorra un 5%.",
   },
   {
-    icon: Truck,
+    Icon: IconTruck,
     titulo: "Nosotros ejecutamos",
     texto: "Embalaje, carga, transporte y descarga. Tú no cargas nada.",
   },
@@ -31,24 +31,37 @@ export default function HowItWorks() {
           Cómo funciona
         </h2>
 
-        <div className="mt-12 grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-4">
-          {PASOS.map((paso, i) => {
-            const Icon = paso.icon;
-            return (
-              <div key={paso.titulo} className="flex flex-col">
-                <Icon size={40} strokeWidth={1} className="text-black" />
-                <span className="mt-6 text-sm font-medium text-black/40">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-2 text-lg font-medium tracking-tight text-black">
-                  {paso.titulo}
-                </h3>
-                <p className="mt-2 text-[15px] leading-[1.6] text-black/70">
-                  {paso.texto}
-                </p>
-              </div>
-            );
-          })}
+        <div className="relative mt-16">
+          {/* Línea de progresión (escritorio): une el centro de los 4 nodos. */}
+          <div
+            aria-hidden
+            className="absolute top-7 left-[12.5%] right-[12.5%] hidden h-px bg-black/15 md:block"
+          />
+
+          <div className="grid grid-cols-1 gap-y-14 md:grid-cols-4 md:gap-x-8">
+            {PASOS.map((paso, i) => {
+              const Icon = paso.Icon;
+              return (
+                <div
+                  key={paso.titulo}
+                  className="flex flex-col md:items-center md:text-center"
+                >
+                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-black/15 bg-white text-black md:mx-auto">
+                    <Icon size={26} />
+                  </div>
+                  <span className="mt-5 text-sm font-medium tabular-nums tracking-[0.15em] text-black/40">
+                    0{i + 1}
+                  </span>
+                  <h3 className="mt-1 text-lg font-medium tracking-tight text-black">
+                    {paso.titulo}
+                  </h3>
+                  <p className="mt-2 text-[15px] leading-[1.6] text-black/70 md:max-w-[220px]">
+                    {paso.texto}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useQuote } from "./QuoteContext";
 
 const TAMANOS = ["Estudio", "Piso pequeño", "Piso mediano", "Piso grande", "Casa"];
@@ -11,6 +12,7 @@ const fieldClass =
 
 export default function QuoteForm() {
   const { prefill } = useQuote();
+  const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
 
   const [form, setForm] = useState({
@@ -24,7 +26,6 @@ export default function QuoteForm() {
     acepta: false,
   });
   const [enviando, setEnviando] = useState(false);
-  const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Referencias en orden para enfocar el primer campo vacío tras el prefill.
@@ -99,12 +100,12 @@ export default function QuoteForm() {
       if (!res.ok) {
         throw new Error("No se pudo enviar la solicitud.");
       }
-      setEnviado(true);
+      // Redirige a la página propia de confirmación (URL medible).
+      router.push("/solicitud-recibida");
     } catch {
       setError(
         "No se pudo enviar la solicitud. Revisa los datos e inténtalo de nuevo."
       );
-    } finally {
       setEnviando(false);
     }
   };
@@ -120,13 +121,7 @@ export default function QuoteForm() {
           Pide tu presupuesto
         </h2>
 
-        {enviado ? (
-          <p className="mt-10 text-lg leading-[1.6] text-black">
-            Solicitud recibida. Te contactamos hoy mismo para cerrar tu
-            presupuesto.
-          </p>
-        ) : (
-          <form onSubmit={handleSubmit} className="mt-10 flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="mt-10 flex flex-col gap-6">
             <div>
               <label htmlFor="origen" className={labelClass}>
                 Origen
@@ -273,8 +268,7 @@ export default function QuoteForm() {
             >
               {enviando ? "Enviando…" : "Solicitar presupuesto"}
             </button>
-          </form>
-        )}
+        </form>
       </div>
     </section>
   );
