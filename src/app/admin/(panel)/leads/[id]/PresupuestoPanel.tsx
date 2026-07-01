@@ -9,6 +9,8 @@ import PresupuestoForm, {
   type DatosCliente,
   type PresupuestoPayload,
 } from "./PresupuestoForm";
+import PagoPresupuesto from "./PagoPresupuesto";
+import { type Pago } from "./pagoActions";
 
 export type PresupuestoGuardado = {
   id: string;
@@ -25,11 +27,13 @@ export default function PresupuestoPanel({
   accesosDefault,
   datosCliente,
   presupuestos,
+  pagosPorPresupuesto,
 }: {
   leadId: string;
   accesosDefault: AccesosDefault;
   datosCliente: DatosCliente;
   presupuestos: PresupuestoGuardado[];
+  pagosPorPresupuesto: Record<string, Pago>;
 }) {
   const router = useRouter();
   const [editId, setEditId] = useState<string | null>(null);
@@ -67,27 +71,41 @@ export default function PresupuestoPanel({
             const activo = p.id === editId;
             const puede = reabrible(p);
             return (
-              <button
+              <div
                 key={p.id}
-                type="button"
-                onClick={() => abrir(p)}
-                disabled={!puede}
-                className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
-                  activo
-                    ? "border-black bg-gris"
-                    : "border-black/10 hover:bg-gris disabled:cursor-default disabled:hover:bg-transparent"
+                className={`rounded-lg border transition-colors ${
+                  activo ? "border-black" : "border-black/10"
                 }`}
               >
-                <div className="min-w-0">
-                  <p className="font-medium tabular-nums">{formatPrecio(p.precio_final)}</p>
-                  <p className="text-xs text-black/50">
-                    {formatFechaHora(p.creado_en)} · {p.vehiculo ?? "—"} ·{" "}
-                    {p.operarios ?? "—"} operarios
-                    {!puede && " · (formato antiguo)"}
-                  </p>
+                <button
+                  type="button"
+                  onClick={() => abrir(p)}
+                  disabled={!puede}
+                  className={`flex w-full items-center justify-between gap-3 rounded-t-lg px-3 py-2 text-left text-sm transition-colors ${
+                    puede ? "hover:bg-gris" : "cursor-default"
+                  } ${activo ? "bg-gris" : ""}`}
+                >
+                  <div className="min-w-0">
+                    <p className="font-medium tabular-nums">
+                      {formatPrecio(p.precio_final)}
+                    </p>
+                    <p className="text-xs text-black/50">
+                      {formatFechaHora(p.creado_en)} · {p.vehiculo ?? "—"} ·{" "}
+                      {p.operarios ?? "—"} operarios
+                      {!puede && " · (formato antiguo)"}
+                    </p>
+                  </div>
+                  <EstadoPill estado={p.estado} />
+                </button>
+
+                <div className="px-3 pb-3">
+                  <PagoPresupuesto
+                    presupuestoId={p.id}
+                    precioFinal={p.precio_final}
+                    pagoInicial={pagosPorPresupuesto[p.id] ?? null}
+                  />
                 </div>
-                <EstadoPill estado={p.estado} />
-              </button>
+              </div>
             );
           })}
         </div>

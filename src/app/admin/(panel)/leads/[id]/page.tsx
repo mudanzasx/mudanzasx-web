@@ -17,13 +17,17 @@ import PresupuestoPanel, {
   type PresupuestoGuardado,
 } from "./PresupuestoPanel";
 import { type DatosCliente } from "./PresupuestoForm";
+import { type Pago } from "./pagoActions";
 
 export default async function LeadDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ pago?: string }>;
 }) {
   const { id } = await params;
+  const { pago: pagoParam } = await searchParams;
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -62,6 +66,18 @@ export default async function LeadDetailPage({
     .eq("lead_id", id)
     .order("creado_en", { ascending: false });
   const presupuestos = (presupuestosData ?? []) as PresupuestoGuardado[];
+
+  // Pagos de este cliente, mapeados por presupuesto.
+  const { data: pagosData } = await supabase
+    .from("pagos")
+    .select(
+      "id,presupuesto_id,lead_id,importe_total,importe_pagado,importe_pendiente,tipo,estado,metodo,stripe_id"
+    )
+    .eq("lead_id", id);
+  const pagosPorPresupuesto: Record<string, Pago> = {};
+  for (const p of (pagosData ?? []) as Pago[]) {
+    if (p.presupuesto_id) pagosPorPresupuesto[p.presupuesto_id] = p;
+  }
 
   const accesosDefault = {
     origen_planta: parsePlantaNum(lead.origen_planta),
@@ -110,6 +126,18 @@ export default async function LeadDetailPage({
         <EstadoPill estado={lead.estado_comercial} />
       </div>
 
+      {pagoParam === "ok" && (
+        <div className="mb-6 rounded-lg border border-black/15 bg-gris px-4 py-3 text-sm">
+          Pago completado en Stripe. El estado se confirmará automáticamente
+          cuando el webhook esté activo (fase 3b).
+        </div>
+      )}
+      {pagoParam === "cancelado" && (
+        <div className="mb-6 rounded-lg border border-black/15 px-4 py-3 text-sm text-black/60">
+          El cliente canceló o cerró el pago sin completarlo.
+        </div>
+      )}
+
       {/* Ficha editable: contacto + origen + destino + gestión, un solo Guardar */}
       <div className="mb-8">
         <EditLeadForm id={lead.id} inicial={inicial} />
@@ -151,6 +179,7 @@ export default async function LeadDetailPage({
               accesosDefault={accesosDefault}
               datosCliente={datosCliente}
               presupuestos={presupuestos}
+              pagosPorPresupuesto={pagosPorPresupuesto}
             />
           </Section>
           <PlaceholderSection title="Pago" />
