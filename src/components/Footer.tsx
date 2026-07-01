@@ -7,6 +7,7 @@ import {
   YoutubeIcon,
   XIcon,
 } from "./BrandIcons";
+import ConfigurarCookiesButton from "./cookies/ConfigurarCookiesButton";
 
 const REDES = [
   { Icon: FacebookIcon, label: "Facebook", href: "https://facebook.com/mudanzasxai" },
@@ -79,6 +80,9 @@ export default function Footer() {
                   </a>
                 </li>
               ))}
+              <li>
+                <ConfigurarCookiesButton className="text-left text-sm text-white/70 transition-colors duration-150 hover:text-white" />
+              </li>
             </ul>
           </div>
 

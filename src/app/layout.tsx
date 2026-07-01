@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import ConsentModeInit from "@/components/cookies/ConsentModeInit";
+import { ConsentProvider } from "@/components/cookies/ConsentContext";
+import CookieBanner from "@/components/cookies/CookieBanner";
+import AnalyticsScripts from "@/components/cookies/AnalyticsScripts";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -29,8 +33,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${montserrat.variable} h-full`}>
+      {/* Consent Mode v2: fija el estado por defecto (denegado) antes de cargar
+          cualquier etiqueta de analítica/marketing. */}
+      <ConsentModeInit />
       <body className="min-h-full flex flex-col bg-white text-black">
-        {children}
+        <ConsentProvider>
+          {children}
+          {/* Banner de cookies + panel de configuración (primera visita y reapertura). */}
+          <CookieBanner />
+          {/* Huecos preparados para GA4 / Google Ads / Meta Pixel, condicionados al consentimiento. */}
+          <AnalyticsScripts />
+        </ConsentProvider>
       </body>
     </html>
   );
