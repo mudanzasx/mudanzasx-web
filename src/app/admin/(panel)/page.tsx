@@ -49,6 +49,23 @@ export default async function AdminDashboard({
   const { data, error } = await query;
   const leads = (data ?? []) as unknown as Lead[];
 
+  // Estado de cobro de los leads visibles: UNA sola consulta a `pagos` por sus
+  // ids. Un lead tiene pago pendiente si alguna fila mantiene importe_pendiente
+  // > 0 (p. ej. una "Reserva 50%" sin cobrar el resto).
+  const pagosPendientes = new Set<string>();
+  const leadIds = leads.map((l) => l.id).filter(Boolean);
+  if (leadIds.length > 0) {
+    const { data: pagosData } = await supabase
+      .from("pagos")
+      .select("lead_id,importe_pendiente")
+      .in("lead_id", leadIds);
+    for (const p of pagosData ?? []) {
+      if (p.lead_id && Number(p.importe_pendiente) > 0) {
+        pagosPendientes.add(p.lead_id);
+      }
+    }
+  }
+
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -99,12 +116,15 @@ export default async function AdminDashboard({
                   className="border-b border-black/5 transition-colors last:border-b-0 hover:bg-gris/60"
                 >
                   <Td>
-                    <Link
-                      href={`/admin/leads/${lead.id}`}
-                      className="font-medium text-black underline-offset-2 hover:underline"
-                    >
-                      {textoODash(lead.nombre)}
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href={`/admin/leads/${lead.id}`}
+                        className="font-medium text-black underline-offset-2 hover:underline"
+                      >
+                        {textoODash(lead.nombre)}
+                      </Link>
+                      {pagosPendientes.has(lead.id) && <BadgePagoPendiente />}
+                    </div>
                   </Td>
                   <Td>{textoODash(lead.telefono)}</Td>
                   <Td className="text-black/70">
@@ -130,6 +150,16 @@ export default async function AdminDashboard({
 
 function Th({ children }: { children: React.ReactNode }) {
   return <th className="px-4 py-3 font-medium">{children}</th>;
+}
+
+// Aviso sobrio (ámbar apagado) de que al lead le queda dinero por cobrar.
+function BadgePagoPendiente() {
+  return (
+    <span className="inline-flex items-center gap-1 whitespace-nowrap rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
+      <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
+      Pago pendiente
+    </span>
+  );
 }
 
 function Td({

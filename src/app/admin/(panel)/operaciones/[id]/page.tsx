@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { formatVolumen, textoODash } from "@/lib/leads";
+import { formatPrecio, formatVolumen, textoODash } from "@/lib/leads";
 import OperacionForm, {
   type OperacionInicial,
   type OtraOperacion,
@@ -30,6 +30,14 @@ type LeadResumen = {
   telefono: string | null;
   origen_direccion: string | null;
   destino_direccion: string | null;
+};
+
+// Resumen de cobro de la operación (leído de la tabla `pagos`).
+type PagoResumen = {
+  importe_total: number | null;
+  importe_pagado: number | null;
+  importe_pendiente: number | null;
+  estado: string | null;
 };
 
 export default async function OperacionDetallePage({
@@ -82,10 +90,13 @@ export default async function OperacionDetallePage({
   // detalle (jsonb) lleva el inventario, productos y accesos que se cotizaron.
   let detallePresupuesto: DetallePresupuesto | null = null;
   let volumenPresupuesto: number | null = op.volumen_m3;
+  let pago: PagoResumen | null = null;
   if (op.lead_id) {
     const { data: pagosRows } = await supabase
       .from("pagos")
-      .select("presupuesto_id,estado")
+      .select(
+        "presupuesto_id,estado,importe_total,importe_pagado,importe_pendiente"
+      )
       .eq("lead_id", op.lead_id);
     const filas = pagosRows ?? [];
     const pagado = filas.find(
@@ -94,6 +105,16 @@ export default async function OperacionDetallePage({
         (p.estado?.startsWith("Reserva") || p.estado?.startsWith("Pagado"))
     );
     const cualquiera = filas.find((p) => p.presupuesto_id);
+    // Pago de referencia para el resumen de cobro (el reservado si lo hay).
+    const elegido = pagado ?? cualquiera ?? filas[0] ?? null;
+    if (elegido) {
+      pago = {
+        importe_total: elegido.importe_total ?? null,
+        importe_pagado: elegido.importe_pagado ?? null,
+        importe_pendiente: elegido.importe_pendiente ?? null,
+        estado: elegido.estado ?? null,
+      };
+    }
     let presuId = (pagado ?? cualquiera)?.presupuesto_id ?? null;
 
     let presu:
@@ -235,6 +256,14 @@ export default async function OperacionDetallePage({
                 Ver ficha del cliente →
               </Link>
             )}
+
+            {/* Estado de cobro de la mudanza (solo lectura). */}
+            <div className="mt-1 border-t border-black/10 pt-3">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-black/50">
+                Cobro
+              </p>
+              <PagoEstado pago={pago} />
+            </div>
           </div>
         </section>
 
@@ -264,6 +293,49 @@ function Campo({ label, valor }: { label: string; valor: string }) {
     <div className="flex flex-col gap-0.5 sm:flex-row sm:justify-between sm:gap-4">
       <span className="text-sm text-black/50">{label}</span>
       <span className="text-sm text-black sm:text-right">{valor}</span>
+    </div>
+  );
+}
+
+// Resumen del cobro: importes y un aviso destacado según quede o no pendiente.
+function PagoEstado({ pago }: { pago: PagoResumen | null }) {
+  if (!pago) {
+    return (
+      <p className="rounded-lg border border-dashed border-black/15 px-3 py-2 text-sm text-black/50">
+        Sin pago registrado.
+      </p>
+    );
+  }
+
+  const hayPendiente = Number(pago.importe_pendiente ?? 0) > 0;
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-3 gap-x-4">
+        <ResumenCobro label="Total" valor={formatPrecio(pago.importe_total)} />
+        <ResumenCobro label="Pagado" valor={formatPrecio(pago.importe_pagado)} />
+        <ResumenCobro
+          label="Pendiente"
+          valor={formatPrecio(pago.importe_pendiente)}
+        />
+      </div>
+      {hayPendiente ? (
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+          Pago pendiente: {formatPrecio(pago.importe_pendiente)}
+        </p>
+      ) : (
+        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+          Pagado completo
+        </p>
+      )}
+    </div>
+  );
+}
+
+function ResumenCobro({ label, valor }: { label: string; valor: string }) {
+  return (
+    <div>
+      <p className="text-[11px] uppercase tracking-wide text-black/40">{label}</p>
+      <p className="mt-0.5 text-sm font-medium tabular-nums text-black">{valor}</p>
     </div>
   );
 }
