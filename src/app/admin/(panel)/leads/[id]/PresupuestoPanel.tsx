@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import { formatPrecio, formatFechaHora } from "@/lib/leads";
 import EstadoPill from "@/components/admin/EstadoPill";
 import PresupuestoForm, {
@@ -40,6 +41,9 @@ export default function PresupuestoPanel({
   const [initial, setInitial] = useState<PresupuestoPayload | null>(null);
   // Cambia con cada carga/nuevo para forzar el remonte del formulario.
   const [formKey, setFormKey] = useState(0);
+  // El formulario empieza plegado; se abre solo al usarlo (nuevo/editar) o al
+  // pulsar su cabecera.
+  const [formOpen, setFormOpen] = useState(false);
 
   function abrir(p: PresupuestoGuardado) {
     // Solo se puede reabrir si el snapshot es del formato nuevo (v2).
@@ -47,12 +51,14 @@ export default function PresupuestoPanel({
     setEditId(p.id);
     setInitial(p.detalle_objetos);
     setFormKey((k) => k + 1);
+    setFormOpen(true);
   }
 
   function nuevo() {
     setEditId(null);
     setInitial(null);
     setFormKey((k) => k + 1);
+    setFormOpen(true);
   }
 
   function onSaved() {
@@ -111,30 +117,64 @@ export default function PresupuestoPanel({
         </div>
       )}
 
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-black/50">
-          {editId ? "Editando un presupuesto guardado." : "Nuevo presupuesto."}
-        </p>
-        {(editId || presupuestos.length > 0) && (
-          <button
-            type="button"
-            onClick={nuevo}
-            className="rounded-full border border-black/15 px-3 py-1.5 text-xs font-medium hover:bg-gris"
-          >
-            + Nuevo presupuesto
-          </button>
-        )}
-      </div>
+      {/* Acordeón: formulario de crear/editar presupuesto. Plegado por defecto
+          para no ocupar espacio; se abre al pulsar la cabecera, al reabrir un
+          presupuesto guardado o al pulsar "+ Nuevo presupuesto". */}
+      <div className="rounded-lg border border-black/10">
+        <button
+          type="button"
+          onClick={() => setFormOpen((o) => !o)}
+          aria-expanded={formOpen}
+          className="flex w-full items-center justify-between gap-3 rounded-lg px-4 py-3 text-left transition-colors hover:bg-gris/60"
+        >
+          <span className="text-sm font-medium">
+            {editId ? "Editar presupuesto" : "Nuevo presupuesto"}
+          </span>
+          <ChevronDown
+            size={18}
+            className={`shrink-0 text-black/50 transition-transform duration-200 ${
+              formOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
 
-      <PresupuestoForm
-        key={formKey}
-        leadId={leadId}
-        accesosDefault={accesosDefault}
-        datosCliente={datosCliente}
-        initial={initial}
-        presupuestoId={editId}
-        onSaved={onSaved}
-      />
+        <div
+          className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+            formOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="border-t border-black/10 px-4 pb-4 pt-4">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-xs text-black/50">
+                  {editId
+                    ? "Editando un presupuesto guardado."
+                    : "Rellena los datos del nuevo presupuesto."}
+                </p>
+                {(editId || presupuestos.length > 0) && (
+                  <button
+                    type="button"
+                    onClick={nuevo}
+                    className="rounded-full border border-black/15 px-3 py-1.5 text-xs font-medium hover:bg-gris"
+                  >
+                    + Nuevo presupuesto
+                  </button>
+                )}
+              </div>
+
+              <PresupuestoForm
+                key={formKey}
+                leadId={leadId}
+                accesosDefault={accesosDefault}
+                datosCliente={datosCliente}
+                initial={initial}
+                presupuestoId={editId}
+                onSaved={onSaved}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

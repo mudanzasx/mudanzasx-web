@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { useConsent } from "./ConsentContext";
 
@@ -71,6 +72,8 @@ export default function CookieBanner() {
     closePreferences,
   } = useConsent();
 
+  const pathname = usePathname();
+
   // Estado local de los interruptores del panel de configuración.
   const [analytics, setAnalytics] = useState(consent.analytics);
   const [marketing, setMarketing] = useState(consent.marketing);
@@ -83,6 +86,10 @@ export default function CookieBanner() {
       setMarketing(consent.marketing);
     }
   }, [preferencesOpen, consent.analytics, consent.marketing]);
+
+  // El banner es para los visitantes de la web pública. En el panel /admin
+  // (solo entra el equipo con login) no tiene sentido, así que no se muestra.
+  if (pathname?.startsWith("/admin")) return null;
 
   // Evita renderizar en el servidor / antes de conocer la elección (sin parpadeos).
   if (!ready) return null;

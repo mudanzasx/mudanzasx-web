@@ -1,8 +1,50 @@
-// Pastilla sobria para el estado comercial: texto sobre gris, sin color chillón.
-export default function EstadoPill({ estado }: { estado: string | null }) {
+// Pastilla del estado. Por defecto es neutra (gris), como el resto del panel.
+// Con `colorize` se aplica un semáforo sobrio a los estados COMERCIALES del lead
+// (gris/ámbar/verde/rojo). Los estados de presupuesto/pago se dejan neutros para
+// no alterar su aspecto.
+
+type Tono = "neutro" | "gris" | "ambar" | "verde" | "rojo";
+
+// Mapa de estado comercial -> tono. Basado en ESTADOS_COMERCIALES:
+// Nuevo (recién entrado) → gris; intermedios (contacto/presupuesto/negociación)
+// → ámbar; Reservado (cerrado con éxito) → verde; Perdido/Cancelado → rojo.
+const ESTADO_TONO: Record<string, Tono> = {
+  Nuevo: "gris",
+  Contactado: "ambar",
+  "Presupuesto pendiente": "ambar",
+  "Presupuesto enviado": "ambar",
+  Negociación: "ambar",
+  Reservado: "verde",
+  Perdido: "rojo",
+  Cancelado: "rojo",
+};
+
+const TONO_CLASES: Record<Tono, { badge: string; dot: string }> = {
+  neutro: { badge: "bg-gris text-black", dot: "" },
+  gris: { badge: "bg-gris text-black/70", dot: "bg-black/30" },
+  ambar: { badge: "bg-amber-50 text-amber-700", dot: "bg-amber-500" },
+  verde: { badge: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" },
+  rojo: { badge: "bg-red-50 text-red-700", dot: "bg-red-500" },
+};
+
+export default function EstadoPill({
+  estado,
+  colorize = false,
+}: {
+  estado: string | null;
+  colorize?: boolean;
+}) {
   const texto = (estado ?? "").trim() || "—";
+  const tono: Tono = colorize ? ESTADO_TONO[texto] ?? "neutro" : "neutro";
+  const clases = TONO_CLASES[tono];
+
   return (
-    <span className="inline-block whitespace-nowrap rounded-full bg-gris px-2.5 py-1 text-xs font-medium text-black">
+    <span
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${clases.badge}`}
+    >
+      {clases.dot && (
+        <span className={`h-1.5 w-1.5 rounded-full ${clases.dot}`} aria-hidden />
+      )}
       {texto}
     </span>
   );

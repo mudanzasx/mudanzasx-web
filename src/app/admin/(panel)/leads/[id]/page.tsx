@@ -123,7 +123,7 @@ export default async function LeadDetailPage({
 
       <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-medium">{textoODash(lead.nombre)}</h1>
-        <EstadoPill estado={lead.estado_comercial} />
+        <EstadoPill estado={lead.estado_comercial} colorize />
       </div>
 
       {pagoParam === "ok" && (

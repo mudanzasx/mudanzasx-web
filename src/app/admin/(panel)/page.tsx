@@ -113,7 +113,7 @@ export default async function AdminDashboard({
                   <Td>{formatFecha(lead.fecha_deseada)}</Td>
                   <Td>{textoODash(lead.tamano_aprox)}</Td>
                   <Td>
-                    <EstadoPill estado={lead.estado_comercial} />
+                    <EstadoPill estado={lead.estado_comercial} colorize />
                   </Td>
                   <Td className="whitespace-nowrap text-black/70">
                     {formatFechaHora(lead.creado_en)}
