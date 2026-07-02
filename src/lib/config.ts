@@ -1,8 +1,11 @@
 // Datos de contacto y constantes fáciles de cambiar en un único sitio.
-// El teléfono aún no existe: se define aquí y se usa en todos los enlaces tel:.
-export const TELEFONO = "+34600000000";
+// TELEFONO: valor para los enlaces tel: (sin espacios).
+export const TELEFONO = "+34936942941";
 
-// Versión legible para mostrar en botones/enlaces (deriva del anterior si se desea).
+// Versión legible para mostrar al usuario (texto visible).
+export const TELEFONO_TEXTO = "+34 936 942 941";
+
+// Etiqueta del botón de llamada de la cabecera.
 export const TELEFONO_DISPLAY = "Llamar";
 
 // Datos identificativos del titular. Se usan literalmente en las páginas legales

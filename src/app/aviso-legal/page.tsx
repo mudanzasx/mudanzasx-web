@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import LegalShell from "@/components/legal/LegalShell";
-import { EMPRESA } from "@/lib/config";
+import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Aviso legal",
@@ -32,6 +32,10 @@ export default function AvisoLegal() {
         <li>
           <strong>Correo electrónico:</strong>{" "}
           <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a>
+        </li>
+        <li>
+          <strong>Teléfono:</strong>{" "}
+          <a href={`tel:${TELEFONO}`}>{TELEFONO_TEXTO}</a>
         </li>
         <li>
           <strong>Sitio web:</strong> {EMPRESA.web}

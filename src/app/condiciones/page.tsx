@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import LegalShell from "@/components/legal/LegalShell";
-import { EMPRESA } from "@/lib/config";
+import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Condiciones del servicio",
@@ -18,8 +18,10 @@ export default function Condiciones() {
         condiciones») regulan la contratación del servicio de mudanzas ofrecido
         por {EMPRESA.titular}, con NIF {EMPRESA.nif} y domicilio en{" "}
         {EMPRESA.domicilio} (en adelante, «Mudanzas X»), a través del sitio web{" "}
-        {EMPRESA.web}. La solicitud y aceptación de un presupuesto implica la
-        aceptación plena de estas condiciones.
+        {EMPRESA.web}. Para cualquier consulta puedes contactar en{" "}
+        <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a> o en el teléfono{" "}
+        <a href={`tel:${TELEFONO}`}>{TELEFONO_TEXTO}</a>. La solicitud y aceptación
+        de un presupuesto implica la aceptación plena de estas condiciones.
       </p>
 
       <h2>2. Descripción del servicio</h2>

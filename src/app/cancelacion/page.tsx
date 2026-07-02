@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import LegalShell from "@/components/legal/LegalShell";
-import { EMPRESA } from "@/lib/config";
+import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Condiciones de cancelación y cambios",
@@ -55,9 +55,10 @@ export default function Cancelacion() {
         Para cancelar la mudanza o solicitar un cambio de fecha, el cliente debe
         comunicarlo a través de los canales de contacto de Mudanzas X, por correo
         electrónico a{" "}
-        <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a> o por teléfono,
-        indicando sus datos y la fecha reservada. La antelación se calcula desde el
-        momento de recepción de dicha comunicación.
+        <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a> o por teléfono en el{" "}
+        <a href={`tel:${TELEFONO}`}>{TELEFONO_TEXTO}</a>, indicando sus datos y la
+        fecha reservada. La antelación se calcula desde el momento de recepción de
+        dicha comunicación.
       </p>
 
       <h2>4. Cancelación por Mudanzas X</h2>

@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { MapPin, Mail, Clock } from "lucide-react";
+import { MapPin, Mail, Phone, Clock } from "lucide-react";
+import { TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 import {
   FacebookIcon,
   InstagramIcon,
@@ -50,6 +51,13 @@ export default function Footer() {
             >
               <Mail size={16} strokeWidth={1.5} className="shrink-0" />
               info@mudanzasx.com
+            </a>
+            <a
+              href={`tel:${TELEFONO}`}
+              className="mt-3 flex items-center gap-2 text-sm text-white/70 transition-colors duration-150 hover:text-white"
+            >
+              <Phone size={16} strokeWidth={1.5} className="shrink-0" />
+              {TELEFONO_TEXTO}
             </a>
           </div>
 
