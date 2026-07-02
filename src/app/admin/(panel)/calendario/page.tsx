@@ -21,6 +21,7 @@ type OperacionCalendario = {
   estado_operativo: string | null;
   nombre: string | null;
   tipo: string | null;
+  pendiente: boolean;
 };
 
 // Fila cruda de operaciones (sin resolver relaciones).
@@ -113,6 +114,23 @@ export default async function CalendarioPage({
     for (const v of vehData ?? []) tipoPorVehiculo.set(v.id, v.tipo ?? null);
   }
 
+  // Estado de cobro por lead para el indicador del calendario: UNA sola consulta
+  // a `pagos` por los lead_id visibles. Un lead tiene pago pendiente si alguna de
+  // sus filas mantiene importe_pendiente > 0 (p. ej. "Reserva 50%" sin cobrar el
+  // resto). Los saldados ("Pagado 100%" / pendiente 0) no se marcan.
+  const pagoPendientePorLead = new Map<string, boolean>();
+  if (leadIds.length > 0) {
+    const { data: pagosData } = await supabase
+      .from("pagos")
+      .select("lead_id,importe_pendiente")
+      .in("lead_id", leadIds);
+    for (const p of pagosData ?? []) {
+      if (p.lead_id && Number(p.importe_pendiente) > 0) {
+        pagoPendientePorLead.set(p.lead_id, true);
+      }
+    }
+  }
+
   function resolver(o: OperacionFila): OperacionCalendario {
     return {
       id: o.id,
@@ -121,6 +139,7 @@ export default async function CalendarioPage({
       estado_operativo: o.estado_operativo,
       nombre: o.lead_id ? nombrePorLead.get(o.lead_id) ?? null : null,
       tipo: o.vehiculo_id ? tipoPorVehiculo.get(o.vehiculo_id) ?? null : null,
+      pendiente: o.lead_id ? pagoPendientePorLead.get(o.lead_id) ?? false : false,
     };
   }
 
@@ -248,6 +267,7 @@ export default async function CalendarioPage({
                 <span className="text-black/50">
                   {op.tipo?.trim() || "sin vehículo"}
                 </span>
+                {op.pendiente && <BadgePendiente />}
               </Link>
             ))}
           </div>
@@ -278,7 +298,23 @@ function TarjetaOperacion({ op }: { op: OperacionCalendario }) {
         {hora && <span className="tabular-nums">{hora} · </span>}
         {op.tipo?.trim() || "sin vehículo"}
       </div>
+      {op.pendiente && (
+        <div className="mt-0.5 pl-3">
+          <BadgePendiente />
+        </div>
+      )}
     </Link>
+  );
+}
+
+// Indicador sobrio de pago pendiente (ámbar apagado), coherente con el semáforo
+// de estados del panel.
+function BadgePendiente() {
+  return (
+    <span className="inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+      <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
+      Pendiente
+    </span>
   );
 }
 

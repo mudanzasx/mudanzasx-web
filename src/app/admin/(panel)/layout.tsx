@@ -25,8 +25,11 @@ export default async function PanelLayout({
         <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-6">
             <Link href="/admin" className="flex items-center" aria-label="Mudanzas X · Panel">
+              {/* Móvil: solo la X (ocupa menos). Escritorio: logo completo. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-white.svg" alt="Mudanzas X" className="h-5 w-auto" />
+              <img src="/icon-white.svg" alt="Mudanzas X" className="h-6 w-auto sm:hidden" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-white.svg" alt="Mudanzas X" className="hidden h-5 w-auto sm:block" />
             </Link>
             <nav className="flex items-center gap-1 text-sm">
               <Link
