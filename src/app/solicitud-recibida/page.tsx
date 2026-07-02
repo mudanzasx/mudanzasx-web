@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Solicitud recibida · Mudanzas X",
+  title: "Solicitud recibida",
   description: "Hemos recibido tu solicitud de presupuesto.",
   robots: { index: false, follow: false },
 };

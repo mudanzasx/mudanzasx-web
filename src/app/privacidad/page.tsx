@@ -4,7 +4,7 @@ import LegalShell from "@/components/legal/LegalShell";
 import { EMPRESA } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Política de privacidad · Mudanzas X",
+  title: "Política de privacidad",
   description:
     "Cómo trata Mudanzas X tus datos personales: responsable, finalidades, base jurídica, conservación, encargados, derechos y reclamación ante la AEPD.",
 };

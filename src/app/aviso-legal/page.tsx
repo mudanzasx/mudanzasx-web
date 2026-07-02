@@ -4,7 +4,7 @@ import LegalShell from "@/components/legal/LegalShell";
 import { EMPRESA } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Aviso legal · Mudanzas X",
+  title: "Aviso legal",
   description:
     "Datos identificativos del titular, condiciones de uso, propiedad intelectual y legislación aplicable del sitio web de Mudanzas X.",
 };

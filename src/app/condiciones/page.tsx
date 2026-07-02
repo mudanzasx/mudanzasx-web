@@ -4,7 +4,7 @@ import LegalShell from "@/components/legal/LegalShell";
 import { EMPRESA } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Condiciones del servicio · Mudanzas X",
+  title: "Condiciones del servicio",
   description:
     "Condiciones generales de contratación del servicio de mudanzas de Mudanzas X: presupuesto, reserva y pago, obligaciones de las partes, seguros y responsabilidad.",
 };

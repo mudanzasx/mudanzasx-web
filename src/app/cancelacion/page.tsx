@@ -4,7 +4,7 @@ import LegalShell from "@/components/legal/LegalShell";
 import { EMPRESA } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Condiciones de cancelación y cambios · Mudanzas X",
+  title: "Condiciones de cancelación y cambios",
   description:
     "Condiciones de cancelación de la mudanza, cambio de fecha, plazos de reembolso y derecho de desistimiento en Mudanzas X.",
 };

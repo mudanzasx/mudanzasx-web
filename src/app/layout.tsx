@@ -13,16 +13,42 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
+// SEO base del sitio. Los iconos (favicon.ico, icon.svg, apple-icon.png) se
+// sirven por convención de archivos de Next (src/app), y el manifest por
+// src/app/manifest.ts, así que no hace falta declararlos aquí.
+//
+// El `template` de título hace que cada página pueda exportar solo su nombre
+// (p. ej. `title: "Aviso legal"`) y herede el sufijo "· Mudanzas X". Para
+// futuras rutas por ciudad (mudanzas Barcelona → [Ciudad]) basta con exportar
+// su propia `metadata` con title/description específicos.
+const OG_DESCRIPTION =
+  "Mudanzas desde Barcelona a toda la península. Pide tu presupuesto en un minuto: precio calculado con datos reales, cobertura nacional y servicio con seguro.";
+
 export const metadata: Metadata = {
-  title: "Mudanzas X · Mudanzas desde Barcelona a toda la península",
-  description:
-    "Un sistema que calcula tu mudanza con datos reales: volumen, distancia y equipo. Precio claro antes de reservar.",
-  icons: {
-    icon: [
-      { url: "/icon-black.svg", type: "image/svg+xml", media: "(prefers-color-scheme: light)" },
-      { url: "/icon-white.svg", type: "image/svg+xml", media: "(prefers-color-scheme: dark)" },
+  metadataBase: new URL("https://www.mudanzasx.com"),
+  title: {
+    default: "Mudanzas X · Mudanzas desde Barcelona a toda España",
+    template: "%s · Mudanzas X",
+  },
+  description: OG_DESCRIPTION,
+  applicationName: "Mudanzas X",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "es_ES",
+    siteName: "Mudanzas X",
+    url: "https://www.mudanzasx.com",
+    title: "Mudanzas X · Mudanzas desde Barcelona a toda España",
+    description: OG_DESCRIPTION,
+    images: [
+      { url: "/og.png", width: 1200, height: 630, alt: "Mudanzas X" },
     ],
-    apple: [{ url: "/icon-black.svg", type: "image/svg+xml" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mudanzas X · Mudanzas desde Barcelona a toda España",
+    description: OG_DESCRIPTION,
+    images: ["/og.png"],
   },
 };
 

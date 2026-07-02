@@ -5,7 +5,7 @@ import ConfigurarCookiesButton from "@/components/cookies/ConfigurarCookiesButto
 import { EMPRESA } from "@/lib/config";
 
 export const metadata: Metadata = {
-  title: "Política de cookies · Mudanzas X",
+  title: "Política de cookies",
   description:
     "Qué cookies usa Mudanzas X (técnicas, analíticas y de marketing), para qué sirven y cómo aceptarlas, rechazarlas o configurarlas.",
 };
