@@ -2,62 +2,57 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ESTADOS_COMERCIALES } from "@/lib/leads";
-import { Card, Text, Check, fieldClass, labelClass } from "@/components/admin/LeadFields";
-import { guardarLead, type GuardarLeadInput } from "./actions";
+import { ESTADOS_COMERCIALES, TAMANOS_VIVIENDA } from "@/lib/leads";
+import {
+  Card,
+  Text,
+  Check,
+  fieldClass,
+  labelClass,
+} from "@/components/admin/LeadFields";
+import { crearLead, type CrearLeadInput } from "./actions";
 
-export type LeadInicial = GuardarLeadInput;
+const INICIAL: CrearLeadInput = {
+  nombre: "",
+  telefono: "",
+  email: "",
+  origen_direccion: "",
+  origen_planta: "",
+  origen_ascensor: false,
+  destino_direccion: "",
+  destino_planta: "",
+  destino_ascensor: false,
+  fecha_deseada: "",
+  tamano_aprox: "",
+  estado_comercial: "Nuevo",
+  notas: "",
+};
 
-// Ficha editable completa del cliente. Un único "Guardar" persiste contacto,
-// origen, destino, estado comercial y notas mediante la Server Action.
-export default function EditLeadForm({
-  id,
-  inicial,
-}: {
-  id: string;
-  inicial: LeadInicial;
-}) {
+// Alta manual de un lead (ficha completa) para clientes que llaman por teléfono.
+// Al guardar, redirige a la ficha del nuevo lead para poder presupuestarlo.
+export default function NuevoLeadForm() {
   const router = useRouter();
-  const [f, setF] = useState<LeadInicial>(inicial);
+  const [f, setF] = useState<CrearLeadInput>(INICIAL);
   const [pending, startTransition] = useTransition();
-  const [mensaje, setMensaje] = useState<
-    { tipo: "ok" | "error"; texto: string } | null
-  >(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fuente de verdad = el servidor. Si el lead recién leído (props `inicial`)
-  // difiere del último snapshot que sincronizamos, reinicializamos el formulario
-  // con esos valores. Así, tras un pago, cuando el webhook deja el estado en
-  // 'Reservado' en la base de datos y la página se recarga, el desplegable
-  // refleja el valor real igual que la etiqueta de arriba (no un valor cacheado).
-  const [snapshot, setSnapshot] = useState<LeadInicial>(inicial);
-  const servidorCambio = (Object.keys(inicial) as (keyof LeadInicial)[]).some(
-    (k) => inicial[k] !== snapshot[k]
-  );
-  if (servidorCambio) {
-    setSnapshot(inicial);
-    setF(inicial);
-    setMensaje(null);
-  }
-
-  const sinCambios = (Object.keys(inicial) as (keyof LeadInicial)[]).every(
-    (k) => f[k] === inicial[k]
-  );
-
-  function set<K extends keyof LeadInicial>(key: K, value: LeadInicial[K]) {
+  function set<K extends keyof CrearLeadInput>(key: K, value: CrearLeadInput[K]) {
     setF((prev) => ({ ...prev, [key]: value }));
-    setMensaje(null);
+    setError(null);
   }
+
+  const puedeGuardar =
+    f.nombre.trim().length > 0 && f.telefono.trim().length > 0;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMensaje(null);
+    setError(null);
     startTransition(async () => {
-      const res = await guardarLead(id, f);
+      const res = await crearLead(f);
       if (res.ok) {
-        setMensaje({ tipo: "ok", texto: "Ficha guardada." });
-        router.refresh();
+        router.push(`/admin/leads/${res.id}`);
       } else {
-        setMensaje({ tipo: "error", texto: res.error });
+        setError(res.error);
       }
     });
   }
@@ -67,8 +62,51 @@ export default function EditLeadForm({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card title="Contacto">
           <Text label="Nombre" value={f.nombre} onChange={(v) => set("nombre", v)} />
-          <Text label="Teléfono" value={f.telefono} onChange={(v) => set("telefono", v)} />
-          <Text label="Email" type="email" value={f.email} onChange={(v) => set("email", v)} />
+          <Text
+            label="Teléfono"
+            type="tel"
+            value={f.telefono}
+            onChange={(v) => set("telefono", v)}
+          />
+          <Text
+            label="Email (opcional)"
+            type="email"
+            value={f.email}
+            onChange={(v) => set("email", v)}
+          />
+        </Card>
+
+        <Card title="Detalles">
+          <div>
+            <label htmlFor="fecha_deseada" className={labelClass}>
+              Fecha deseada
+            </label>
+            <input
+              id="fecha_deseada"
+              type="date"
+              value={f.fecha_deseada}
+              onChange={(e) => set("fecha_deseada", e.target.value)}
+              className={fieldClass}
+            />
+          </div>
+          <div>
+            <label htmlFor="tamano_aprox" className={labelClass}>
+              Tamaño aproximado
+            </label>
+            <select
+              id="tamano_aprox"
+              value={f.tamano_aprox}
+              onChange={(e) => set("tamano_aprox", e.target.value)}
+              className={`${fieldClass} appearance-none`}
+            >
+              <option value="">Sin especificar</option>
+              {TAMANOS_VIVIENDA.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
         </Card>
 
         <Card title="Origen">
@@ -144,19 +182,14 @@ export default function EditLeadForm({
       <div className="mt-6 flex items-center gap-4">
         <button
           type="submit"
-          disabled={pending || sinCambios}
+          disabled={pending || !puedeGuardar}
           className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-40"
         >
-          {pending ? "Guardando…" : "Guardar"}
+          {pending ? "Creando…" : "Crear lead"}
         </button>
-        {mensaje && (
-          <span
-            role="status"
-            className={`text-sm ${
-              mensaje.tipo === "ok" ? "text-black/60" : "text-red-600"
-            }`}
-          >
-            {mensaje.texto}
+        {error && (
+          <span role="status" className="text-sm text-red-600">
+            {error}
           </span>
         )}
       </div>

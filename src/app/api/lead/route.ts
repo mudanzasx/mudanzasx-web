@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
+import { TAMANOS_VIVIENDA } from "@/lib/leads";
 
-const TAMANOS = [
-  "Estudio",
-  "Piso pequeño",
-  "Piso mediano",
-  "Piso grande",
-  "Casa",
-];
+const TAMANOS: readonly string[] = TAMANOS_VIVIENDA;
 
 type LeadPayload = {
   nombre?: unknown;

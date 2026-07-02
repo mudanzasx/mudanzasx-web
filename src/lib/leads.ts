@@ -19,6 +19,16 @@ export function esEstadoComercial(value: unknown): value is EstadoComercial {
   );
 }
 
+// Tamaños de vivienda. Fuente única para el formulario web (api/lead) y el alta
+// manual del panel, para que ofrezcan exactamente las mismas opciones.
+export const TAMANOS_VIVIENDA = [
+  "Estudio",
+  "Piso pequeño",
+  "Piso mediano",
+  "Piso grande",
+  "Casa",
+] as const;
+
 // Fila de la tabla `leads` con los nombres de columna reales de Supabase.
 export type Lead = {
   id: string;

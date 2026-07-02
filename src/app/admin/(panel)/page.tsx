@@ -51,13 +51,21 @@ export default async function AdminDashboard({
 
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-xl font-medium">Clientes potenciales</h1>
-        <span className="text-sm text-black/50">
-          {leads.length}{" "}
-          {leads.length === 1 ? "cliente" : "clientes"}
-          {term || estado ? " (filtrados)" : ""}
-        </span>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-baseline gap-3">
+          <h1 className="text-xl font-medium">Clientes potenciales</h1>
+          <span className="text-sm text-black/50">
+            {leads.length}{" "}
+            {leads.length === 1 ? "cliente" : "clientes"}
+            {term || estado ? " (filtrados)" : ""}
+          </span>
+        </div>
+        <Link
+          href="/admin/leads/nuevo"
+          className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85"
+        >
+          + Nuevo lead
+        </Link>
       </div>
 
       <div className="mb-6">
