@@ -1,21 +1,21 @@
 "use client";
 
 import Script from "next/script";
+import { Suspense } from "react";
 import { useConsent } from "./ConsentContext";
+import GaPageView from "./GaPageView";
 
 // ---------------------------------------------------------------------------
-// HUECOS PARA LAS ETIQUETAS DE ANALÍTICA Y MARKETING
+// ETIQUETAS DE ANALÍTICA Y MARKETING (condicionadas al consentimiento)
 // ---------------------------------------------------------------------------
-// Rellena estos identificadores en la fase de analítica. Mientras estén vacíos,
-// NO se carga ninguna etiqueta (bloqueo previo). Además, cada bloque solo se
-// monta si el usuario ha consentido su categoría; el estado por defecto de
-// Google Consent Mode v2 se fija en "denied" en ConsentModeInit.
+// GA4 se carga SOLO si el usuario ha aceptado la categoría "analíticas" en el
+// banner. El identificador de medición (G-XXXXXXXXXX) llega por variable de
+// entorno pública; nunca se escribe a mano aquí.
 //
-// Se tipan como `string` (no como literal "") para que puedan rellenarse sin
-// falsos avisos del compilador.
-const GA4_MEASUREMENT_ID: string = ""; // p. ej. "G-XXXXXXXXXX"
-const GOOGLE_ADS_ID: string = ""; // p. ej. "AW-XXXXXXXXXX"
-const META_PIXEL_ID: string = ""; // p. ej. "123456789012345"
+// El estado por defecto de Consent Mode v2 se fija en "denied" en
+// ConsentModeInit, y ConsentProvider ya envía gtag('consent','update',...) al
+// aceptar/revocar. Aquí solo nos ocupamos de cargar (o no) las etiquetas.
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export default function AnalyticsScripts() {
   const { consent, ready } = useConsent();
@@ -23,52 +23,49 @@ export default function AnalyticsScripts() {
   // No cargamos nada hasta conocer la elección del usuario en el cliente.
   if (!ready) return null;
 
-  const cargarGoogle = Boolean(GA4_MEASUREMENT_ID || GOOGLE_ADS_ID);
+  // GA4 solo si hay ID configurado y el usuario aceptó ANALÍTICAS.
+  const cargarGA4 = Boolean(GA_MEASUREMENT_ID) && consent.analytics;
 
   return (
     <>
-      {/* ---- Google Analytics 4 + Google Ads (categoría: analíticas / marketing) ---- */}
-      {/* La librería gtag.js es común a GA4 y Google Ads. La cargamos si hay algún
-          ID configurado y si el usuario aceptó analíticas o marketing. El consentimiento
-          fino por producto ya lo controla Consent Mode (analytics_storage / ad_storage). */}
-      {cargarGoogle && (consent.analytics || consent.marketing) && (
+      {/* ---- Google Analytics 4 (categoría: analíticas) ---- */}
+      {cargarGA4 && (
         <>
           <Script
-            id="gtag-js"
+            id="ga4-js"
             strategy="afterInteractive"
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID || GOOGLE_ADS_ID}`}
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
           />
-          <Script id="gtag-config" strategy="afterInteractive">
+          <Script id="ga4-config" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
+              window.gtag = gtag;
               gtag('js', new Date());
-              ${GA4_MEASUREMENT_ID ? `gtag('config', '${GA4_MEASUREMENT_ID}');` : ""}
-              ${GOOGLE_ADS_ID ? `gtag('config', '${GOOGLE_ADS_ID}');` : ""}
+              // send_page_view:false — las vistas de página las envía GaPageView
+              // en cada cambio de ruta (SPA), incluida la carga inicial, para no
+              // duplicar la vista inicial de gtag('config', ...).
+              gtag('config', '${GA_MEASUREMENT_ID}', { send_page_view: false });
             `}
           </Script>
+          {/* Registra page_view en cada navegación interna del App Router. */}
+          <Suspense fallback={null}>
+            <GaPageView />
+          </Suspense>
         </>
       )}
 
-      {/* ---- Meta Pixel (categoría: marketing) ---- */}
-      {/* Meta no usa Consent Mode: basta con no cargar el píxel hasta que el
-          usuario acepte marketing. */}
-      {META_PIXEL_ID && consent.marketing && (
-        <Script id="meta-pixel" strategy="afterInteractive">
-          {`
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${META_PIXEL_ID}');
-            fbq('track', 'PageView');
-          `}
-        </Script>
-      )}
+      {/* ------------------------------------------------------------------- */}
+      {/* HUECOS PREPARADOS (INACTIVOS) — activar en una fase posterior        */}
+      {/* ------------------------------------------------------------------- */}
+      {/* TODO(marketing): Google Ads. Cuando se active, cargar gtag.js con su
+          ID (AW-XXXXXXXXXX, vía process.env.NEXT_PUBLIC_GOOGLE_ADS_ID) SOLO si
+          `consent.marketing`. Consent Mode ya actualiza ad_storage /
+          ad_user_data / ad_personalization a 'granted' cuando el usuario acepta
+          marketing (ver toConsentModeUpdate en @/lib/consent). */}
+      {/* TODO(marketing): Meta Pixel. Cargar el píxel (fbevents.js con
+          NEXT_PUBLIC_META_PIXEL_ID) SOLO si `consent.marketing`. Meta no usa
+          Consent Mode: basta con no cargarlo hasta que se acepte marketing. */}
     </>
   );
 }
