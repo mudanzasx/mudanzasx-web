@@ -33,10 +33,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${montserrat.variable} h-full`}>
-      {/* Consent Mode v2: fija el estado por defecto (denegado) antes de cargar
-          cualquier etiqueta de analítica/marketing. */}
-      <ConsentModeInit />
       <body className="min-h-full flex flex-col bg-white text-black">
+        {/* Consent Mode v2: fija el estado por defecto (denegado) antes de cargar
+            cualquier etiqueta de analítica/marketing. Debe ir dentro de <body>
+            (no como hijo directo de <html>); Next inyecta el script
+            beforeInteractive en el <head> de todos modos. */}
+        <ConsentModeInit />
         <ConsentProvider>
           {children}
           {/* Banner de cookies + panel de configuración (primera visita y reapertura). */}

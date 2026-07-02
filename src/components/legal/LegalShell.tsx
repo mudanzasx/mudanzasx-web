@@ -16,7 +16,7 @@ export default function LegalShell({
   return (
     <>
       <header className="w-full border-b border-black/10">
-        <div className="mx-auto flex max-w-[1200px] items-center px-6 py-4">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-center px-6 py-4">
           <Link href="/" aria-label="Mudanzas X — inicio" className="flex items-center">
             <Image
               src="/logo-black.svg"

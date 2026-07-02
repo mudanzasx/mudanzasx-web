@@ -56,39 +56,41 @@ export default function Cookies() {
         </li>
       </ul>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Categoría</th>
-            <th>Titular</th>
-            <th>Finalidad</th>
-            <th>Consentimiento</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Técnicas / necesarias</td>
-            <td>Mudanzas X</td>
-            <td>
-              Funcionamiento del sitio, seguridad y recuerdo de tus preferencias de
-              cookies.
-            </td>
-            <td>No requiere (exentas)</td>
-          </tr>
-          <tr>
-            <td>Analíticas</td>
-            <td>Google (Google Analytics 4)</td>
-            <td>Medición estadística y agregada del uso del sitio.</td>
-            <td>Requiere tu consentimiento</td>
-          </tr>
-          <tr>
-            <td>Marketing</td>
-            <td>Google (Google Ads) y Meta (Meta Pixel)</td>
-            <td>Medición de campañas y publicidad personalizada.</td>
-            <td>Requiere tu consentimiento</td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="legal-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Categoría</th>
+              <th>Titular</th>
+              <th>Finalidad</th>
+              <th>Consentimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Técnicas / necesarias</td>
+              <td>Mudanzas X</td>
+              <td>
+                Funcionamiento del sitio, seguridad y recuerdo de tus preferencias
+                de cookies.
+              </td>
+              <td>No requiere (exentas)</td>
+            </tr>
+            <tr>
+              <td>Analíticas</td>
+              <td>Google (Google Analytics 4)</td>
+              <td>Medición estadística y agregada del uso del sitio.</td>
+              <td>Requiere tu consentimiento</td>
+            </tr>
+            <tr>
+              <td>Marketing</td>
+              <td>Google (Google Ads) y Meta (Meta Pixel)</td>
+              <td>Medición de campañas y publicidad personalizada.</td>
+              <td>Requiere tu consentimiento</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>4. Consentimiento: cómo aceptar, rechazar o configurar</h2>
       <p>

@@ -78,11 +78,23 @@ body {
   color: #000;
   font-weight: 500;
 }
+/* Contenedor con scroll horizontal propio para las tablas: en móvil la tabla
+   puede desbordar, pero el scroll queda confinado aquí y la página no gana
+   scroll horizontal global. */
+.legal-table-wrap {
+  margin: 0.5rem 0 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .legal-prose table {
   width: 100%;
   margin: 0.5rem 0 1.5rem;
   border-collapse: collapse;
   font-size: 14px;
+}
+.legal-table-wrap table {
+  min-width: 520px;
+  margin: 0;
 }
 .legal-prose th,
 .legal-prose td {

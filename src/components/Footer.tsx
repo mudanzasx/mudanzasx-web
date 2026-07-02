@@ -21,6 +21,8 @@ const LEGALES = [
   { label: "Aviso legal", href: "/aviso-legal" },
   { label: "Política de privacidad", href: "/privacidad" },
   { label: "Política de cookies", href: "/cookies" },
+  { label: "Condiciones del servicio", href: "/condiciones" },
+  { label: "Condiciones de cancelación", href: "/cancelacion" },
 ];
 
 export default function Footer() {
