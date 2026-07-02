@@ -171,7 +171,7 @@ export default async function LeadDetailPage({
           </Section>
         </div>
 
-        {/* Presupuesto + marcadores de fases siguientes */}
+        {/* Presupuesto (incluye el cobro con Stripe dentro de cada presupuesto) */}
         <div className="flex flex-col gap-6">
           <Section title="Presupuesto">
             <PresupuestoPanel
@@ -182,8 +182,6 @@ export default async function LeadDetailPage({
               pagosPorPresupuesto={pagosPorPresupuesto}
             />
           </Section>
-          <PlaceholderSection title="Pago" />
-          <PlaceholderSection title="Planificación" />
         </div>
       </div>
     </div>
@@ -216,13 +214,3 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
-function PlaceholderSection({ title }: { title: string }) {
-  return (
-    <section className="rounded-lg border border-dashed border-black/15 p-5">
-      <h2 className="text-xs font-medium uppercase tracking-wide text-black/40">
-        {title}
-      </h2>
-      <p className="mt-2 text-sm text-black/40">Disponible en una fase posterior.</p>
-    </section>
-  );
-}
