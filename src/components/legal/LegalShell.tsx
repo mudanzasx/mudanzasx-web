@@ -15,11 +15,11 @@ export default function LegalShell({
 }) {
   return (
     <>
-      <header className="w-full border-b border-black/10">
+      <header className="w-full bg-black">
         <div className="mx-auto flex max-w-[1200px] items-center justify-center px-6 py-4">
           <Link href="/" aria-label="Mudanzas X — inicio" className="flex items-center">
             <Image
-              src="/logo-black.svg"
+              src="/logo-white.svg"
               alt="Mudanzas X"
               width={2453}
               height={512}
@@ -31,7 +31,7 @@ export default function LegalShell({
         </div>
       </header>
 
-      <main className="flex-1">
+      <main className="min-w-0 flex-1 overflow-x-hidden">
         <div className="mx-auto max-w-[760px] px-6 py-14 md:py-20">
           <h1 className="text-[clamp(1.9rem,4vw,2.75rem)] font-medium leading-[1.1] tracking-[-0.02em] text-black">
             {titulo}

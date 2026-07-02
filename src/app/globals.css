@@ -83,6 +83,8 @@ body {
    scroll horizontal global. */
 .legal-table-wrap {
   margin: 0.5rem 0 1.5rem;
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
