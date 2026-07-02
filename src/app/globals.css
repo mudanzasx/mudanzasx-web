@@ -110,3 +110,68 @@ body {
   font-weight: 500;
   color: #000;
 }
+
+/* ---------------------------------------------------------------------------
+   Animaciones de entrada de la página "Solicitud recibida".
+   Sutiles y sobrias, en la línea minimalista de la marca. Se respetan las
+   preferencias de movimiento reducido (se muestran sin animación).
+   --------------------------------------------------------------------------- */
+@keyframes mx-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes mx-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes mx-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Disco de confirmación: aparece con un leve escalado. */
+.mx-confirm-badge {
+  animation: mx-pop 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Marca de verificación: se dibuja el trazo (monolínea negra). pathLength=1
+   normaliza la longitud para animar el trazado de forma independiente al path. */
+.mx-check-path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: mx-draw 0.45s ease 0.35s forwards;
+}
+
+/* Aparición escalonada del texto y los pasos (el retardo se fija por elemento). */
+.mx-fade-up {
+  animation: mx-fade-up 0.5s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mx-confirm-badge,
+  .mx-fade-up {
+    animation: none;
+  }
+  .mx-check-path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

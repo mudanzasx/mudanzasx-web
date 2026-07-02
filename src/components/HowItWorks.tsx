@@ -46,7 +46,7 @@ export default function HowItWorks() {
                   key={paso.titulo}
                   className="flex flex-col md:items-center md:text-center"
                 >
-                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-black/15 bg-white text-black md:mx-auto">
+                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-black/15 bg-gris text-black md:mx-auto">
                     <Icon size={26} />
                   </div>
                   <span className="mt-5 inline-block text-sm font-medium tabular-nums tracking-[0.15em] text-black/40">
