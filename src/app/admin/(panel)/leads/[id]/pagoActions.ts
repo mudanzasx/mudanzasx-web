@@ -181,3 +181,104 @@ export async function crearEnlacePago(
   revalidatePath(`/admin/leads/${leadId}`);
   return { ok: true, url: session.url, pago: pagoRow as Pago };
 }
+
+// Cobro del importe restante tras una reserva del 50%. Reutiliza la fila de
+// pago del presupuesto (la tabla tiene una fila por presupuesto): solo apunta su
+// stripe_id a la nueva sesión. El importe se calcula desde el importe_pendiente
+// autoritativo del pago; el webhook (tipo 'resto') marca la fila como pagada al
+// 100% cuando el cliente completa el pago.
+export async function crearEnlaceResto(
+  presupuestoId: string
+): Promise<CrearEnlaceResult> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, error: "Sesión no válida." };
+
+  const { data: presu, error: ePresu } = await supabase
+    .from("presupuestos")
+    .select("id,lead_id,precio_final")
+    .eq("id", presupuestoId)
+    .maybeSingle();
+  if (ePresu || !presu)
+    return { ok: false, error: "No se encontró el presupuesto." };
+
+  const precioFinal = Number(presu.precio_final);
+  if (!Number.isFinite(precioFinal) || precioFinal <= 0)
+    return { ok: false, error: "El presupuesto no tiene un precio válido." };
+
+  // Debe existir un pago (la reserva) con importe pendiente por cobrar.
+  const { data: pagoExistente } = await supabase
+    .from("pagos")
+    .select(SELECT_PAGO)
+    .eq("presupuesto_id", presupuestoId)
+    .maybeSingle();
+  if (!pagoExistente)
+    return { ok: false, error: "No hay un cobro de reserva para este presupuesto." };
+
+  const pendiente = round2(Number(pagoExistente.importe_pendiente) || 0);
+  if (!(pendiente > 0))
+    return { ok: false, error: "No queda importe pendiente por cobrar." };
+
+  const leadId = String(presu.lead_id);
+  const { data: lead } = await supabase
+    .from("leads")
+    .select("nombre,email")
+    .eq("id", leadId)
+    .maybeSingle();
+  const nombre = (lead?.nombre ?? "").trim() || "cliente";
+  const concepto = `Pago restante mudanza - ${nombre}`;
+  const centimos = Math.round(pendiente * 100);
+
+  const base = await origen();
+  const successUrl = `${base}/admin/leads/${leadId}?pago=ok`;
+  const cancelUrl = `${base}/admin/leads/${leadId}?pago=cancelado`;
+
+  let session;
+  try {
+    const stripe = getStripe();
+    session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "eur",
+            unit_amount: centimos,
+            product_data: { name: concepto },
+          },
+        },
+      ],
+      ...(lead?.email ? { customer_email: String(lead.email) } : {}),
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: {
+        lead_id: leadId,
+        presupuesto_id: presupuestoId,
+        tipo: "resto",
+        importe_total: String(round2(precioFinal)),
+        importe_a_cobrar: String(pendiente),
+        // Tras cobrar el resto no queda nada pendiente.
+        importe_pendiente: "0",
+      },
+    });
+  } catch {
+    return { ok: false, error: "No se pudo crear el enlace de pago en Stripe." };
+  }
+
+  if (!session.url)
+    return { ok: false, error: "Stripe no devolvió una URL de pago." };
+
+  // Reutiliza la fila del presupuesto: solo se apunta el stripe_id a la nueva
+  // sesión. El resto de campos (pagado 50%, pendiente, estado "Reserva 50%") se
+  // mantienen hasta que el webhook confirme el pago del resto.
+  const { data: pagoRow, error: eUpd } = await supabase
+    .from("pagos")
+    .update({ stripe_id: session.id })
+    .eq("id", pagoExistente.id)
+    .select(SELECT_PAGO)
+    .single();
+  if (eUpd || !pagoRow)
+    return { ok: false, error: "No se pudo registrar el cobro del resto." };
+
+  revalidatePath(`/admin/leads/${leadId}`);
+  return { ok: true, url: session.url, pago: pagoRow as Pago };
+}

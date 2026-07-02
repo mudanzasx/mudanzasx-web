@@ -4,11 +4,17 @@ import { useState, useTransition } from "react";
 import { formatPrecio } from "@/lib/leads";
 import { round2 } from "@/lib/presupuesto";
 import EstadoPill from "@/components/admin/EstadoPill";
-import { crearEnlacePago, type Pago, type TipoCobro } from "./pagoActions";
+import {
+  crearEnlacePago,
+  crearEnlaceResto,
+  type Pago,
+  type TipoCobro,
+} from "./pagoActions";
 
 function tipoLabel(tipo: string | null): string {
   if (tipo === "total") return "Total (100% con 5% dto)";
   if (tipo === "reserva50") return "Reserva 50%";
+  if (tipo === "resto") return "Pago completo";
   return "—";
 }
 
@@ -46,6 +52,26 @@ export default function PagoPresupuesto({
     });
   }
 
+  function cobrarResto() {
+    setError(null);
+    setUrl(null);
+    setCopiado(false);
+    startCrear(async () => {
+      const res = await crearEnlaceResto(presupuestoId);
+      if (res.ok) {
+        setPago(res.pago);
+        setUrl(res.url);
+      } else {
+        setError(res.error);
+      }
+    });
+  }
+
+  // Estado del cobro para decidir qué acciones ofrecer.
+  const pendiente = round2(pago?.importe_pendiente ?? 0);
+  const reservaPagada = pago?.estado === "Reserva 50%" && pendiente > 0;
+  const pagadoCompleto = pago?.estado === "Pagado 100%";
+
   async function copiar() {
     if (!url) return;
     try {
@@ -76,25 +102,44 @@ export default function PagoPresupuesto({
         </div>
       )}
 
-      {/* Botones de cobro */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => cobrar("reserva50")}
-          disabled={creando}
-          className="rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-40"
-        >
-          Cobrar reserva (50%) · {formatPrecio(importeReserva)}
-        </button>
-        <button
-          type="button"
-          onClick={() => cobrar("total")}
-          disabled={creando}
-          className="rounded-full border border-black/20 px-4 py-2 text-xs font-medium transition-colors hover:bg-white disabled:opacity-40"
-        >
-          Cobrar total (100% −5%) · {formatPrecio(importeTotal)}
-        </button>
-      </div>
+      {/* Botones de cobro, según el estado del pago */}
+      {pagadoCompleto ? (
+        <p className="text-xs font-medium text-emerald-700">
+          Cobro completado · pagado {formatPrecio(pago?.importe_pagado)}
+        </p>
+      ) : reservaPagada ? (
+        // Reserva ya cobrada: solo queda cobrar el importe restante.
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={cobrarResto}
+            disabled={creando}
+            className="rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-40"
+          >
+            Cobrar resto pendiente · {formatPrecio(pendiente)}
+          </button>
+        </div>
+      ) : (
+        // Cobro inicial: reserva del 50% o total con descuento.
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => cobrar("reserva50")}
+            disabled={creando}
+            className="rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-40"
+          >
+            Cobrar reserva (50%) · {formatPrecio(importeReserva)}
+          </button>
+          <button
+            type="button"
+            onClick={() => cobrar("total")}
+            disabled={creando}
+            className="rounded-full border border-black/20 px-4 py-2 text-xs font-medium transition-colors hover:bg-white disabled:opacity-40"
+          >
+            Cobrar total (100% −5%) · {formatPrecio(importeTotal)}
+          </button>
+        </div>
+      )}
 
       {creando && <p className="mt-2 text-xs text-black/50">Generando enlace…</p>}
       {error && (

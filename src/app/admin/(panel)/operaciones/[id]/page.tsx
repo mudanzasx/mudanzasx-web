@@ -8,6 +8,9 @@ import OperacionForm, {
   type VehiculoOpcion,
   type OperarioOpcion,
 } from "./OperacionForm";
+import ServicioInventario, {
+  type DetallePresupuesto,
+} from "./ServicioInventario";
 
 type OperacionDetalle = {
   id: string;
@@ -72,6 +75,57 @@ export default async function OperacionDetallePage({
       .eq("id", op.lead_id)
       .maybeSingle();
     lead = (leadData as LeadResumen | null) ?? null;
+  }
+
+  // Presupuesto asociado a esta operación: el que se reservó (vinculado por la
+  // fila de `pagos` del lead) o, en su defecto, el más reciente del lead. Su
+  // detalle (jsonb) lleva el inventario, productos y accesos que se cotizaron.
+  let detallePresupuesto: DetallePresupuesto | null = null;
+  let volumenPresupuesto: number | null = op.volumen_m3;
+  if (op.lead_id) {
+    const { data: pagosRows } = await supabase
+      .from("pagos")
+      .select("presupuesto_id,estado")
+      .eq("lead_id", op.lead_id);
+    const filas = pagosRows ?? [];
+    const pagado = filas.find(
+      (p) =>
+        p.presupuesto_id &&
+        (p.estado?.startsWith("Reserva") || p.estado?.startsWith("Pagado"))
+    );
+    const cualquiera = filas.find((p) => p.presupuesto_id);
+    let presuId = (pagado ?? cualquiera)?.presupuesto_id ?? null;
+
+    let presu:
+      | { volumen_m3: number | null; detalle_objetos: DetallePresupuesto | null }
+      | null = null;
+    if (presuId) {
+      const { data } = await supabase
+        .from("presupuestos")
+        .select("volumen_m3,detalle_objetos")
+        .eq("id", presuId)
+        .maybeSingle();
+      presu = data ?? null;
+    }
+    if (!presu) {
+      const { data } = await supabase
+        .from("presupuestos")
+        .select("id,volumen_m3,detalle_objetos")
+        .eq("lead_id", op.lead_id)
+        .order("creado_en", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) {
+        presuId = data.id;
+        presu = { volumen_m3: data.volumen_m3, detalle_objetos: data.detalle_objetos };
+      }
+    }
+    if (presu) {
+      detallePresupuesto = (presu.detalle_objetos as DetallePresupuesto) ?? null;
+      if (presu.volumen_m3 !== null && presu.volumen_m3 !== undefined) {
+        volumenPresupuesto = presu.volumen_m3;
+      }
+    }
   }
 
   // Catálogos para los selectores.
@@ -191,6 +245,14 @@ export default async function OperacionDetallePage({
           vehiculos={vehiculos}
           operarios={operarios}
           otras={otras}
+        />
+      </div>
+
+      {/* Servicio e inventario del presupuesto asociado (solo lectura). */}
+      <div className="mt-8">
+        <ServicioInventario
+          detalle={detallePresupuesto}
+          volumenM3={volumenPresupuesto}
         />
       </div>
     </div>

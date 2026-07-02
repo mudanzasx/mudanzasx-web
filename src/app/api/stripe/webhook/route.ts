@@ -70,16 +70,42 @@ export async function POST(request: Request) {
 async function procesarPagoCompletado(session: Stripe.Checkout.Session) {
   const metadata = session.metadata ?? {};
   const leadId = metadata.lead_id ?? null;
-  const tipo = metadata.tipo; // 'reserva50' | 'total'
+  const tipo = metadata.tipo; // 'reserva50' | 'total' | 'resto'
   const importeACobrar = Number(metadata.importe_a_cobrar);
   const importePendiente = Number(metadata.importe_pendiente);
+  const importeTotalMeta = Number(metadata.importe_total);
 
   const supabase = getSupabaseAdmin();
 
-  const estado =
-    tipo === "total" ? "Pagado 100%" : tipo === "reserva50" ? "Reserva 50%" : null;
+  // Campos resultantes de la fila de pago según el tipo de cobro.
+  // - 'resto': se ha cobrado el importe restante -> pagado el total, 0 pendiente
+  //   y estado "Pagado 100%". También se fija tipo='resto' en la fila.
+  // - 'total': pago único con descuento -> "Pagado 100%".
+  // - 'reserva50': se cobra el 50% y queda el resto pendiente -> "Reserva 50%".
+  let importePagadoFinal: number | null;
+  let importePendienteFinal: number | null;
+  let estado: string | null;
+  const camposExtra: Record<string, unknown> = {};
 
-  // Busca la fila de pago por stripe_id (la sesión creada en la fase 3a).
+  if (tipo === "resto") {
+    importePagadoFinal = Number.isFinite(importeTotalMeta) ? importeTotalMeta : null;
+    importePendienteFinal = 0;
+    estado = "Pagado 100%";
+    camposExtra.tipo = "resto";
+  } else {
+    importePagadoFinal = Number.isFinite(importeACobrar) ? importeACobrar : null;
+    importePendienteFinal = Number.isFinite(importePendiente)
+      ? importePendiente
+      : null;
+    estado =
+      tipo === "total"
+        ? "Pagado 100%"
+        : tipo === "reserva50"
+          ? "Reserva 50%"
+          : null;
+  }
+
+  // Busca la fila de pago por stripe_id (la sesión creada al generar el enlace).
   const { data: pago, error: eBuscar } = await supabase
     .from("pagos")
     .select("id,lead_id")
@@ -102,10 +128,11 @@ async function procesarPagoCompletado(session: Stripe.Checkout.Session) {
   const { error: eUpd } = await supabase
     .from("pagos")
     .update({
-      importe_pagado: Number.isFinite(importeACobrar) ? importeACobrar : null,
-      importe_pendiente: Number.isFinite(importePendiente) ? importePendiente : null,
+      importe_pagado: importePagadoFinal,
+      importe_pendiente: importePendienteFinal,
       estado,
       metodo: "stripe",
+      ...camposExtra,
     })
     .eq("id", pago.id);
 
