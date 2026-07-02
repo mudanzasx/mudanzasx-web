@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 // Próximos pasos del proceso, en secuencia breve.
 const PASOS = [
   "Hemos recibido tu solicitud.",
-  "Revisamos los datos de tu mudanza y preparamos tu presupuesto.",
-  "Te contactamos con el precio cerrado. Si te encaja, reservas tu fecha.",
+  "Te llamamos para conocer los detalles de tu mudanza: inventario, accesos y fechas.",
+  "Cerramos tu presupuesto y, si te encaja, reservas tu fecha.",
 ];
 
 export default function SolicitudRecibida() {
