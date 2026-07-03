@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuote } from "./QuoteContext";
+import AddressAutocomplete from "./AddressAutocomplete";
+import { usePlaces } from "@/lib/googleMaps";
 
 const TAMANOS = ["Estudio", "Piso pequeño", "Piso mediano", "Piso grande", "Casa"];
 
@@ -28,6 +30,18 @@ export default function QuoteForm() {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Validación del número de calle (Google Places). Si Google no está
+  // disponible, no se exige (degradación) para no bloquear el envío.
+  const { failed: mapsFailed } = usePlaces();
+  const [origenNum, setOrigenNum] = useState(false);
+  const [destinoNum, setDestinoNum] = useState(false);
+  const [intentado, setIntentado] = useState(false);
+  const exigirNumero = !mapsFailed;
+  const faltaOrigenNum =
+    exigirNumero && form.origen.trim() !== "" && !origenNum;
+  const faltaDestinoNum =
+    exigirNumero && form.destino.trim() !== "" && !destinoNum;
+
   // Referencias en orden para enfocar el primer campo vacío tras el prefill.
   const origenRef = useRef<HTMLInputElement>(null);
   const destinoRef = useRef<HTMLInputElement>(null);
@@ -49,6 +63,9 @@ export default function QuoteForm() {
     // nonce); sincronizarlo aquí no encadena renders. Falso positivo de la regla.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm((prev) => ({ ...prev, ...next }));
+    // El hero ya validó el número de calle de cada dirección; lo respetamos.
+    setOrigenNum(prefill.origenValida);
+    setDestinoNum(prefill.destinoValida);
 
     sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -90,6 +107,11 @@ export default function QuoteForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIntentado(true);
+    // La dirección de origen y destino debe incluir número de calle.
+    if (exigirNumero && (!origenNum || !destinoNum)) {
+      return;
+    }
     setError(null);
     setEnviando(true);
     try {
@@ -127,30 +149,44 @@ export default function QuoteForm() {
               <label htmlFor="origen" className={labelClass}>
                 Origen
               </label>
-              <input
+              <AddressAutocomplete
                 id="origen"
-                ref={origenRef}
-                type="text"
+                inputRef={origenRef}
                 value={form.origen}
-                onChange={update("origen")}
+                onChange={(v, hasNumber) => {
+                  setForm((prev) => ({ ...prev, origen: v }));
+                  setOrigenNum(hasNumber);
+                }}
                 required
                 className={fieldClass}
               />
+              {intentado && faltaOrigenNum && (
+                <p className="mt-2 text-[13px] font-medium text-amber-700">
+                  Indica el número de la calle.
+                </p>
+              )}
             </div>
 
             <div>
               <label htmlFor="destino" className={labelClass}>
                 Destino
               </label>
-              <input
+              <AddressAutocomplete
                 id="destino"
-                ref={destinoRef}
-                type="text"
+                inputRef={destinoRef}
                 value={form.destino}
-                onChange={update("destino")}
+                onChange={(v, hasNumber) => {
+                  setForm((prev) => ({ ...prev, destino: v }));
+                  setDestinoNum(hasNumber);
+                }}
                 required
                 className={fieldClass}
               />
+              {intentado && faltaDestinoNum && (
+                <p className="mt-2 text-[13px] font-medium text-amber-700">
+                  Indica el número de la calle.
+                </p>
+              )}
             </div>
 
             <div>

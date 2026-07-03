@@ -2,14 +2,29 @@
 
 import { useState } from "react";
 import { useQuote } from "./QuoteContext";
+import AddressAutocomplete from "./AddressAutocomplete";
+import { usePlaces } from "@/lib/googleMaps";
 
 export default function Hero() {
   const { requestQuote } = useQuote();
+  const { failed: mapsFailed } = usePlaces();
   const [origen, setOrigen] = useState("");
   const [destino, setDestino] = useState("");
+  const [origenNum, setOrigenNum] = useState(false);
+  const [destinoNum, setDestinoNum] = useState(false);
+  const [intentado, setIntentado] = useState(false);
+
+  // Si Google no está disponible, no bloqueamos por el número (degradación).
+  const exigirNumero = !mapsFailed;
+  const faltaOrigen = exigirNumero && origen.trim() !== "" && !origenNum;
+  const faltaDestino = exigirNumero && destino.trim() !== "" && !destinoNum;
 
   const handleCalcular = () => {
-    requestQuote(origen.trim(), destino.trim());
+    setIntentado(true);
+    // Una dirección escrita debe llevar número; vacía se deja pasar (el
+    // formulario la exigirá como campo obligatorio).
+    if (faltaOrigen || faltaDestino) return;
+    requestQuote(origen.trim(), destino.trim(), origenNum, destinoNum);
   };
 
   return (
@@ -39,35 +54,54 @@ export default function Hero() {
             />
 
             {/* Fila Origen */}
-            <label className="grid h-14 grid-cols-[20px_1fr] items-center">
+            <div className="grid h-14 grid-cols-[20px_1fr] items-center">
               <span className="flex items-center justify-center">
                 <span className="block h-2.5 w-2.5 rounded-full bg-black" />
               </span>
-              <span className="sr-only">Origen</span>
-              <input
-                type="text"
+              <AddressAutocomplete
                 value={origen}
-                onChange={(e) => setOrigen(e.target.value)}
+                onChange={(v, hasNumber) => {
+                  setOrigen(v);
+                  setOrigenNum(hasNumber);
+                }}
                 placeholder="¿Desde dónde?"
-                className="col-start-2 w-full border-b border-black/10 bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
+                ariaLabel="Origen"
+                wrapperClassName="col-start-2"
+                className="w-full border-b border-black/10 bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
               />
-            </label>
+            </div>
 
             {/* Fila Destino */}
-            <label className="grid h-14 grid-cols-[20px_1fr] items-center">
+            <div className="grid h-14 grid-cols-[20px_1fr] items-center">
               <span className="flex items-center justify-center">
                 <span className="block h-2.5 w-2.5 bg-black" />
               </span>
-              <span className="sr-only">Destino</span>
-              <input
-                type="text"
+              <AddressAutocomplete
                 value={destino}
-                onChange={(e) => setDestino(e.target.value)}
+                onChange={(v, hasNumber) => {
+                  setDestino(v);
+                  setDestinoNum(hasNumber);
+                }}
                 placeholder="¿Hasta dónde?"
-                className="col-start-2 w-full bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
+                ariaLabel="Destino"
+                wrapperClassName="col-start-2"
+                className="w-full bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
               />
-            </label>
+            </div>
           </div>
+
+          {/* Aviso de número de calle obligatorio */}
+          {intentado && (faltaOrigen || faltaDestino) && (
+            <p className="mt-2 text-[13px] font-medium text-amber-700">
+              Indica el número de la calle en{" "}
+              {faltaOrigen && faltaDestino
+                ? "el origen y el destino"
+                : faltaOrigen
+                  ? "el origen"
+                  : "el destino"}
+              .
+            </p>
+          )}
 
           <button
             type="button"
