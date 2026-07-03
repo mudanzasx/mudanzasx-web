@@ -21,7 +21,7 @@ const jsonLd = {
   url: "https://www.mudanzasx.com",
   telephone: TELEFONO,
   email: EMPRESA.email,
-  image: "https://www.mudanzasx.com/camion-barcelona-mirador.jpg",
+  image: "https://www.mudanzasx.com/embalaje-cuidado-mueble.jpg",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Calle Unió, 15",
