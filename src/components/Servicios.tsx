@@ -41,7 +41,7 @@ export default function Servicios() {
         </div>
 
         {/* Banda editorial: camión de Mudanzas X en Barcelona al atardecer. */}
-        <div className="relative mt-14 aspect-[16/9] w-full overflow-hidden rounded-2xl md:mt-20">
+        <div className="relative mt-12 aspect-[16/9] w-full overflow-hidden rounded-2xl md:mt-16">
           <Image
             src="/camion-barcelona-mirador.jpg"
             alt="Camión de mudanzas de Mudanzas X en un mirador de Barcelona con la Sagrada Familia al atardecer"

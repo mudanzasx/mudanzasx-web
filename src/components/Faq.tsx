@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 
 const PREGUNTAS = [
@@ -51,49 +52,72 @@ export default function Faq() {
 
   return (
     <section id="faq" className="w-full border-t border-black/10">
-      <div className="mx-auto max-w-[820px] px-6 py-14 md:py-24">
+      <div className="mx-auto max-w-[1100px] px-6 py-14 md:py-24">
         <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
           Preguntas frecuentes
         </h2>
 
-        <div className="mt-10 border-t border-black/10">
-          {PREGUNTAS.map((item, i) => {
-            const open = abierta === i;
-            return (
-              <div key={item.q} className="border-b border-black/10">
-                <button
-                  type="button"
-                  onClick={() => setAbierta(open ? null : i)}
-                  aria-expanded={open}
-                  className="flex w-full items-center justify-between gap-6 py-5 text-left"
-                >
-                  <span className="text-base font-medium tracking-tight text-black md:text-lg">
-                    {item.q}
-                  </span>
-                  <ChevronDown
-                    size={20}
-                    strokeWidth={1.5}
-                    className={`shrink-0 text-black transition-transform duration-200 ${
-                      open ? "rotate-180" : "rotate-0"
-                    }`}
-                  />
-                </button>
-                <div
-                  className={`grid transition-all duration-200 ease-out ${
-                    open
-                      ? "grid-rows-[1fr] opacity-100"
-                      : "grid-rows-[0fr] opacity-0"
-                  }`}
-                >
-                  <div className="overflow-hidden">
-                    <p className="pb-5 pr-8 text-[15px] leading-[1.6] text-black/70">
-                      {item.a}
-                    </p>
-                  </div>
-                </div>
+        <div className="mt-12 grid grid-cols-1 gap-10 md:mt-16 md:grid-cols-2 md:gap-16">
+          {/* Imagen: cuidado en el embalaje. En escritorio va a la derecha y se
+              queda fija mientras se recorre el listado; en móvil, arriba. */}
+          <div className="md:order-2">
+            <div className="md:sticky md:top-24">
+              <div className="relative aspect-square w-full overflow-hidden rounded-2xl">
+                <Image
+                  src="/embalaje-cuidado-mueble.jpg"
+                  alt="Operario de Mudanzas X protegiendo con film un mueble de madera antes de una mudanza en Barcelona"
+                  fill
+                  sizes="(min-width: 768px) 500px, 100vw"
+                  quality={90}
+                  loading="lazy"
+                  className="object-cover"
+                />
               </div>
-            );
-          })}
+            </div>
+          </div>
+
+          {/* Acordeón de preguntas (contenido intacto). */}
+          <div className="md:order-1">
+            <div className="border-t border-black/10">
+              {PREGUNTAS.map((item, i) => {
+                const open = abierta === i;
+                return (
+                  <div key={item.q} className="border-b border-black/10">
+                    <button
+                      type="button"
+                      onClick={() => setAbierta(open ? null : i)}
+                      aria-expanded={open}
+                      className="flex w-full items-center justify-between gap-6 py-5 text-left"
+                    >
+                      <span className="text-base font-medium tracking-tight text-black md:text-lg">
+                        {item.q}
+                      </span>
+                      <ChevronDown
+                        size={20}
+                        strokeWidth={1.5}
+                        className={`shrink-0 text-black transition-transform duration-200 ${
+                          open ? "rotate-180" : "rotate-0"
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className={`grid transition-all duration-200 ease-out ${
+                        open
+                          ? "grid-rows-[1fr] opacity-100"
+                          : "grid-rows-[0fr] opacity-0"
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <p className="pb-5 pr-8 text-[15px] leading-[1.6] text-black/70">
+                          {item.a}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </section>
