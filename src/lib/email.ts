@@ -1,11 +1,8 @@
 import { Resend } from "resend";
 import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "./config";
 
-// Remitente del correo.
-// TEMPORAL: usamos el remitente de pruebas de Resend porque el dominio propio
-// (mudanzasx.com) aún no está verificado en Resend. Cuando lo esté, sustituir
-// por "Mudanzas X <info@mudanzasx.com>".
-export const EMAIL_FROM = "Mudanzas X <onboarding@resend.dev>";
+// Remitente del correo. El dominio mudanzasx.com está verificado en Resend.
+export const EMAIL_FROM = "Mudanzas X <info@mudanzasx.com>";
 
 // URL absoluta del sitio en producción. En emails las rutas deben ser absolutas
 // (los clientes de correo no resuelven rutas relativas).
