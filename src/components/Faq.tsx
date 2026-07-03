@@ -14,12 +14,12 @@ const PREGUNTAS = [
     a: "Con datos reales: volumen de lo que mueves, distancia entre origen y destino, número de operarios y horas. No trabajamos con estimaciones a ojo.",
   },
   {
-    q: "¿El precio de la web es el definitivo?",
-    a: "La web te da un precio de referencia. El precio cerrado se confirma cuando validamos los datos exactos (planta, ascensor, acceso). Sin sorpresas después.",
+    q: "¿Cómo sé cuánto me costará?",
+    a: "Nos dejas los datos de tu mudanza y te llamamos para conocer los detalles (volumen, planta, ascensor, acceso). Con eso cerramos un precio claro, sin sorpresas después.",
   },
   {
     q: "¿Qué necesito pagar para reservar?",
-    a: "El 50% para bloquear fecha y equipo. Si pagas el 100% por adelantado, aplicamos un 5% de descuento. El resto se abona el día de la mudanza.",
+    a: "Primero cerramos tu presupuesto. Para reservar la fecha, pagas el 50% (o el 100% con un 5% de descuento). El resto se abona el día de la mudanza.",
   },
   {
     q: "¿Desmontáis y montáis los muebles?",
@@ -35,15 +35,11 @@ const PREGUNTAS = [
   },
   {
     q: "¿Cuánto tardáis en darme el presupuesto?",
-    a: "El de referencia es inmediato desde la web. Para cerrarlo, te contactamos el mismo día laborable.",
+    a: "Te contactamos el mismo día laborable para conocer los detalles y cerrar tu presupuesto.",
   },
   {
     q: "¿Puedo comprar cajas y material de embalaje?",
     a: "Sí: cajas de cartón, cajas armario y bolsas de mudanza. Se incluye en el presupuesto si lo necesitas.",
-  },
-  {
-    q: "¿Hacéis mudanzas de larga distancia?",
-    a: "Sí, es nuestra especialidad: rutas nacionales desde Barcelona a cualquier punto de la península.",
   },
 ];
 

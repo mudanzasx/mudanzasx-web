@@ -10,14 +10,46 @@ import {
 } from "./SystemIcons";
 
 const SERVICIOS = [
-  { Icon: IconDocument, nombre: "Presupuesto sin compromiso" },
-  { Icon: IconCalendar, nombre: "Planificación" },
-  { Icon: IconBuilding, nombre: "Gestión de permisos municipales" },
-  { Icon: IconTools, nombre: "Montaje y desmontaje" },
-  { Icon: IconBox, nombre: "Protección y embalaje" },
-  { Icon: IconLoad, nombre: "Carga y descarga" },
-  { Icon: IconTruck, nombre: "Transporte" },
-  { Icon: IconRecycle, nombre: "Retirada a punto limpio" },
+  {
+    Icon: IconDocument,
+    nombre: "Presupuesto sin compromiso",
+    desc: "Te damos un precio cerrado y claro antes de que decidas nada.",
+  },
+  {
+    Icon: IconCalendar,
+    nombre: "Planificación",
+    desc: "Organizamos fecha, equipo y ruta para que todo salga a tiempo.",
+  },
+  {
+    Icon: IconBuilding,
+    nombre: "Gestión de permisos municipales",
+    desc: "Tramitamos los permisos de estacionamiento donde hagan falta.",
+  },
+  {
+    Icon: IconTools,
+    nombre: "Montaje y desmontaje",
+    desc: "Desmontamos en origen y volvemos a montar tus muebles en destino.",
+  },
+  {
+    Icon: IconBox,
+    nombre: "Protección y embalaje",
+    desc: "Envolvemos y protegemos cada objeto con material profesional.",
+  },
+  {
+    Icon: IconLoad,
+    nombre: "Carga y descarga",
+    desc: "Movemos todo con cuidado, también los objetos pesados o delicados.",
+  },
+  {
+    Icon: IconTruck,
+    nombre: "Transporte",
+    desc: "Vehículos propios para llevar tu mudanza a cualquier punto de la península.",
+  },
+  {
+    Icon: IconRecycle,
+    nombre: "Retirada a punto limpio",
+    desc: "Nos llevamos lo que ya no quieras y lo gestionamos por ti.",
+  },
 ];
 
 export default function Servicios() {
@@ -28,13 +60,18 @@ export default function Servicios() {
           Servicios
         </h2>
 
-        <div className="mt-12 grid grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-4">
-          {SERVICIOS.map(({ Icon, nombre }) => (
-            <div key={nombre} className="flex flex-col">
-              <Icon size={28} className="text-black" />
-              <h3 className="mt-4 text-[15px] font-medium leading-[1.35] tracking-tight text-black md:text-base">
-                {nombre}
-              </h3>
+        <div className="mt-12 grid grid-cols-1 gap-x-12 gap-y-9 sm:grid-cols-2 md:mt-16 md:gap-y-11">
+          {SERVICIOS.map(({ Icon, nombre, desc }) => (
+            <div key={nombre} className="flex gap-4">
+              <Icon size={28} className="mt-0.5 shrink-0 text-black" />
+              <div className="min-w-0">
+                <h3 className="text-base font-medium leading-snug tracking-tight text-black">
+                  {nombre}
+                </h3>
+                <p className="mt-1.5 text-sm leading-[1.6] text-black/60">
+                  {desc}
+                </p>
+              </div>
             </div>
           ))}
         </div>
