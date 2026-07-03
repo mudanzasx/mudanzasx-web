@@ -4,23 +4,26 @@ import { IconRoute, IconData, IconLock, IconTruck } from "./SystemIcons";
 const PASOS = [
   {
     Icon: IconRoute,
-    titulo: "Cuéntanos tu mudanza",
-    texto: "Origen, destino y qué mueves. Un minuto.",
+    titulo: "Conectar",
+    texto:
+      "Nos dices desde dónde y hasta dónde. Te llamamos para conocer los detalles de tu mudanza.",
   },
   {
     Icon: IconData,
-    titulo: "Recibe tu precio real",
-    texto: "Calculado con volumen, distancia y equipo. Sin estimaciones a ojo.",
+    titulo: "Presupuesto cerrado",
+    texto: "Con tu inventario y accesos, cerramos un precio claro, sin sorpresas.",
   },
   {
     Icon: IconLock,
-    titulo: "Reserva con el 50%",
-    texto: "Bloqueas fecha y equipo. Paga el 100% y ahorra un 5%.",
+    titulo: "Reserva",
+    texto:
+      "Reservas tu fecha con el 50%, o el total con un 5% de descuento. Pago seguro.",
   },
   {
     Icon: IconTruck,
-    titulo: "Nosotros ejecutamos",
-    texto: "Embalaje, carga, transporte y descarga. Tú no cargas nada.",
+    titulo: "Nueva vida",
+    texto:
+      "Nos encargamos de todo el día de la mudanza. Tú solo empiezas tu nueva vida.",
   },
 ];
 
@@ -46,13 +49,25 @@ export default function HowItWorks() {
             />
           </div>
 
-          {/* Pasos del proceso (lista vertical). */}
-          <ol className="flex flex-col gap-8">
+          {/* Pasos del proceso: secuencia encadenada con conector vertical. */}
+          <ol className="flex flex-col">
             {PASOS.map((paso, i) => {
               const Icon = paso.Icon;
+              const ultimo = i === PASOS.length - 1;
               return (
-                <li key={paso.titulo} className="flex gap-4">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-black/15 bg-gris text-black">
+                <li
+                  key={paso.titulo}
+                  className={`relative flex gap-4 ${ultimo ? "" : "pb-8"}`}
+                >
+                  {/* Conector hacia el siguiente paso (une el centro de los
+                      círculos, mostrando la progresión). */}
+                  {!ultimo && (
+                    <span
+                      aria-hidden
+                      className="absolute bottom-0 left-[22px] top-11 w-px -translate-x-1/2 bg-black/15"
+                    />
+                  )}
+                  <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-black/15 bg-gris text-black">
                     <Icon size={22} />
                   </div>
                   <div className="min-w-0">
