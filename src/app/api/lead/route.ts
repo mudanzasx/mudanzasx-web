@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import { TAMANOS_VIVIENDA } from "@/lib/leads";
+import { esTelefonoEsValido, esEmailValido } from "@/lib/validaciones";
 
 const TAMANOS: readonly string[] = TAMANOS_VIVIENDA;
 
@@ -39,8 +40,8 @@ export async function POST(request: Request) {
   // Validación en el servidor.
   const errores: string[] = [];
   if (!nombre) errores.push("nombre");
-  if (!telefono) errores.push("telefono");
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errores.push("email");
+  if (!esTelefonoEsValido(telefono)) errores.push("telefono");
+  if (!esEmailValido(email)) errores.push("email");
   if (!origen) errores.push("origen");
   if (!destino) errores.push("destino");
   if (!fecha) errores.push("fecha");

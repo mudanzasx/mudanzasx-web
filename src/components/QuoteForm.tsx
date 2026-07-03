@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation";
 import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
+import {
+  esTelefonoEsValido,
+  esEmailValido,
+  AVISO_TELEFONO,
+  AVISO_EMAIL,
+} from "@/lib/validaciones";
 
 const TAMANOS = ["Estudio", "Piso pequeño", "Piso mediano", "Piso grande", "Casa"];
 
@@ -36,6 +42,16 @@ export default function QuoteForm() {
   const [origenNum, setOrigenNum] = useState(false);
   const [destinoNum, setDestinoNum] = useState(false);
   const [intentado, setIntentado] = useState(false);
+
+  // Errores de contacto (teléfono y email) mostrados junto a cada campo.
+  const [telefonoError, setTelefonoError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+
+  // Email obligatorio en el formulario público.
+  const validarTelefono = (v: string) =>
+    esTelefonoEsValido(v) ? null : AVISO_TELEFONO;
+  const validarEmail = (v: string) =>
+    esEmailValido(v) ? null : AVISO_EMAIL;
   const exigirNumero = !mapsFailed;
   const faltaOrigenNum =
     exigirNumero && form.origen.trim() !== "" && !origenNum;
@@ -108,8 +124,15 @@ export default function QuoteForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIntentado(true);
+
+    // Teléfono y email deben ser válidos para poder contactar al cliente.
+    const telErr = validarTelefono(form.telefono);
+    const emErr = validarEmail(form.email);
+    setTelefonoError(telErr);
+    setEmailError(emErr);
+
     // La dirección de origen y destino debe incluir número de calle.
-    if (exigirNumero && (!origenNum || !destinoNum)) {
+    if ((exigirNumero && (!origenNum || !destinoNum)) || telErr || emErr) {
       return;
     }
     setError(null);
@@ -251,10 +274,25 @@ export default function QuoteForm() {
                 ref={telefonoRef}
                 type="tel"
                 value={form.telefono}
-                onChange={update("telefono")}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setForm((prev) => ({ ...prev, telefono: v }));
+                  if (telefonoError && esTelefonoEsValido(v)) setTelefonoError(null);
+                }}
+                onBlur={() =>
+                  setTelefonoError(
+                    form.telefono.trim() ? validarTelefono(form.telefono) : null
+                  )
+                }
                 required
+                aria-invalid={telefonoError ? true : undefined}
                 className={fieldClass}
               />
+              {telefonoError && (
+                <p className="mt-2 text-[13px] font-medium text-red-600" role="alert">
+                  {telefonoError}
+                </p>
+              )}
             </div>
 
             <div>
@@ -266,10 +304,25 @@ export default function QuoteForm() {
                 ref={emailRef}
                 type="email"
                 value={form.email}
-                onChange={update("email")}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setForm((prev) => ({ ...prev, email: v }));
+                  if (emailError && esEmailValido(v)) setEmailError(null);
+                }}
+                onBlur={() =>
+                  setEmailError(
+                    form.email.trim() ? validarEmail(form.email) : null
+                  )
+                }
                 required
+                aria-invalid={emailError ? true : undefined}
                 className={fieldClass}
               />
+              {emailError && (
+                <p className="mt-2 text-[13px] font-medium text-red-600" role="alert">
+                  {emailError}
+                </p>
+              )}
             </div>
 
             <label className="flex items-start gap-3 text-[15px] leading-[1.5] text-black/70">

@@ -10,6 +10,12 @@ import {
   fieldClass,
   labelClass,
 } from "@/components/admin/LeadFields";
+import {
+  esTelefonoEsValido,
+  esEmailValido,
+  AVISO_TELEFONO,
+  AVISO_EMAIL,
+} from "@/lib/validaciones";
 import { crearLead, type CrearLeadInput } from "./actions";
 
 const INICIAL: CrearLeadInput = {
@@ -35,17 +41,30 @@ export default function NuevoLeadForm() {
   const [f, setF] = useState<CrearLeadInput>(INICIAL);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [telefonoError, setTelefonoError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   function set<K extends keyof CrearLeadInput>(key: K, value: CrearLeadInput[K]) {
     setF((prev) => ({ ...prev, [key]: value }));
     setError(null);
   }
 
+  // Teléfono obligatorio y válido; email opcional pero válido si se rellena.
+  const validarTelefono = (v: string) =>
+    esTelefonoEsValido(v) ? null : AVISO_TELEFONO;
+  const validarEmail = (v: string) =>
+    v.trim() === "" || esEmailValido(v) ? null : AVISO_EMAIL;
+
   const puedeGuardar =
     f.nombre.trim().length > 0 && f.telefono.trim().length > 0;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const telErr = validarTelefono(f.telefono);
+    const emErr = validarEmail(f.email);
+    setTelefonoError(telErr);
+    setEmailError(emErr);
+    if (telErr || emErr) return;
     setError(null);
     startTransition(async () => {
       const res = await crearLead(f);
@@ -66,13 +85,27 @@ export default function NuevoLeadForm() {
             label="Teléfono"
             type="tel"
             value={f.telefono}
-            onChange={(v) => set("telefono", v)}
+            onChange={(v) => {
+              set("telefono", v);
+              if (telefonoError && esTelefonoEsValido(v)) setTelefonoError(null);
+            }}
+            onBlur={() =>
+              setTelefonoError(
+                f.telefono.trim() ? validarTelefono(f.telefono) : null
+              )
+            }
+            error={telefonoError}
           />
           <Text
             label="Email (opcional)"
             type="email"
             value={f.email}
-            onChange={(v) => set("email", v)}
+            onChange={(v) => {
+              set("email", v);
+              if (emailError && validarEmail(v) === null) setEmailError(null);
+            }}
+            onBlur={() => setEmailError(validarEmail(f.email))}
+            error={emailError}
           />
         </Card>
 

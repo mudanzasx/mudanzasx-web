@@ -29,12 +29,16 @@ export function Text({
   label,
   value,
   onChange,
+  onBlur,
   type = "text",
+  error,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   type?: string;
+  error?: string | null;
 }) {
   return (
     <div>
@@ -43,8 +47,15 @@ export function Text({
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        aria-invalid={error ? true : undefined}
         className={fieldClass}
       />
+      {error && (
+        <p className="mt-1.5 text-[13px] font-medium text-red-600" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

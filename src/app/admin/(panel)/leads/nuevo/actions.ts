@@ -3,6 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { esEstadoComercial } from "@/lib/leads";
+import {
+  esTelefonoEsValido,
+  esEmailValido,
+  AVISO_TELEFONO,
+  AVISO_EMAIL,
+} from "@/lib/validaciones";
 
 export type CrearLeadInput = {
   nombre: string;
@@ -50,6 +56,13 @@ export async function crearLead(
   const telefono = texto(input.telefono);
   if (!nombre || !telefono) {
     return { ok: false, error: "El nombre y el teléfono son obligatorios." };
+  }
+  if (!esTelefonoEsValido(telefono)) {
+    return { ok: false, error: AVISO_TELEFONO };
+  }
+  // Email opcional: solo se valida el formato si viene relleno.
+  if ((input.email ?? "").trim() !== "" && !esEmailValido(input.email)) {
+    return { ok: false, error: AVISO_EMAIL };
   }
 
   // Estado inicial: el que elija el usuario si es válido; si no, "Nuevo".
