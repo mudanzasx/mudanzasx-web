@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
+import { TAMANOS_VIVIENDA } from "@/lib/leads";
 import {
   esTelefonoEsValido,
   esEmailValido,
@@ -12,17 +14,17 @@ import {
   AVISO_EMAIL,
 } from "@/lib/validaciones";
 
-const TAMANOS = ["Estudio", "Piso pequeño", "Piso mediano", "Piso grande", "Casa"];
-
-const labelClass = "block text-sm font-medium text-black";
+// Campo base: gris muy claro, redondeado, borde que se marca al enfocar.
 const fieldClass =
-  "mt-2 w-full rounded-lg bg-gris px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+  "w-full rounded-lg bg-gris px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+const errorClass = "mt-1.5 text-[13px] font-medium";
 
 export default function QuoteForm() {
   const { prefill } = useQuote();
   const router = useRouter();
   const sectionRef = useRef<HTMLElement>(null);
 
+  // form.telefono guarda solo los 9 dígitos; el +34 se añade al enviar.
   const [form, setForm] = useState({
     origen: "",
     destino: "",
@@ -47,7 +49,7 @@ export default function QuoteForm() {
   const [telefonoError, setTelefonoError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
 
-  // Email obligatorio en el formulario público.
+  // Teléfono: 9 dígitos válidos (el prefijo +34 lo pone el propio campo).
   const validarTelefono = (v: string) =>
     esTelefonoEsValido(v) ? null : AVISO_TELEFONO;
   const validarEmail = (v: string) =>
@@ -110,9 +112,7 @@ export default function QuoteForm() {
   const update =
     (key: keyof typeof form) =>
     (
-      e: React.ChangeEvent<
-        HTMLInputElement | HTMLSelectElement
-      >
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
       const value =
         e.target.type === "checkbox"
@@ -138,10 +138,12 @@ export default function QuoteForm() {
     setError(null);
     setEnviando(true);
     try {
+      // Se guarda el teléfono completo con prefijo (+34 + 9 dígitos).
+      const payload = { ...form, telefono: `+34 ${form.telefono}` };
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         throw new Error("No se pudo enviar la solicitud.");
@@ -162,98 +164,111 @@ export default function QuoteForm() {
       ref={sectionRef}
       className="w-full border-t border-black/10 scroll-mt-24"
     >
-      <div className="mx-auto max-w-[640px] px-6 py-14 md:py-24">
+      <div className="mx-auto max-w-[560px] px-6 py-14 md:py-24">
         <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
           Pide tu presupuesto
         </h2>
 
-        <form onSubmit={handleSubmit} className="mt-10 flex flex-col gap-6">
-            <div>
-              <label htmlFor="origen" className={labelClass}>
-                Origen
-              </label>
-              <AddressAutocomplete
-                id="origen"
-                inputRef={origenRef}
-                value={form.origen}
-                onChange={(v, hasNumber) => {
-                  setForm((prev) => ({ ...prev, origen: v }));
-                  setOrigenNum(hasNumber);
-                }}
-                required
-                className={fieldClass}
-              />
-              {intentado && faltaOrigenNum && (
-                <p className="mt-2 text-[13px] font-medium text-amber-700">
-                  Indica el número de la calle.
-                </p>
-              )}
-            </div>
+        {/* Tarjeta contenedora del formulario. */}
+        <div className="mt-8 rounded-2xl border border-black/10 bg-white p-5 shadow-[0_2px_20px_rgba(0,0,0,0.05)] sm:p-6 md:mt-10 md:p-8">
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-4">
+              {/* Origen */}
+              <div>
+                <AddressAutocomplete
+                  id="origen"
+                  inputRef={origenRef}
+                  value={form.origen}
+                  onChange={(v, hasNumber) => {
+                    setForm((prev) => ({ ...prev, origen: v }));
+                    setOrigenNum(hasNumber);
+                  }}
+                  required
+                  placeholder="Dirección de origen"
+                  ariaLabel="Dirección de origen"
+                  className={fieldClass}
+                />
+                {intentado && faltaOrigenNum && (
+                  <p className={`${errorClass} text-amber-700`}>
+                    Indica el número de la calle.
+                  </p>
+                )}
+              </div>
 
-            <div>
-              <label htmlFor="destino" className={labelClass}>
-                Destino
-              </label>
-              <AddressAutocomplete
-                id="destino"
-                inputRef={destinoRef}
-                value={form.destino}
-                onChange={(v, hasNumber) => {
-                  setForm((prev) => ({ ...prev, destino: v }));
-                  setDestinoNum(hasNumber);
-                }}
-                required
-                className={fieldClass}
-              />
-              {intentado && faltaDestinoNum && (
-                <p className="mt-2 text-[13px] font-medium text-amber-700">
-                  Indica el número de la calle.
-                </p>
-              )}
-            </div>
+              {/* Destino */}
+              <div>
+                <AddressAutocomplete
+                  id="destino"
+                  inputRef={destinoRef}
+                  value={form.destino}
+                  onChange={(v, hasNumber) => {
+                    setForm((prev) => ({ ...prev, destino: v }));
+                    setDestinoNum(hasNumber);
+                  }}
+                  required
+                  placeholder="Dirección de destino"
+                  ariaLabel="Dirección de destino"
+                  className={fieldClass}
+                />
+                {intentado && faltaDestinoNum && (
+                  <p className={`${errorClass} text-amber-700`}>
+                    Indica el número de la calle.
+                  </p>
+                )}
+              </div>
 
-            <div>
-              <label htmlFor="tamano" className={labelClass}>
-                Tamaño aproximado
-              </label>
-              <select
-                id="tamano"
-                ref={tamanoRef}
-                value={form.tamano}
-                onChange={update("tamano")}
-                required
-                className={`${fieldClass} appearance-none`}
-              >
-                <option value="" disabled>
-                  Selecciona una opción
-                </option>
-                {TAMANOS.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
+              {/* Tamaño de la vivienda + Fecha */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="relative">
+                  <select
+                    id="tamano"
+                    ref={tamanoRef}
+                    value={form.tamano}
+                    onChange={update("tamano")}
+                    required
+                    aria-label="Tamaño de la vivienda"
+                    className={`${fieldClass} appearance-none pr-10 ${
+                      form.tamano ? "text-black" : "text-black/40"
+                    }`}
+                  >
+                    <option value="" disabled>
+                      Tamaño de la vivienda
+                    </option>
+                    {TAMANOS_VIVIENDA.map((t) => (
+                      <option key={t} value={t} className="text-black">
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={18}
+                    strokeWidth={1.75}
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-black/40"
+                  />
+                </div>
 
-            <div>
-              <label htmlFor="fecha" className={labelClass}>
-                Fecha deseada
-              </label>
-              <input
-                id="fecha"
-                ref={fechaRef}
-                type="date"
-                value={form.fecha}
-                onChange={update("fecha")}
-                required
-                className={fieldClass}
-              />
-            </div>
+                <div className="relative">
+                  <input
+                    id="fecha"
+                    ref={fechaRef}
+                    type="date"
+                    value={form.fecha}
+                    onChange={update("fecha")}
+                    required
+                    aria-label="Fecha deseada"
+                    className={`${fieldClass} ${
+                      form.fecha ? "text-black" : "text-transparent"
+                    }`}
+                  />
+                  {!form.fecha && (
+                    <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-base text-black/40">
+                      Fecha deseada
+                    </span>
+                  )}
+                </div>
+              </div>
 
-            <div>
-              <label htmlFor="nombre" className={labelClass}>
-                Nombre
-              </label>
+              {/* Nombre */}
               <input
                 id="nombre"
                 ref={nombreRef}
@@ -261,77 +276,90 @@ export default function QuoteForm() {
                 value={form.nombre}
                 onChange={update("nombre")}
                 required
+                aria-label="Nombre y apellidos"
+                placeholder="Nombre y apellidos"
                 className={fieldClass}
               />
+
+              {/* Teléfono (con +34 fijo) + Email */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <div className="flex items-stretch overflow-hidden rounded-lg border border-transparent bg-gris transition-colors duration-150 focus-within:border-black">
+                    <span className="flex select-none items-center border-r border-black/10 pl-4 pr-3 text-base text-black/50">
+                      +34
+                    </span>
+                    <input
+                      id="telefono"
+                      ref={telefonoRef}
+                      type="tel"
+                      inputMode="numeric"
+                      value={form.telefono}
+                      onChange={(e) => {
+                        const digitos = e.target.value.replace(/\D/g, "").slice(0, 9);
+                        setForm((prev) => ({ ...prev, telefono: digitos }));
+                        if (telefonoError && esTelefonoEsValido(digitos)) {
+                          setTelefonoError(null);
+                        }
+                      }}
+                      onBlur={() =>
+                        setTelefonoError(
+                          form.telefono.trim()
+                            ? validarTelefono(form.telefono)
+                            : null
+                        )
+                      }
+                      required
+                      aria-label="Teléfono"
+                      placeholder="600 000 000"
+                      aria-invalid={telefonoError ? true : undefined}
+                      className="w-full min-w-0 bg-transparent py-3 pl-3 pr-4 text-base text-black placeholder-black/40 outline-none"
+                    />
+                  </div>
+                  {telefonoError && (
+                    <p className={`${errorClass} text-red-600`} role="alert">
+                      {telefonoError}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <input
+                    id="email"
+                    ref={emailRef}
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setForm((prev) => ({ ...prev, email: v }));
+                      if (emailError && esEmailValido(v)) setEmailError(null);
+                    }}
+                    onBlur={() =>
+                      setEmailError(
+                        form.email.trim() ? validarEmail(form.email) : null
+                      )
+                    }
+                    required
+                    aria-label="Email"
+                    placeholder="Email"
+                    aria-invalid={emailError ? true : undefined}
+                    className={fieldClass}
+                  />
+                  {emailError && (
+                    <p className={`${errorClass} text-red-600`} role="alert">
+                      {emailError}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="telefono" className={labelClass}>
-                Teléfono
-              </label>
-              <input
-                id="telefono"
-                ref={telefonoRef}
-                type="tel"
-                value={form.telefono}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setForm((prev) => ({ ...prev, telefono: v }));
-                  if (telefonoError && esTelefonoEsValido(v)) setTelefonoError(null);
-                }}
-                onBlur={() =>
-                  setTelefonoError(
-                    form.telefono.trim() ? validarTelefono(form.telefono) : null
-                  )
-                }
-                required
-                aria-invalid={telefonoError ? true : undefined}
-                className={fieldClass}
-              />
-              {telefonoError && (
-                <p className="mt-2 text-[13px] font-medium text-red-600" role="alert">
-                  {telefonoError}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="email" className={labelClass}>
-                Email
-              </label>
-              <input
-                id="email"
-                ref={emailRef}
-                type="email"
-                value={form.email}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setForm((prev) => ({ ...prev, email: v }));
-                  if (emailError && esEmailValido(v)) setEmailError(null);
-                }}
-                onBlur={() =>
-                  setEmailError(
-                    form.email.trim() ? validarEmail(form.email) : null
-                  )
-                }
-                required
-                aria-invalid={emailError ? true : undefined}
-                className={fieldClass}
-              />
-              {emailError && (
-                <p className="mt-2 text-[13px] font-medium text-red-600" role="alert">
-                  {emailError}
-                </p>
-              )}
-            </div>
-
-            <label className="flex items-start gap-3 text-[15px] leading-[1.5] text-black/70">
+            <label className="mt-5 flex items-start gap-3 text-[14px] leading-[1.5] text-black/70">
               <input
                 type="checkbox"
                 checked={form.acepta}
                 onChange={update("acepta")}
                 required
-                className="mt-1 h-4 w-4 shrink-0 accent-black"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-black"
               />
               <span>
                 He leído y acepto la{" "}
@@ -346,7 +374,7 @@ export default function QuoteForm() {
             </label>
 
             {error && (
-              <p className="text-[15px] text-black" role="alert">
+              <p className="mt-4 text-[15px] text-red-600" role="alert">
                 {error}
               </p>
             )}
@@ -354,11 +382,12 @@ export default function QuoteForm() {
             <button
               type="submit"
               disabled={enviando}
-              className="mt-2 w-full rounded-full bg-black px-8 py-4 text-base font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-50"
+              className="mt-5 w-full rounded-full bg-black px-8 py-4 text-base font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-50"
             >
               {enviando ? "Enviando…" : "Solicitar presupuesto"}
             </button>
-        </form>
+          </form>
+        </div>
       </div>
     </section>
   );

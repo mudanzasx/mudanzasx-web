@@ -23,9 +23,9 @@ export function esEstadoComercial(value: unknown): value is EstadoComercial {
 // manual del panel, para que ofrezcan exactamente las mismas opciones.
 export const TAMANOS_VIVIENDA = [
   "Estudio",
-  "Piso pequeño",
-  "Piso mediano",
-  "Piso grande",
+  "Piso pequeño (1 habitación)",
+  "Piso mediano (2-3 habitaciones)",
+  "Piso grande (4+ habitaciones)",
   "Casa",
 ] as const;
 
