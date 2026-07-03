@@ -7,9 +7,13 @@ import EstadoPill from "@/components/admin/EstadoPill";
 import {
   crearEnlacePago,
   crearEnlaceResto,
+  enviarEnlacePago,
   type Pago,
   type TipoCobro,
 } from "./pagoActions";
+
+// Tipo del enlace actualmente generado (para adaptar el email).
+type TipoEnlace = "reserva50" | "total" | "resto";
 
 function tipoLabel(tipo: string | null): string {
   if (tipo === "total") return "Total (100% con 5% dto)";
@@ -29,23 +33,35 @@ export default function PagoPresupuesto({
 }) {
   const [pago, setPago] = useState<Pago | null>(pagoInicial);
   const [url, setUrl] = useState<string | null>(null);
+  const [urlTipo, setUrlTipo] = useState<TipoEnlace | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [creando, startCrear] = useTransition();
+  const [enviando, startEnviar] = useTransition();
+  const [emailMsg, setEmailMsg] = useState<
+    { ok: boolean; texto: string } | null
+  >(null);
 
   const precio = precioFinal ?? 0;
   const importeReserva = round2(precio * 0.5);
   const importeTotal = round2(precio * 0.95);
 
-  function cobrar(tipo: TipoCobro) {
+  function reset() {
     setError(null);
     setUrl(null);
+    setUrlTipo(null);
     setCopiado(false);
+    setEmailMsg(null);
+  }
+
+  function cobrar(tipo: TipoCobro) {
+    reset();
     startCrear(async () => {
       const res = await crearEnlacePago(presupuestoId, tipo);
       if (res.ok) {
         setPago(res.pago);
         setUrl(res.url);
+        setUrlTipo(tipo);
       } else {
         setError(res.error);
       }
@@ -53,16 +69,28 @@ export default function PagoPresupuesto({
   }
 
   function cobrarResto() {
-    setError(null);
-    setUrl(null);
-    setCopiado(false);
+    reset();
     startCrear(async () => {
       const res = await crearEnlaceResto(presupuestoId);
       if (res.ok) {
         setPago(res.pago);
         setUrl(res.url);
+        setUrlTipo("resto");
       } else {
         setError(res.error);
+      }
+    });
+  }
+
+  function enviarEmail() {
+    if (!urlTipo) return;
+    setEmailMsg(null);
+    startEnviar(async () => {
+      const res = await enviarEnlacePago(presupuestoId, urlTipo);
+      if (res.ok) {
+        setEmailMsg({ ok: true, texto: `Email enviado a ${res.email}` });
+      } else {
+        setEmailMsg({ ok: false, texto: res.error });
       }
     });
   }
@@ -176,6 +204,28 @@ export default function PagoPresupuesto({
             >
               Abrir enlace
             </a>
+          </div>
+
+          {/* Envío del enlace por email al cliente */}
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={enviarEmail}
+              disabled={enviando}
+              className="rounded-full border border-black/20 px-3 py-2 text-xs font-medium transition-colors hover:bg-white disabled:opacity-40"
+            >
+              {enviando ? "Enviando…" : "Enviar por email al cliente"}
+            </button>
+            {emailMsg && (
+              <span
+                role="status"
+                className={`text-xs ${
+                  emailMsg.ok ? "text-emerald-700" : "text-red-600"
+                }`}
+              >
+                {emailMsg.texto}
+              </span>
+            )}
           </div>
         </div>
       )}

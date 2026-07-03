@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
 import { round2 } from "@/lib/presupuesto";
+import { formatPrecio } from "@/lib/leads";
+import { enviarEmailPago, type TipoCobroEmail } from "@/lib/email";
 
 export type TipoCobro = "reserva50" | "total";
 
@@ -281,4 +283,77 @@ export async function crearEnlaceResto(
 
   revalidatePath(`/admin/leads/${leadId}`);
   return { ok: true, url: session.url, pago: pagoRow as Pago };
+}
+
+export type EnviarEmailPagoResult =
+  | { ok: true; email: string }
+  | { ok: false; error: string };
+
+// Envía por email al cliente el enlace de pago vigente del presupuesto. La URL
+// se recupera de Stripe por el stripe_id del pago (no se confía en el cliente),
+// así el enlace enviado es siempre el real. Protegida por sesión.
+export async function enviarEnlacePago(
+  presupuestoId: string,
+  tipo: TipoCobroEmail
+): Promise<EnviarEmailPagoResult> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, error: "Sesión no válida." };
+
+  const { data: presu } = await supabase
+    .from("presupuestos")
+    .select("id,lead_id,precio_final")
+    .eq("id", presupuestoId)
+    .maybeSingle();
+  if (!presu) return { ok: false, error: "No se encontró el presupuesto." };
+
+  const { data: lead } = await supabase
+    .from("leads")
+    .select("nombre,email")
+    .eq("id", String(presu.lead_id))
+    .maybeSingle();
+  const email = (lead?.email ?? "").trim();
+  if (!email) {
+    return { ok: false, error: "Este cliente no tiene email registrado." };
+  }
+
+  const { data: pago } = await supabase
+    .from("pagos")
+    .select("stripe_id,importe_pendiente")
+    .eq("presupuesto_id", presupuestoId)
+    .maybeSingle();
+  if (!pago?.stripe_id) {
+    return { ok: false, error: "No hay un enlace de pago generado." };
+  }
+
+  // URL de pago vigente, recuperada desde Stripe por el stripe_id del pago.
+  let url: string | null = null;
+  try {
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.retrieve(pago.stripe_id);
+    url = session.url ?? null;
+  } catch {
+    return { ok: false, error: "No se pudo recuperar el enlace de pago." };
+  }
+  if (!url) {
+    return { ok: false, error: "El enlace de pago ya no está disponible." };
+  }
+
+  // Importe a mostrar en el email según el tipo (autoritativo, del servidor).
+  const precio = Number(presu.precio_final);
+  const importe =
+    tipo === "total"
+      ? round2(precio * 0.95)
+      : tipo === "resto"
+        ? round2(Number(pago.importe_pendiente) || 0)
+        : round2(precio * 0.5);
+
+  const res = await enviarEmailPago({
+    para: email,
+    nombre: (lead?.nombre ?? "").trim() || "cliente",
+    tipo,
+    importeTexto: formatPrecio(importe),
+    url,
+  });
+  if (!res.ok) return { ok: false, error: res.error };
+  return { ok: true, email };
 }
