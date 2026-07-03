@@ -7,6 +7,10 @@ import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "./config";
 // por "Mudanzas X <info@mudanzasx.com>".
 export const EMAIL_FROM = "Mudanzas X <onboarding@resend.dev>";
 
+// URL absoluta del sitio en producción. En emails las rutas deben ser absolutas
+// (los clientes de correo no resuelven rutas relativas).
+const SITE_URL = "https://www.mudanzasx.com";
+
 let cliente: Resend | null = null;
 function getResend(): Resend {
   const key = process.env.RESEND_API_KEY;
@@ -71,10 +75,10 @@ function plantillaHtml(params: {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f3f3;font-family:'Montserrat',Arial,Helvetica,sans-serif;">
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:12px;">
-<tr><td style="padding:28px 32px 4px;">
-<div style="font-weight:600;letter-spacing:2px;font-size:15px;color:#000000;">MUDANZAS X</div>
+<tr><td align="center" bgcolor="#000000" style="background-color:#000000;padding:24px 32px;border-radius:12px 12px 0 0;">
+<img src="${SITE_URL}/logo-white-email.png" width="200" alt="Mudanzas X" style="display:block;width:200px;max-width:70%;height:auto;border:0;outline:none;text-decoration:none;">
 </td></tr>
-<tr><td style="padding:16px 32px 0;">
+<tr><td style="padding:28px 32px 0;">
 <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">Hola ${nombre},</p>
 <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#333333;">${intro}</p>
 <table role="presentation" cellpadding="0" cellspacing="0"><tr>
@@ -88,7 +92,10 @@ function plantillaHtml(params: {
 <tr><td style="padding:26px 32px 30px;">
 <div style="border-top:1px solid #eeeeee;margin:0 0 16px;"></div>
 <p style="margin:0;font-size:12px;line-height:1.7;color:#888888;">
-Mudanzas X · <a href="mailto:${EMPRESA.email}" style="color:#888888;">${EMPRESA.email}</a> · <a href="tel:${TELEFONO}" style="color:#888888;">${TELEFONO_TEXTO}</a>
+<a href="tel:${TELEFONO}" style="color:#888888;text-decoration:none;">${TELEFONO_TEXTO}</a> · <a href="mailto:${EMPRESA.email}" style="color:#888888;">${EMPRESA.email}</a>
+</p>
+<p style="margin:6px 0 0;font-size:12px;line-height:1.7;color:#aaaaaa;">
+<a href="${SITE_URL}/privacidad" style="color:#aaaaaa;">Política de privacidad</a>
 </p>
 </td></tr>
 </table>
