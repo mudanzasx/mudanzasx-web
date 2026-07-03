@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
-import { TAMANOS_VIVIENDA } from "@/lib/leads";
 import { esTelefonoEsValido, esEmailValido } from "@/lib/validaciones";
-
-const TAMANOS: readonly string[] = TAMANOS_VIVIENDA;
 
 type LeadPayload = {
   nombre?: unknown;
@@ -11,8 +8,6 @@ type LeadPayload = {
   email?: unknown;
   origen?: unknown;
   destino?: unknown;
-  fecha?: unknown;
-  tamano?: unknown;
   acepta?: unknown;
 };
 
@@ -33,19 +28,16 @@ export async function POST(request: Request) {
   const email = asString(body.email);
   const origen = asString(body.origen);
   const destino = asString(body.destino);
-  const fecha = asString(body.fecha);
-  const tamano = asString(body.tamano);
   const acepta = body.acepta === true;
 
-  // Validación en el servidor.
+  // Validación en el servidor. Fecha y tamaño ya no se piden en la web (se
+  // recogen después por teléfono), así que no se validan aquí.
   const errores: string[] = [];
   if (!nombre) errores.push("nombre");
   if (!esTelefonoEsValido(telefono)) errores.push("telefono");
   if (!esEmailValido(email)) errores.push("email");
   if (!origen) errores.push("origen");
   if (!destino) errores.push("destino");
-  if (!fecha) errores.push("fecha");
-  if (!TAMANOS.includes(tamano)) errores.push("tamano");
   if (!acepta) errores.push("acepta");
 
   if (errores.length > 0) {
@@ -61,8 +53,6 @@ export async function POST(request: Request) {
     email,
     origen_direccion: origen,
     destino_direccion: destino,
-    fecha_deseada: fecha,
-    tamano_aprox: tamano,
     via_entrada: "web",
   });
 

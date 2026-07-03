@@ -2,11 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown } from "lucide-react";
 import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
-import { TAMANOS_VIVIENDA } from "@/lib/leads";
 import {
   esTelefonoEsValido,
   esEmailValido,
@@ -28,8 +26,6 @@ export default function QuoteForm() {
   const [form, setForm] = useState({
     origen: "",
     destino: "",
-    tamano: "",
-    fecha: "",
     nombre: "",
     telefono: "",
     email: "",
@@ -63,8 +59,6 @@ export default function QuoteForm() {
   // Referencias en orden para enfocar el primer campo vacío tras el prefill.
   const origenRef = useRef<HTMLInputElement>(null);
   const destinoRef = useRef<HTMLInputElement>(null);
-  const tamanoRef = useRef<HTMLSelectElement>(null);
-  const fechaRef = useRef<HTMLInputElement>(null);
   const nombreRef = useRef<HTMLInputElement>(null);
   const telefonoRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -93,8 +87,6 @@ export default function QuoteForm() {
       const orden: { valor: unknown; enfocar: () => void }[] = [
         { valor: merged.origen, enfocar: () => origenRef.current?.focus() },
         { valor: merged.destino, enfocar: () => destinoRef.current?.focus() },
-        { valor: merged.tamano, enfocar: () => tamanoRef.current?.focus() },
-        { valor: merged.fecha, enfocar: () => fechaRef.current?.focus() },
         { valor: merged.nombre, enfocar: () => nombreRef.current?.focus() },
         { valor: merged.telefono, enfocar: () => telefonoRef.current?.focus() },
         { valor: merged.email, enfocar: () => emailRef.current?.focus() },
@@ -215,57 +207,6 @@ export default function QuoteForm() {
                     Indica el número de la calle.
                   </p>
                 )}
-              </div>
-
-              {/* Tamaño de la vivienda + Fecha */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="relative">
-                  <select
-                    id="tamano"
-                    ref={tamanoRef}
-                    value={form.tamano}
-                    onChange={update("tamano")}
-                    required
-                    aria-label="Tamaño de la vivienda"
-                    className={`${fieldClass} appearance-none pr-10 ${
-                      form.tamano ? "text-black" : "text-black/40"
-                    }`}
-                  >
-                    <option value="" disabled>
-                      Tamaño de la vivienda
-                    </option>
-                    {TAMANOS_VIVIENDA.map((t) => (
-                      <option key={t} value={t} className="text-black">
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={18}
-                    strokeWidth={1.75}
-                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-black/40"
-                  />
-                </div>
-
-                <div className="relative">
-                  <input
-                    id="fecha"
-                    ref={fechaRef}
-                    type="date"
-                    value={form.fecha}
-                    onChange={update("fecha")}
-                    required
-                    aria-label="Fecha deseada"
-                    className={`${fieldClass} ${
-                      form.fecha ? "text-black" : "text-transparent"
-                    }`}
-                  />
-                  {!form.fecha && (
-                    <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-base text-black/40">
-                      Fecha deseada
-                    </span>
-                  )}
-                </div>
               </div>
 
               {/* Nombre */}
