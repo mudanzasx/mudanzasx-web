@@ -196,14 +196,6 @@ export default function PagoPresupuesto({
             >
               {copiado ? "¡Copiado!" : "Copiar enlace"}
             </button>
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="shrink-0 rounded-full border border-black/20 px-3 py-2 text-xs font-medium hover:bg-white"
-            >
-              Abrir enlace
-            </a>
           </div>
 
           {/* Envío del enlace por email al cliente */}
