@@ -81,6 +81,7 @@ export default function PresupuestoForm({
   accesosDefault,
   datosCliente,
   initial,
+  initialFechaMudanza,
   presupuestoId,
   onSaved,
 }: {
@@ -88,6 +89,7 @@ export default function PresupuestoForm({
   accesosDefault: AccesosDefault;
   datosCliente: DatosCliente;
   initial: PresupuestoPayload | null;
+  initialFechaMudanza: string | null;
   presupuestoId: string | null;
   onSaved: (id: string) => void;
 }) {
@@ -137,6 +139,10 @@ export default function PresupuestoForm({
   const [accesoDificil, setAccesoDificil] = useState(a ? a.acceso_dificil : false);
   const [urgencia, setUrgencia] = useState(a ? a.urgencia : false);
   const [permisos, setPermisos] = useState(String(a ? a.permisos : 0));
+
+  // Fecha acordada de la mudanza (opcional). No interviene en el cálculo del
+  // precio, así que cambiarla no invalida el resultado ya calculado.
+  const [fechaMudanza, setFechaMudanza] = useState(initialFechaMudanza ?? "");
 
   // Buscadores
   const [qObj, setQObj] = useState("");
@@ -329,6 +335,7 @@ export default function PresupuestoForm({
         productos: productos.map((l) => ({ id: l.id, cantidad: l.cantidad })),
         accesos: accesosPayload(),
         precioFinalAjustado: parsed > 0 ? round2(parsed) : null,
+        fechaMudanza: fechaMudanza.trim() || null,
       });
       if (res.ok) {
         setGuardado(true);
@@ -562,6 +569,24 @@ export default function PresupuestoForm({
           <input type="number" min={0} value={permisos} onChange={(e) => { setPermisos(e.target.value); invalidar(); }} className={`mt-2 ${fieldClass}`} />
         </div>
         </div>
+      </div>
+
+      {/* ===== Fecha de la mudanza (opcional) ===== */}
+      <div>
+        <label htmlFor="fecha_mudanza" className={labelClass}>
+          Fecha de la mudanza
+        </label>
+        <p className="mb-2 text-[11px] text-black/40">
+          Fecha acordada con el cliente. Opcional: se guarda con el presupuesto y,
+          al pagar, fija el día de la operación en el calendario.
+        </p>
+        <input
+          id="fecha_mudanza"
+          type="date"
+          value={fechaMudanza}
+          onChange={(e) => setFechaMudanza(e.target.value)}
+          className={`${fieldClass} w-auto`}
+        />
       </div>
 
       <button

@@ -20,6 +20,7 @@ export type PresupuestoGuardado = {
   vehiculo: string | null;
   operarios: number | null;
   estado: string | null;
+  fecha_mudanza: string | null;
   detalle_objetos: PresupuestoPayload | null;
 };
 
@@ -39,6 +40,7 @@ export default function PresupuestoPanel({
   const router = useRouter();
   const [editId, setEditId] = useState<string | null>(null);
   const [initial, setInitial] = useState<PresupuestoPayload | null>(null);
+  const [initialFecha, setInitialFecha] = useState<string | null>(null);
   // Cambia con cada carga/nuevo para forzar el remonte del formulario.
   const [formKey, setFormKey] = useState(0);
   // El formulario empieza plegado; se abre solo al usarlo (nuevo/editar) o al
@@ -50,6 +52,7 @@ export default function PresupuestoPanel({
     if (!p.detalle_objetos || p.detalle_objetos.version == null) return;
     setEditId(p.id);
     setInitial(p.detalle_objetos);
+    setInitialFecha(p.fecha_mudanza);
     setFormKey((k) => k + 1);
     setFormOpen(true);
   }
@@ -57,6 +60,7 @@ export default function PresupuestoPanel({
   function nuevo() {
     setEditId(null);
     setInitial(null);
+    setInitialFecha(null);
     setFormKey((k) => k + 1);
     setFormOpen(true);
   }
@@ -168,6 +172,7 @@ export default function PresupuestoPanel({
                 accesosDefault={accesosDefault}
                 datosCliente={datosCliente}
                 initial={initial}
+                initialFechaMudanza={initialFecha}
                 presupuestoId={editId}
                 onSaved={onSaved}
               />

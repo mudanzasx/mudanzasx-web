@@ -61,7 +61,7 @@ export default async function LeadDetailPage({
   const { data: presupuestosData } = await supabase
     .from("presupuestos")
     .select(
-      "id,creado_en,precio_final,vehiculo,operarios,estado,detalle_objetos"
+      "id,creado_en,precio_final,vehiculo,operarios,estado,fecha_mudanza,detalle_objetos"
     )
     .eq("lead_id", id)
     .order("creado_en", { ascending: false });

@@ -3,11 +3,12 @@
 // (gris/ámbar/verde/rojo). Los estados de presupuesto/pago se dejan neutros para
 // no alterar su aspecto.
 
-type Tono = "neutro" | "gris" | "ambar" | "verde" | "rojo";
+type Tono = "neutro" | "gris" | "ambar" | "verde" | "azul" | "rojo";
 
 // Mapa de estado comercial -> tono. Basado en ESTADOS_COMERCIALES:
 // Nuevo (recién entrado) → gris; intermedios (contacto/presupuesto/negociación)
-// → ámbar; Reservado (cerrado con éxito) → verde; Perdido/Cancelado → rojo.
+// → ámbar; Reservado (cerrado con éxito) → verde; Finalizado (mudanza ya hecha)
+// → azul apagado (distinto del verde de Reservado); Perdido/Cancelado → rojo.
 const ESTADO_TONO: Record<string, Tono> = {
   Nuevo: "gris",
   Contactado: "ambar",
@@ -15,6 +16,7 @@ const ESTADO_TONO: Record<string, Tono> = {
   "Presupuesto enviado": "ambar",
   Negociación: "ambar",
   Reservado: "verde",
+  Finalizado: "azul",
   Perdido: "rojo",
   Cancelado: "rojo",
 };
@@ -24,6 +26,7 @@ const TONO_CLASES: Record<Tono, { badge: string; dot: string }> = {
   gris: { badge: "bg-gris text-black/70", dot: "bg-black/30" },
   ambar: { badge: "bg-amber-50 text-amber-700", dot: "bg-amber-500" },
   verde: { badge: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" },
+  azul: { badge: "bg-slate-100 text-slate-700", dot: "bg-slate-600" },
   rojo: { badge: "bg-red-50 text-red-700", dot: "bg-red-500" },
 };
 

@@ -44,6 +44,9 @@ export type GuardarInput = CalcularInput & {
   leadId: string;
   presupuestoId: string | null;
   precioFinalAjustado: number | null;
+  // Fecha acordada de la mudanza (YYYY-MM-DD) o null si aún no se sabe. Es el
+  // origen de la fecha de la operación en el calendario (la fija el webhook al pagar).
+  fechaMudanza: string | null;
 };
 
 export type GuardarResultado = { ok: true; id: string } | { ok: false; error: string };
@@ -334,6 +337,14 @@ export async function guardarPresupuestoAction(
   const precio_final = round2(ajustado ?? r.precio_final);
   const volumen_m3 = round2(r.volumen_total_m3);
 
+  // Fecha de la mudanza: opcional. Se normaliza a null si viene vacía o no es
+  // una fecha ISO (YYYY-MM-DD) válida, para no meter basura en la columna date.
+  const fechaMudanza =
+    typeof input.fechaMudanza === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(input.fechaMudanza.trim())
+      ? input.fechaMudanza.trim()
+      : null;
+
   // Snapshot completo para reabrir el presupuesto (Cambio 6).
   const detalle_objetos = {
     version: 2,
@@ -345,6 +356,7 @@ export async function guardarPresupuestoAction(
   const fila = {
     lead_id: input.leadId,
     detalle_objetos,
+    fecha_mudanza: fechaMudanza,
     volumen_m3,
     vehiculo: r.viajes > 1 ? `${r.vehiculo} ×${r.viajes}` : r.vehiculo,
     operarios: r.operarios,

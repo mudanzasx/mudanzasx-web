@@ -196,20 +196,25 @@ async function crearOperacionSiNoExiste(
     return;
   }
 
-  // Fecha y volumen parten del lead; el volumen del presupuesto (si hay) manda.
+  // El volumen parte del lead; el volumen del presupuesto (si hay) manda.
   const { data: lead } = await supabase
     .from("leads")
-    .select("fecha_deseada,volumen_estimado_m3")
+    .select("volumen_estimado_m3")
     .eq("id", leadId)
     .maybeSingle();
 
   let volumen: number | null = lead?.volumen_estimado_m3 ?? null;
   let vehiculoTexto: string | null = null;
+  // La fecha de la operación viene de la FECHA DE LA MUDANZA del presupuesto que
+  // se está pagando (ya no de fecha_deseada del lead, que la web pública ya no
+  // pide). Si el presupuesto no tiene fecha, la operación se crea sin fecha y va
+  // a la tira de "sin fecha asignada".
+  let fechaMudanza: string | null = null;
 
   if (presupuestoId) {
     const { data: presu } = await supabase
       .from("presupuestos")
-      .select("vehiculo,volumen_m3")
+      .select("vehiculo,volumen_m3,fecha_mudanza")
       .eq("id", presupuestoId)
       .maybeSingle();
     if (presu) {
@@ -217,6 +222,7 @@ async function crearOperacionSiNoExiste(
         volumen = presu.volumen_m3;
       }
       vehiculoTexto = presu.vehiculo ?? null;
+      fechaMudanza = presu.fecha_mudanza ?? null;
     }
   }
 
@@ -234,7 +240,7 @@ async function crearOperacionSiNoExiste(
 
   const { error: eIns } = await supabase.from("operaciones").insert({
     lead_id: leadId,
-    fecha: lead?.fecha_deseada ?? null,
+    fecha: fechaMudanza,
     hora: null,
     vehiculo_id: vehiculoId,
     operarios_ids: [],

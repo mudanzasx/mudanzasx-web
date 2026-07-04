@@ -6,6 +6,7 @@ export const ESTADOS_COMERCIALES = [
   "Presupuesto enviado",
   "Negociación",
   "Reservado",
+  "Finalizado",
   "Perdido",
   "Cancelado",
 ] as const;
