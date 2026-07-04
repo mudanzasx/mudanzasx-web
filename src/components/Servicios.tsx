@@ -65,6 +65,8 @@ export default function Servicios() {
         <SectionImage
           src="/servicios-vivienda.webp"
           alt="Vivienda moderna representando los servicios de mudanzas de Mudanzas X en Barcelona"
+          width={900}
+          height={719}
         />
 
         <div className="mt-12 grid grid-cols-1 gap-x-12 gap-y-9 sm:grid-cols-2 md:mt-16 md:gap-y-11">

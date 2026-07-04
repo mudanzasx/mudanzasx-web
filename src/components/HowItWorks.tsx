@@ -39,6 +39,8 @@ export default function HowItWorks() {
         <SectionImage
           src="/como-funciona-movil.webp"
           alt="La web de Mudanzas X en el móvil para pedir presupuesto de mudanza en Barcelona"
+          width={839}
+          height={835}
         />
 
         {/* Pasos del proceso: secuencia encadenada con conector vertical. */}

@@ -57,6 +57,8 @@ export default function Faq() {
         <SectionImage
           src="/faq-operario.webp"
           alt="Operario de Mudanzas X resolviendo dudas frecuentes sobre la mudanza"
+          width={706}
+          height={988}
         />
 
         {/* Acordeón de preguntas (contenido intacto). */}

@@ -1,36 +1,37 @@
 import Image from "next/image";
 
 // Imagen destacada de sección: patrón único y reutilizable para las tres
-// secciones (Cómo funciona, FAQs, Servicios), de modo que los tres cuadros y las
-// tres imágenes se vean EXACTAMENTE iguales en cada breakpoint.
+// secciones (Cómo funciona, FAQs, Servicios).
 //
-// - Contenedor cuadrado (aspect-square) con fondo gris de marca (#F3F3F3),
-//   esquinas redondeadas, ancho máximo contenido (420px) y centrado.
-// - Padding interior uniforme (p-6) por los cuatro lados.
-// - La imagen (1024x1024 cuadrada) rellena el área interior con object-contain:
-//   se ve completa, sin recortar ni deformar, y al mismo tamaño visual en las tres.
+// Las WebP están recortadas (el sujeto llena el archivo), así que cada una tiene
+// su propia proporción. El marco gris NO es cuadrado: se adapta a la imagen.
+// - Mismo ancho máximo (420px), centrado; en móvil ocupa el ancho disponible.
+// - Fondo gris de marca (#F3F3F3), esquinas redondeadas.
+// - Padding interior uniforme y reducido (p-6) idéntico en las tres.
+// - La imagen rellena el ancho interior; el alto del cuadro sigue la proporción
+//   real de la imagen (width/height evitan el layout shift; sin deformar).
 export default function SectionImage({
   src,
   alt,
+  width,
+  height,
 }: {
   src: string;
   alt: string;
+  width: number;
+  height: number;
 }) {
   return (
-    <div className="mx-auto mt-8 w-full max-w-[420px] md:mt-10">
-      <div className="aspect-square w-full rounded-2xl bg-gris p-6">
-        {/* Área interior (dentro del padding). La imagen la rellena por completo. */}
-        <div className="relative h-full w-full">
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            sizes="(min-width: 468px) 372px, calc(100vw - 96px)"
-            loading="lazy"
-            className="object-contain"
-          />
-        </div>
-      </div>
+    <div className="mx-auto mt-8 w-full max-w-[420px] rounded-2xl bg-gris p-6 md:mt-10">
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        sizes="(min-width: 468px) 372px, calc(100vw - 96px)"
+        loading="lazy"
+        className="h-auto w-full object-contain"
+      />
     </div>
   );
 }
