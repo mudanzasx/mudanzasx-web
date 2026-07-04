@@ -1,4 +1,4 @@
-import Image from "next/image";
+import SectionImage from "./SectionImage";
 import {
   IconDocument,
   IconCalendar,
@@ -62,17 +62,10 @@ export default function Servicios() {
         </h2>
 
         {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
-        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-4 md:mt-10 md:p-5">
-          <Image
-            src="/servicios-vivienda-fit.webp"
-            alt="Vivienda moderna representando los servicios de mudanzas de Mudanzas X en Barcelona"
-            width={900}
-            height={719}
-            sizes="(min-width: 640px) 352px, 85vw"
-            loading="lazy"
-            className="h-auto w-full"
-          />
-        </div>
+        <SectionImage
+          src="/servicios-vivienda.webp"
+          alt="Vivienda moderna representando los servicios de mudanzas de Mudanzas X en Barcelona"
+        />
 
         <div className="mt-12 grid grid-cols-1 gap-x-12 gap-y-9 sm:grid-cols-2 md:mt-16 md:gap-y-11">
           {SERVICIOS.map(({ Icon, nombre, desc }) => (

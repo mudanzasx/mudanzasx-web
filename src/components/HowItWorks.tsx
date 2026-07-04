@@ -1,4 +1,4 @@
-import Image from "next/image";
+import SectionImage from "./SectionImage";
 import { IconRoute, IconData, IconLock, IconTruck } from "./SystemIcons";
 
 const PASOS = [
@@ -36,17 +36,10 @@ export default function HowItWorks() {
         </h2>
 
         {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
-        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-4 md:mt-10 md:p-5">
-          <Image
-            src="/como-funciona-movil-fit.webp"
-            alt="La web de Mudanzas X en el móvil para pedir presupuesto de mudanza en Barcelona"
-            width={839}
-            height={835}
-            sizes="(min-width: 640px) 352px, 85vw"
-            loading="lazy"
-            className="h-auto w-full"
-          />
-        </div>
+        <SectionImage
+          src="/como-funciona-movil.webp"
+          alt="La web de Mudanzas X en el móvil para pedir presupuesto de mudanza en Barcelona"
+        />
 
         {/* Pasos del proceso: secuencia encadenada con conector vertical. */}
         <ol className="mx-auto mt-12 flex max-w-[640px] flex-col md:mt-16">
