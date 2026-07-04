@@ -54,13 +54,13 @@ export default function Faq() {
         </h2>
 
         {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
-        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-6 md:mt-10 md:p-8">
+        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-4 md:mt-10 md:p-5">
           <Image
-            src="/faq-operario.webp"
+            src="/faq-operario-fit.webp"
             alt="Operario de Mudanzas X resolviendo dudas frecuentes sobre la mudanza"
-            width={1024}
-            height={1024}
-            sizes="(min-width: 640px) 336px, 85vw"
+            width={706}
+            height={988}
+            sizes="(min-width: 640px) 352px, 85vw"
             loading="lazy"
             className="h-auto w-full"
           />

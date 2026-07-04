@@ -62,13 +62,13 @@ export default function Servicios() {
         </h2>
 
         {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
-        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-6 md:mt-10 md:p-8">
+        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-4 md:mt-10 md:p-5">
           <Image
-            src="/servicios-embalaje.webp"
-            alt="Operario de Mudanzas X embalando con film una mesita de madera antes de una mudanza"
-            width={1024}
-            height={1024}
-            sizes="(min-width: 640px) 336px, 85vw"
+            src="/servicios-vivienda-fit.webp"
+            alt="Vivienda moderna representando los servicios de mudanzas de Mudanzas X en Barcelona"
+            width={900}
+            height={719}
+            sizes="(min-width: 640px) 352px, 85vw"
             loading="lazy"
             className="h-auto w-full"
           />

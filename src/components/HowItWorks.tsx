@@ -36,13 +36,13 @@ export default function HowItWorks() {
         </h2>
 
         {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
-        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-6 md:mt-10 md:p-8">
+        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-4 md:mt-10 md:p-5">
           <Image
-            src="/como-funciona-movil.webp"
+            src="/como-funciona-movil-fit.webp"
             alt="La web de Mudanzas X en el móvil para pedir presupuesto de mudanza en Barcelona"
-            width={1024}
-            height={1024}
-            sizes="(min-width: 640px) 336px, 85vw"
+            width={839}
+            height={835}
+            sizes="(min-width: 640px) 352px, 85vw"
             loading="lazy"
             className="h-auto w-full"
           />
