@@ -1,9 +1,9 @@
 import { IconMap, IconClock, IconShield, IconShieldCheck } from "./SystemIcons";
 
 const DATOS = [
-  { Icon: IconMap, texto: "Cobertura nacional desde Barcelona" },
-  { Icon: IconClock, texto: "Operativa 24/7 · 365 días" },
-  { Icon: IconShield, texto: "Seguro de responsabilidad civil" },
+  { Icon: IconMap, texto: "Cobertura nacional" },
+  { Icon: IconClock, texto: "Operativa 365 días" },
+  { Icon: IconShield, texto: "Responsabilidad civil" },
   { Icon: IconShieldCheck, texto: "Mercancías aseguradas" },
 ];
 

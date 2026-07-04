@@ -163,6 +163,15 @@ export default function QuoteForm() {
 
         {/* Tarjeta contenedora del formulario. */}
         <div className="mt-8 rounded-2xl border border-black/10 bg-white p-5 shadow-[0_2px_20px_rgba(0,0,0,0.05)] sm:p-6 md:mt-10 md:p-8">
+          {/* Encabezado del formulario dentro de la tarjeta. */}
+          <div className="mb-5 md:mb-6">
+            <h3 className="text-xl font-medium tracking-tight text-black">
+              Te llamamos
+            </h3>
+            <p className="mt-1 text-[14px] leading-[1.5] text-black/60">
+              Déjanos tus datos y te preparamos el presupuesto.
+            </p>
+          </div>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
               {/* Origen */}
@@ -325,7 +334,7 @@ export default function QuoteForm() {
               disabled={enviando}
               className="mt-5 w-full rounded-full bg-black px-8 py-4 text-base font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-50"
             >
-              {enviando ? "Enviando…" : "Solicitar presupuesto"}
+              {enviando ? "Enviando…" : "Presupuesto"}
             </button>
           </form>
         </div>

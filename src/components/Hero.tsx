@@ -74,7 +74,7 @@ export default function Hero() {
             {/* Fila Destino */}
             <div className="grid h-14 grid-cols-[20px_1fr] items-center">
               <span className="flex items-center justify-center">
-                <span className="block h-2.5 w-2.5 bg-black" />
+                <span className="block h-2.5 w-2.5 rounded-full bg-black" />
               </span>
               <AddressAutocomplete
                 value={destino}
