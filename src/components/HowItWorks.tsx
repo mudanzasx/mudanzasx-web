@@ -35,22 +35,21 @@ export default function HowItWorks() {
           Cómo funciona
         </h2>
 
-        <div className="mt-12 grid grid-cols-1 items-center gap-10 md:mt-16 md:grid-cols-2 md:gap-16">
-          {/* Imagen: pídelo desde el móvil. */}
-          <div className="relative aspect-square w-full overflow-hidden rounded-2xl">
-            <Image
-              src="/app-movil-presupuesto.jpg"
-              alt="Persona pidiendo un presupuesto de mudanza desde la app de Mudanzas X en el móvil"
-              fill
-              sizes="(min-width: 768px) 560px, 100vw"
-              quality={90}
-              loading="lazy"
-              className="object-cover"
-            />
-          </div>
+        {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
+        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-6 md:mt-10 md:p-8">
+          <Image
+            src="/como-funciona-movil.webp"
+            alt="La web de Mudanzas X en el móvil para pedir presupuesto de mudanza en Barcelona"
+            width={1024}
+            height={1024}
+            sizes="(min-width: 640px) 336px, 85vw"
+            loading="lazy"
+            className="h-auto w-full"
+          />
+        </div>
 
-          {/* Pasos del proceso: secuencia encadenada con conector vertical. */}
-          <ol className="flex flex-col">
+        {/* Pasos del proceso: secuencia encadenada con conector vertical. */}
+        <ol className="mx-auto mt-12 flex max-w-[640px] flex-col md:mt-16">
             {PASOS.map((paso, i) => {
               const Icon = paso.Icon;
               const ultimo = i === PASOS.length - 1;
@@ -85,7 +84,6 @@ export default function HowItWorks() {
               );
             })}
           </ol>
-        </div>
       </div>
     </section>
   );

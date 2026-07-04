@@ -53,27 +53,21 @@ export default function Faq() {
           Preguntas frecuentes
         </h2>
 
-        <div className="mt-12 grid grid-cols-1 gap-10 md:mt-16 md:grid-cols-2 md:gap-16">
-          {/* Imagen: cuidado en el embalaje. En escritorio va a la derecha y se
-              queda fija mientras se recorre el listado; en móvil, arriba. */}
-          <div className="md:order-2">
-            <div className="md:sticky md:top-24">
-              <div className="relative aspect-square w-full overflow-hidden rounded-2xl">
-                <Image
-                  src="/embalaje-cuidado-mueble.jpg"
-                  alt="Operario de Mudanzas X protegiendo con film un mueble de madera antes de una mudanza en Barcelona"
-                  fill
-                  sizes="(min-width: 768px) 500px, 100vw"
-                  quality={90}
-                  loading="lazy"
-                  className="object-cover"
-                />
-              </div>
-            </div>
-          </div>
+        {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
+        <div className="mx-auto mt-8 max-w-sm rounded-2xl bg-gris p-6 md:mt-10 md:p-8">
+          <Image
+            src="/faq-operario.webp"
+            alt="Operario de Mudanzas X resolviendo dudas frecuentes sobre la mudanza"
+            width={1024}
+            height={1024}
+            sizes="(min-width: 640px) 336px, 85vw"
+            loading="lazy"
+            className="h-auto w-full"
+          />
+        </div>
 
-          {/* Acordeón de preguntas (contenido intacto). */}
-          <div className="md:order-1">
+        {/* Acordeón de preguntas (contenido intacto). */}
+        <div className="mx-auto mt-12 max-w-[760px] md:mt-16">
             <div className="border-t border-black/10">
               {PREGUNTAS.map((item, i) => {
                 const open = abierta === i;
@@ -113,7 +107,6 @@ export default function Faq() {
                 );
               })}
             </div>
-          </div>
         </div>
       </div>
     </section>
