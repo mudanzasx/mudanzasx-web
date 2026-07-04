@@ -63,10 +63,10 @@ export default function Servicios() {
 
         {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
         <SectionImage
-          src="/servicios-vivienda.webp"
-          alt="Vivienda moderna representando los servicios de mudanzas de Mudanzas X en Barcelona"
-          width={1020}
-          height={839}
+          src="/servicios.webp"
+          alt="Servicios de mudanzas de Mudanzas X en Barcelona"
+          width={1024}
+          height={1024}
         />
 
         <div className="mt-12 grid grid-cols-1 gap-x-12 gap-y-9 sm:grid-cols-2 md:mt-16 md:gap-y-11">

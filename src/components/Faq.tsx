@@ -55,10 +55,10 @@ export default function Faq() {
 
         {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
         <SectionImage
-          src="/faq-operario.webp"
+          src="/faqs.webp"
           alt="Operario de Mudanzas X resolviendo dudas frecuentes sobre la mudanza"
-          width={826}
-          height={1108}
+          width={1024}
+          height={1024}
         />
 
         {/* Acordeón de preguntas (contenido intacto). */}

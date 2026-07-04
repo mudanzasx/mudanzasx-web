@@ -22,13 +22,13 @@ export default function SectionImage({
   height: number;
 }) {
   return (
-    <div className="mx-auto mt-8 w-full max-w-[420px] md:mt-10">
+    <div className="mx-auto mt-8 w-full max-w-[480px] md:mt-10">
       <Image
         src={src}
         alt={alt}
         width={width}
         height={height}
-        sizes="(min-width: 468px) 420px, calc(100vw - 48px)"
+        sizes="(min-width: 528px) 480px, calc(100vw - 48px)"
         loading="lazy"
         className="h-auto w-full rounded-2xl"
       />
