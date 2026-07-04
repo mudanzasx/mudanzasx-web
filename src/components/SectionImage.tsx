@@ -3,13 +3,13 @@ import Image from "next/image";
 // Imagen destacada de sección: patrón único y reutilizable para las tres
 // secciones (Cómo funciona, FAQs, Servicios).
 //
-// Las WebP están recortadas (el sujeto llena el archivo), así que cada una tiene
-// su propia proporción. El marco gris NO es cuadrado: se adapta a la imagen.
+// Las WebP ya traen su propio fondo gris de marca (#F3F3F3) integrado, con el
+// sujeto centrado y margen uniforme. Por eso el contenedor NO añade otro fondo
+// ni padding (evita el doble marco/gris): solo aplica esquinas redondeadas a la
+// propia imagen y unifica el ancho.
 // - Mismo ancho máximo (420px), centrado; en móvil ocupa el ancho disponible.
-// - Fondo gris de marca (#F3F3F3), esquinas redondeadas.
-// - Padding interior uniforme y reducido (p-6) idéntico en las tres.
-// - La imagen rellena el ancho interior; el alto del cuadro sigue la proporción
-//   real de la imagen (width/height evitan el layout shift; sin deformar).
+// - La imagen rellena el ancho sin deformar; el alto sigue su proporción real
+//   (width/height evitan el layout shift).
 export default function SectionImage({
   src,
   alt,
@@ -22,15 +22,15 @@ export default function SectionImage({
   height: number;
 }) {
   return (
-    <div className="mx-auto mt-8 w-full max-w-[420px] rounded-2xl bg-gris p-6 md:mt-10">
+    <div className="mx-auto mt-8 w-full max-w-[420px] md:mt-10">
       <Image
         src={src}
         alt={alt}
         width={width}
         height={height}
-        sizes="(min-width: 468px) 372px, calc(100vw - 96px)"
+        sizes="(min-width: 468px) 420px, calc(100vw - 48px)"
         loading="lazy"
-        className="h-auto w-full object-contain"
+        className="h-auto w-full rounded-2xl"
       />
     </div>
   );
