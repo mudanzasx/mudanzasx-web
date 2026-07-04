@@ -27,7 +27,10 @@ const OG_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.mudanzasx.com"),
   title: {
-    default: "Mudanzas X · Mudanzas desde Barcelona a toda España",
+    // Home: título literal (el template no se aplica al `default`), keywords sin
+    // repetir la marca tres veces. Coherente con el contenido visible, que habla
+    // de "Barcelona" y "península" (Hero, FAQ, Servicios).
+    default: "Mudanzas en Barcelona a toda la península | Mudanzas X",
     template: "%s · Mudanzas X",
   },
   description: OG_DESCRIPTION,
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     locale: "es_ES",
     siteName: "Mudanzas X",
     url: "https://www.mudanzasx.com",
-    title: "Mudanzas X · Mudanzas desde Barcelona a toda España",
+    title: "Mudanzas en Barcelona a toda la península | Mudanzas X",
     description: OG_DESCRIPTION,
     images: [
       { url: "/og.png", width: 1200, height: 630, alt: "Mudanzas X" },
@@ -46,7 +49,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mudanzas X · Mudanzas desde Barcelona a toda España",
+    title: "Mudanzas en Barcelona a toda la península | Mudanzas X",
     description: OG_DESCRIPTION,
     images: ["/og.png"],
   },
