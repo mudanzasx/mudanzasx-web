@@ -13,6 +13,7 @@ import {
 } from "@/lib/leads";
 import EstadoPill from "@/components/admin/EstadoPill";
 import EditLeadForm, { type LeadInicial } from "./EditLeadForm";
+import PedirValoracionBoton from "./PedirValoracionBoton";
 import PresupuestoPanel, {
   type PresupuestoGuardado,
 } from "./PresupuestoPanel";
@@ -121,9 +122,15 @@ export default async function LeadDetailPage({
         </Link>
       </div>
 
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-medium">{textoODash(lead.nombre)}</h1>
         <EstadoPill estado={lead.estado_comercial} colorize />
+      </div>
+
+      {/* Acciones de cliente (email). La valoración es útil sobre todo con el
+          lead ya "Finalizado", pero está disponible en cualquier estado. */}
+      <div className="mb-8">
+        <PedirValoracionBoton leadId={lead.id} />
       </div>
 
       {pagoParam === "ok" && (

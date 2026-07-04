@@ -11,6 +11,7 @@ import PresupuestoForm, {
   type PresupuestoPayload,
 } from "./PresupuestoForm";
 import PagoPresupuesto from "./PagoPresupuesto";
+import EnviarResumenBoton from "./EnviarResumenBoton";
 import { type Pago } from "./pagoActions";
 
 export type PresupuestoGuardado = {
@@ -109,6 +110,9 @@ export default function PresupuestoPanel({
                 </button>
 
                 <div className="px-3 pb-3">
+                  <div className="mb-2">
+                    <EnviarResumenBoton presupuestoId={p.id} />
+                  </div>
                   <PagoPresupuesto
                     presupuestoId={p.id}
                     precioFinal={p.precio_final}
