@@ -31,14 +31,9 @@ export default function HowItWorks() {
   return (
     <section id="como-funciona" className="w-full border-t border-black/10">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
-        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-          <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
-            Cómo funciona
-          </h2>
-          <span className="text-xs font-medium uppercase tabular-nums tracking-[0.15em] text-black/40">
-            4 pasos · 01–04
-          </span>
-        </div>
+        <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
+          Cómo funciona
+        </h2>
 
         <div className="mt-12 grid grid-cols-1 items-center gap-10 md:mt-16 md:grid-cols-2 md:gap-16">
           {/* Imagen: pídelo desde el móvil. */}

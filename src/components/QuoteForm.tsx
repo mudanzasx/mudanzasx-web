@@ -157,21 +157,12 @@ export default function QuoteForm() {
       className="w-full border-t border-black/10 scroll-mt-24"
     >
       <div className="mx-auto max-w-[560px] px-6 py-14 md:py-24">
-        <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
-          Pide tu presupuesto
-        </h2>
-
         {/* Tarjeta contenedora del formulario. */}
-        <div className="mt-8 rounded-2xl border border-black/10 bg-white p-5 shadow-[0_2px_20px_rgba(0,0,0,0.05)] sm:p-6 md:mt-10 md:p-8">
-          {/* Encabezado del formulario dentro de la tarjeta. */}
-          <div className="mb-5 md:mb-6">
-            <h3 className="text-xl font-medium tracking-tight text-black">
-              Te llamamos
-            </h3>
-            <p className="mt-1 text-[14px] leading-[1.5] text-black/60">
-              Déjanos tus datos y te preparamos el presupuesto.
-            </p>
-          </div>
+        <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-[0_2px_20px_rgba(0,0,0,0.05)] sm:p-6 md:p-8">
+          {/* Título del formulario dentro de la tarjeta. */}
+          <h3 className="mb-5 text-xl font-medium tracking-tight text-black md:mb-6">
+            Te llamamos
+          </h3>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
               {/* Origen */}

@@ -43,8 +43,13 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Topbar />
-      <Header />
+      {/* Topbar + Header pegados arriba: acompañan al usuario en todo el scroll
+          como reclamo (descuento + CTA "Llamar"). Sticky conserva el hueco en el
+          flujo, así que el contenido no queda tapado ni salta el layout. */}
+      <div className="sticky top-0 z-50">
+        <Topbar />
+        <Header />
+      </div>
       <QuoteProvider>
         <main className="flex-1">
           <Hero />
