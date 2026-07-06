@@ -74,6 +74,10 @@ export default async function LeadDetailPage({
   // aquí basta con los totales.
   const ultimoPresupuesto = presupuestos[0] ?? null;
   const snapshot = ultimoPresupuesto?.detalle_objetos ?? null;
+  // Resumen de la operación (volúmenes, esfuerzo y duración). Presente en los
+  // snapshots v3+; en presupuestos antiguos se cae con elegancia a los datos
+  // sueltos del propio presupuesto.
+  const resumen = snapshot?.resumen ?? null;
   const totalObjetos =
     snapshot?.objetos?.reduce((s, o) => s + (o.cantidad || 0), 0) ?? null;
   const totalProductos =
@@ -179,9 +183,17 @@ export default async function LeadDetailPage({
             <Field label="Fecha deseada" value={formatFecha(lead.fecha_deseada)} />
             <Field label="Tamaño aproximado" value={textoODash(lead.tamano_aprox)} />
             <Field
-              label="Volumen estimado"
-              value={formatVolumen(lead.volumen_estimado_m3)}
+              label="Volumen objetos"
+              value={formatVolumen(
+                resumen?.volumen_neto_m3 ?? lead.volumen_estimado_m3
+              )}
             />
+            {resumen && (
+              <Field
+                label="Espacio en vehículo"
+                value={formatVolumen(resumen.volumen_real_ocupado_m3)}
+              />
+            )}
             <Field
               label="Precio aproximado"
               value={formatRangoPrecio(
@@ -189,7 +201,26 @@ export default async function LeadDetailPage({
                 lead.precio_aprox_max
               )}
             />
-            {ultimoPresupuesto && (
+            {resumen ? (
+              <>
+                <Field
+                  label="Trabajo estimado"
+                  value={`${resumen.horas_trabajo_persona.toLocaleString("es-ES", {
+                    maximumFractionDigits: 1,
+                  })} h-persona`}
+                />
+                <Field
+                  label="Duración estimada"
+                  value={`${resumen.duracion_total_h.toLocaleString("es-ES", {
+                    maximumFractionDigits: 1,
+                  })} h`}
+                />
+                <Field label="Vehículo" value={textoODash(resumen.vehiculo)} />
+                <Field label="Operarios" value={String(resumen.operarios)} />
+                <Field label="Días" value={String(resumen.dias)} />
+                <Field label="Inventario" value={resumenInventario} />
+              </>
+            ) : ultimoPresupuesto ? (
               <>
                 <Field
                   label="Horas estimadas"
@@ -217,7 +248,7 @@ export default async function LeadDetailPage({
                   <Field label="Inventario" value={resumenInventario} />
                 )}
               </>
-            )}
+            ) : null}
           </Section>
 
           <Section title="Origen del contacto">

@@ -32,11 +32,17 @@ export type ConfigPrecios = {
   // volumen neto de la carga ocupa más espacio del que suma. Ej. 0.8 = se
   // aprovecha el 80%, luego el espacio ocupado = volumen_neto / 0.8.
   factor_aprovechamiento_vehiculo: number;
+  // Eficiencia del trabajo en paralelo (0-1). El equipo no reparte el esfuerzo
+  // de forma perfecta (esperas, tareas a dos/tres manos), así que la duración
+  // real = horas-persona / (operarios × factor_paralelo). Ej. 0.8 = 80%.
+  factor_paralelo: number;
 };
 
-// Valor por defecto si config_precios aún no tiene la fila (evita romper el
-// cálculo antes del INSERT). 0.8 = se aprovecha el 80% del vehículo.
+// Valores por defecto si config_precios aún no tiene la fila (evitan romper el
+// cálculo antes del INSERT). 0.8 = se aprovecha el 80% del vehículo / del
+// trabajo en paralelo.
 export const FACTOR_APROVECHAMIENTO_DEFAULT = 0.8;
+export const FACTOR_PARALELO_DEFAULT = 0.8;
 
 export type VehiculoCalc = {
   tipo: string;
@@ -125,7 +131,13 @@ export type PresupuestoResultado = {
   horas_desmontaje: number;
   horas_montaje: number;
   horas_trayecto: number;
-  horas_totales: number;
+  horas_totales: number; // horas-persona sobre las que se paga el personal (sin cambios)
+  // Esfuerzo de manipulación (manejo + desmontaje + montaje), en horas-persona.
+  horas_trabajo_persona: number;
+  // Duración REAL de la mudanza (equipo en paralelo + trayecto + buffer).
+  duracion_trabajo_h: number; // solo la parte de manipulación, ya repartida
+  duracion_total_h: number; // manipulación repartida + trayecto + buffer
+  factor_paralelo: number;
   dias: number;
   km_ruta: number;
   km_totales: number;
@@ -265,8 +277,24 @@ export function calcularPresupuesto(
   else if (volumen_total <= config.umbral_operarios_3) operarios = 3;
   else operarios = 4;
 
-  // --- 5. Días ---
-  const dias = Math.max(1, Math.ceil(horas_totales / config.jornada_h));
+  // --- 5. Duración real de la mudanza y días de vehículo ---
+  // El equipo trabaja EN PARALELO: el esfuerzo de manipulación (horas-persona)
+  // se reparte entre los operarios con una eficiencia (factor_paralelo). El
+  // TRAYECTO no se paraleliza (lo conduce el camión una sola vez) ni el buffer.
+  //   duración_trabajo = horas-persona / (operarios × factor_paralelo)
+  //   duración_total   = duración_trabajo + trayecto + buffer
+  // OJO: el coste de personal NO usa esto; sigue sobre horas_totales (esfuerzo).
+  const horas_trabajo_persona = horas_manejo + horas_desmontaje + horas_montaje;
+  const fParalelo =
+    config.factor_paralelo && config.factor_paralelo > 0
+      ? config.factor_paralelo
+      : FACTOR_PARALELO_DEFAULT;
+  const duracion_trabajo = horas_trabajo_persona / (operarios * fParalelo);
+  const duracion_total =
+    duracion_trabajo + horas_trayecto + config.buffer_operativo_h;
+  // Los días de vehículo se cuentan sobre la DURACIÓN REAL, no sobre las
+  // horas-persona (que están infladas por el trabajo secuencial).
+  const dias = Math.max(1, Math.ceil(duracion_total / config.jornada_h));
 
   // --- 6. Líneas de coste ---
   const coste_vehiculo = vehiculo.tarifa_dia * dias * viajes;
@@ -334,6 +362,10 @@ export function calcularPresupuesto(
     horas_montaje,
     horas_trayecto,
     horas_totales,
+    horas_trabajo_persona,
+    duracion_trabajo_h: duracion_trabajo,
+    duracion_total_h: duracion_total,
+    factor_paralelo: fParalelo,
     dias,
     km_ruta,
     km_totales,

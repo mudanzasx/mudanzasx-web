@@ -6,6 +6,7 @@ import {
   calcularPresupuesto,
   round2,
   FACTOR_APROVECHAMIENTO_DEFAULT,
+  FACTOR_PARALELO_DEFAULT,
   type AccesosInput,
   type ConfigPrecios,
   type Interruptores,
@@ -121,6 +122,16 @@ async function leerConfig(
     factor !== undefined && Number.isFinite(factor) && factor > 0 && factor <= 1
       ? factor
       : FACTOR_APROVECHAMIENTO_DEFAULT;
+
+  // Factor de trabajo en paralelo: también OPCIONAL con valor por defecto.
+  const paralelo = mapa.get("factor_paralelo");
+  config.factor_paralelo =
+    paralelo !== undefined &&
+    Number.isFinite(paralelo) &&
+    paralelo > 0 &&
+    paralelo <= 1
+      ? paralelo
+      : FACTOR_PARALELO_DEFAULT;
 
   return { config };
 }
@@ -356,12 +367,23 @@ export async function guardarPresupuestoAction(
       ? input.fechaMudanza.trim()
       : null;
 
-  // Snapshot completo para reabrir el presupuesto (Cambio 6).
+  // Snapshot completo para reabrir el presupuesto (Cambio 6). Desde v3 incluye
+  // un `resumen` de la operación estimada (volúmenes, esfuerzo y duración) para
+  // mostrarlo de un vistazo en la ficha sin recalcular.
   const detalle_objetos = {
-    version: 2,
+    version: 3,
     objetos: calc.detalleObjetos,
     productos: calc.detalleProductos,
     accesos,
+    resumen: {
+      volumen_neto_m3: round2(r.volumen_total_m3),
+      volumen_real_ocupado_m3: round2(r.volumen_real_ocupado_m3),
+      horas_trabajo_persona: round2(r.horas_trabajo_persona),
+      duracion_total_h: round2(r.duracion_total_h),
+      dias: r.dias,
+      operarios: r.operarios,
+      vehiculo: r.viajes > 1 ? `${r.vehiculo} ×${r.viajes}` : r.vehiculo,
+    },
   };
 
   const fila = {

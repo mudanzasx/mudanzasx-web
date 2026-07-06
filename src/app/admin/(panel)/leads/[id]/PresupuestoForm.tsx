@@ -41,11 +41,23 @@ type ProdLineaUI = {
   cantidad: number;
 };
 
+export type ResumenPresupuesto = {
+  volumen_neto_m3: number;
+  volumen_real_ocupado_m3: number;
+  horas_trabajo_persona: number;
+  duracion_total_h: number;
+  dias: number;
+  operarios: number;
+  vehiculo: string;
+};
+
 export type PresupuestoPayload = {
   version: number;
   objetos: ObjetoLinea[];
   productos: ProductoLinea[];
   accesos: AccesosInput;
+  // Presente desde v3 (snapshots antiguos no lo traen).
+  resumen?: ResumenPresupuesto | null;
 };
 
 export type AccesosDefault = {
@@ -725,11 +737,12 @@ function Resultado({
         Volumen neto: objetos {num(r.volumen_objetos_m3, 2)} m³ + productos{" "}
         {num(r.volumen_productos_m3, 2)} m³ · Espacio en vehículo{" "}
         {num(r.volumen_real_ocupado_m3, 2)} m³ (aprov.{" "}
-        {num(r.factor_aprovechamiento_vehiculo * 100, 0)}%) · Horas{" "}
-        {num(r.horas_totales, 1)} h (manejo{" "}
-        {num(r.horas_manejo, 1)} · desmontaje {num(r.horas_desmontaje, 1)} · montaje{" "}
-        {num(r.horas_montaje, 1)} · trayecto {num(r.horas_trayecto, 1)} + buffer) ·{" "}
-        {num(r.km_totales, 0)} km
+        {num(r.factor_aprovechamiento_vehiculo * 100, 0)}%) · Trabajo{" "}
+        {num(r.horas_trabajo_persona, 1)} h-persona (manejo {num(r.horas_manejo, 1)}{" "}
+        · desmontaje {num(r.horas_desmontaje, 1)} · montaje {num(r.horas_montaje, 1)})
+        · Duración ~{num(r.duracion_total_h, 1)} h ({r.operarios} operarios en
+        paralelo al {num(r.factor_paralelo * 100, 0)}% + trayecto{" "}
+        {num(r.horas_trayecto, 1)} h) · {num(r.km_totales, 0)} km
       </p>
 
       <div className="mt-4 border-t border-black/10 pt-3">
