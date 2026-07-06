@@ -1,12 +1,12 @@
 import { Resend } from "resend";
 import {
-  SITE_URL,
   esc,
   emailLayout,
   emailBoton,
   panelResumen,
   filaResumen,
 } from "./emailLayout";
+import { TELEFONO } from "./config";
 
 // Remitente del correo. El dominio mudanzasx.com está verificado en Resend.
 export const EMAIL_FROM = "Mudanzas X <info@mudanzasx.com>";
@@ -147,34 +147,25 @@ export async function enviarEmailResumen(params: {
   }
 
   // Inventario resumido: total de objetos + material de embalaje (sin listar
-  // objeto por objeto). Los productos se desglosan brevemente (máx. 6).
-  const numProductos = d.productos.reduce((s, p) => s + p.cantidad, 0);
-  const partesInv: string[] = [];
-  if (d.numObjetos > 0)
-    partesInv.push(`${d.numObjetos} ${d.numObjetos === 1 ? "objeto" : "objetos"}`);
-  if (numProductos > 0)
-    partesInv.push(
-      `${numProductos} ${
-        numProductos === 1
-          ? "caja o bulto de embalaje"
-          : "cajas y material de embalaje"
-      }`
-    );
-  let inventarioHtml = "";
-  if (partesInv.length > 0) {
-    inventarioHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:#888888;">Inventario estimado</p>
-<p style="margin:5px 0 0;font-size:14px;line-height:1.7;color:#000000;">${esc(
-      partesInv.join(" · ")
-    )}</p>`;
-    if (d.productos.length > 0) {
-      const lista = d.productos
-        .slice(0, 6)
-        .map((p) => `${p.cantidad}× ${esc(p.nombre)}`)
-        .join(" · ");
-      const extra =
-        d.productos.length > 6 ? ` · +${d.productos.length - 6} más` : "";
-      inventarioHtml += `<p style="margin:4px 0 0;font-size:13px;line-height:1.6;color:#666666;">${lista}${extra}</p>`;
-    }
+  // objeto por objeto). Dos apartados diferenciados: lo que se mueve de casa
+  // del cliente (objetos) y lo que Mudanzas X le vende (productos).
+  let objetosHtml = "";
+  if (d.numObjetos > 0) {
+    const txt = `${d.numObjetos} ${d.numObjetos === 1 ? "objeto" : "objetos"}`;
+    objetosHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:#888888;">Objetos de la mudanza</p>
+<p style="margin:5px 0 0;font-size:14px;line-height:1.7;color:#000000;">${esc(txt)}</p>`;
+  }
+
+  let productosHtml = "";
+  if (d.productos.length > 0) {
+    const lista = d.productos
+      .slice(0, 8)
+      .map((p) => `${p.cantidad}× ${esc(p.nombre)}`)
+      .join(" · ");
+    const extra =
+      d.productos.length > 8 ? ` · +${d.productos.length - 8} más` : "";
+    productosHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:#888888;">Productos</p>
+<p style="margin:5px 0 0;font-size:14px;line-height:1.7;color:#000000;">${lista}${extra}</p>`;
   }
 
   const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">Hola ${nombre},</p>
@@ -189,10 +180,10 @@ ${panelResumen(filas)}
 </tr>
 </table>
 ${serviciosHtml}
-${inventarioHtml}
-<p style="margin:24px 0 0;font-size:13px;line-height:1.7;color:#666666;">Para confirmar la reserva, se abona el 50% del importe (o el 100% con un 5% de descuento); el resto se paga el día de la mudanza.</p>
-<p style="margin:16px 0 22px;font-size:15px;line-height:1.7;color:#333333;">¿Quieres reservar tu fecha? Responde a este correo o llámanos y lo dejamos todo listo.</p>
-${emailBoton(SITE_URL, "Visitar mudanzasx.com")}`;
+${objetosHtml}
+${productosHtml}
+<p style="margin:24px 0 22px;font-size:15px;line-height:1.7;color:#333333;">¿Quieres reservar tu fecha o tienes alguna duda? Llámanos y lo dejamos todo listo.</p>
+${emailBoton(`tel:${TELEFONO}`, "Llámanos")}`;
 
   const html = emailLayout({
     titulo: "Resumen de tu mudanza · Mudanzas X",
