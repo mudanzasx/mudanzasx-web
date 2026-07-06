@@ -14,10 +14,6 @@ const PREGUNTAS = [
     a: "Con datos reales: volumen de lo que mueves, distancia entre origen y destino, número de operarios y horas. No trabajamos con estimaciones a ojo.",
   },
   {
-    q: "¿Cómo sé cuánto me costará?",
-    a: "Nos dejas los datos de tu mudanza y te llamamos para conocer los detalles (volumen, planta, ascensor, acceso). Con eso cerramos un precio claro, sin sorpresas después.",
-  },
-  {
     q: "¿Qué necesito pagar para reservar?",
     a: "Primero cerramos tu presupuesto. Para reservar la fecha, pagas el 50% (o el 100% con un 5% de descuento). El resto se abona el día de la mudanza.",
   },
