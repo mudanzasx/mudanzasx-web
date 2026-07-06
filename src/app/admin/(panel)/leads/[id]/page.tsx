@@ -62,11 +62,33 @@ export default async function LeadDetailPage({
   const { data: presupuestosData } = await supabase
     .from("presupuestos")
     .select(
-      "id,creado_en,precio_final,vehiculo,operarios,estado,fecha_mudanza,detalle_objetos"
+      "id,creado_en,precio_final,vehiculo,operarios,horas,volumen_m3,estado,fecha_mudanza,detalle_objetos"
     )
     .eq("lead_id", id)
     .order("creado_en", { ascending: false });
   const presupuestos = (presupuestosData ?? []) as PresupuestoGuardado[];
+
+  // Resumen de la operación estimada: sale del presupuesto más reciente para
+  // mostrar de un vistazo horas, vehículo, operarios e inventario en "Detalles
+  // de la mudanza". El inventario completo vive en la operación del calendario;
+  // aquí basta con los totales.
+  const ultimoPresupuesto = presupuestos[0] ?? null;
+  const snapshot = ultimoPresupuesto?.detalle_objetos ?? null;
+  const totalObjetos =
+    snapshot?.objetos?.reduce((s, o) => s + (o.cantidad || 0), 0) ?? null;
+  const totalProductos =
+    snapshot?.productos?.reduce((s, p) => s + (p.cantidad || 0), 0) ?? null;
+  const resumenInventario =
+    [
+      totalObjetos != null
+        ? `${totalObjetos} ${totalObjetos === 1 ? "objeto" : "objetos"}`
+        : null,
+      totalProductos
+        ? `${totalProductos} ${totalProductos === 1 ? "producto" : "productos"}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(" · ") || "—";
 
   // Pagos de este cliente, mapeados por presupuesto.
   const { data: pagosData } = await supabase
@@ -167,6 +189,35 @@ export default async function LeadDetailPage({
                 lead.precio_aprox_max
               )}
             />
+            {ultimoPresupuesto && (
+              <>
+                <Field
+                  label="Horas estimadas"
+                  value={
+                    ultimoPresupuesto.horas != null
+                      ? `${ultimoPresupuesto.horas.toLocaleString("es-ES", {
+                          maximumFractionDigits: 1,
+                        })} h`
+                      : "—"
+                  }
+                />
+                <Field
+                  label="Vehículo"
+                  value={textoODash(ultimoPresupuesto.vehiculo)}
+                />
+                <Field
+                  label="Operarios"
+                  value={
+                    ultimoPresupuesto.operarios != null
+                      ? String(ultimoPresupuesto.operarios)
+                      : "—"
+                  }
+                />
+                {snapshot && (
+                  <Field label="Inventario" value={resumenInventario} />
+                )}
+              </>
+            )}
           </Section>
 
           <Section title="Origen del contacto">

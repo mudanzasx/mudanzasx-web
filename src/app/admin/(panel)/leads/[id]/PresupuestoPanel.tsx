@@ -20,6 +20,8 @@ export type PresupuestoGuardado = {
   precio_final: number | null;
   vehiculo: string | null;
   operarios: number | null;
+  horas: number | null;
+  volumen_m3: number | null;
   estado: string | null;
   fecha_mudanza: string | null;
   detalle_objetos: PresupuestoPayload | null;
