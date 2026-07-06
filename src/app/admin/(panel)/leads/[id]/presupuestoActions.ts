@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   calcularPresupuesto,
   round2,
+  FACTOR_APROVECHAMIENTO_DEFAULT,
   type AccesosInput,
   type ConfigPrecios,
   type Interruptores,
@@ -111,6 +112,16 @@ async function leerConfig(
   }
   if (faltan.length > 0)
     return { error: `Faltan parámetros en config_precios: ${faltan.join(", ")}.` };
+
+  // Aprovechamiento del vehículo: OPCIONAL. Si la fila aún no existe (o no es un
+  // valor válido en (0, 1]), se usa el valor por defecto para no romper el
+  // cálculo antes del INSERT en config_precios.
+  const factor = mapa.get("factor_aprovechamiento_vehiculo");
+  config.factor_aprovechamiento_vehiculo =
+    factor !== undefined && Number.isFinite(factor) && factor > 0 && factor <= 1
+      ? factor
+      : FACTOR_APROVECHAMIENTO_DEFAULT;
+
   return { config };
 }
 

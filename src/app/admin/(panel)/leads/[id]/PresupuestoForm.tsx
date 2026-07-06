@@ -722,8 +722,11 @@ function Resultado({
         <Dato label="Días" value={String(r.dias)} />
       </div>
       <p className="mt-2 text-xs text-black/50">
-        Volumen: objetos {num(r.volumen_objetos_m3, 2)} m³ + productos{" "}
-        {num(r.volumen_productos_m3, 2)} m³ · Horas {num(r.horas_totales, 1)} h (manejo{" "}
+        Volumen neto: objetos {num(r.volumen_objetos_m3, 2)} m³ + productos{" "}
+        {num(r.volumen_productos_m3, 2)} m³ · Espacio en vehículo{" "}
+        {num(r.volumen_real_ocupado_m3, 2)} m³ (aprov.{" "}
+        {num(r.factor_aprovechamiento_vehiculo * 100, 0)}%) · Horas{" "}
+        {num(r.horas_totales, 1)} h (manejo{" "}
         {num(r.horas_manejo, 1)} · desmontaje {num(r.horas_desmontaje, 1)} · montaje{" "}
         {num(r.horas_montaje, 1)} · trayecto {num(r.horas_trayecto, 1)} + buffer) ·{" "}
         {num(r.km_totales, 0)} km

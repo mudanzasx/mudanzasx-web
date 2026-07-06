@@ -27,7 +27,16 @@ export type ConfigPrecios = {
   metros_burbujas_por_m3: number;
   precio_burbujas_metro: number;
   coste_punto_limpio: number;
+  // Fracción del volumen del vehículo realmente aprovechable (0-1). En un camión
+  // real quedan huecos entre objetos, muebles irregulares y pasillos, así que el
+  // volumen neto de la carga ocupa más espacio del que suma. Ej. 0.8 = se
+  // aprovecha el 80%, luego el espacio ocupado = volumen_neto / 0.8.
+  factor_aprovechamiento_vehiculo: number;
 };
+
+// Valor por defecto si config_precios aún no tiene la fila (evita romper el
+// cálculo antes del INSERT). 0.8 = se aprovecha el 80% del vehículo.
+export const FACTOR_APROVECHAMIENTO_DEFAULT = 0.8;
 
 export type VehiculoCalc = {
   tipo: string;
@@ -102,9 +111,13 @@ export type AccesosInput = {
 };
 
 export type PresupuestoResultado = {
-  volumen_total_m3: number;
+  volumen_total_m3: number; // volumen NETO de la carga (objetos + productos)
   volumen_objetos_m3: number;
   volumen_productos_m3: number;
+  // Espacio realmente ocupado en el vehículo = volumen neto / aprovechamiento.
+  // Es el que decide vehículo y viajes; NO el neto.
+  volumen_real_ocupado_m3: number;
+  factor_aprovechamiento_vehiculo: number;
   vehiculo: string;
   viajes: number;
   operarios: number;
@@ -197,15 +210,29 @@ export function calcularPresupuesto(
     coste_productos += p.coste_unitario * cantidad;
   }
 
-  const volumen_total = volumen_objetos + volumen_productos;
+  const volumen_total = volumen_objetos + volumen_productos; // NETO
 
-  // --- 2. Vehículo y nº de viajes ---
+  // Espacio real ocupado en el vehículo: el volumen neto no se aprovecha al 100%
+  // (huecos, muebles irregulares, pasillos). Se infla dividiendo por el factor
+  // de aprovechamiento (ej. 0.8 → ×1.25). Este es el volumen que decide vehículo
+  // y viajes; el neto se sigue usando para manejo y operarios (dependen de los
+  // objetos reales, no del aire).
+  const factor =
+    config.factor_aprovechamiento_vehiculo &&
+    config.factor_aprovechamiento_vehiculo > 0
+      ? config.factor_aprovechamiento_vehiculo
+      : FACTOR_APROVECHAMIENTO_DEFAULT;
+  const volumen_real_ocupado = volumen_total / factor;
+
+  // --- 2. Vehículo y nº de viajes (sobre el volumen REAL ocupado) ---
   const usables = vehiculos.filter((v) => v.disponible !== false);
   const pool = usables.length > 0 ? usables : vehiculos;
   const porCapacidad = [...pool].sort(
     (a, b) => a.capacidad_util_m3 - b.capacidad_util_m3
   );
-  const cabe = porCapacidad.find((v) => v.capacidad_util_m3 >= volumen_total);
+  const cabe = porCapacidad.find(
+    (v) => v.capacidad_util_m3 >= volumen_real_ocupado
+  );
   let vehiculo: VehiculoCalc;
   let viajes: number;
   if (cabe) {
@@ -213,10 +240,13 @@ export function calcularPresupuesto(
     viajes = 1;
   } else {
     vehiculo = porCapacidad[porCapacidad.length - 1];
-    viajes = Math.max(1, Math.ceil(volumen_total / vehiculo.capacidad_util_m3));
+    viajes = Math.max(
+      1,
+      Math.ceil(volumen_real_ocupado / vehiculo.capacidad_util_m3)
+    );
   }
 
-  // --- 3. Horas ---
+  // --- 3. Horas (manejo sobre el volumen NETO: manipular depende de los objetos) ---
   const horas_manejo = volumen_total * config.factor_manejo_h_m3;
   const km_ruta =
     accesos.km_base_origen + accesos.km_origen_destino + accesos.km_destino_base;
@@ -294,6 +324,8 @@ export function calcularPresupuesto(
     volumen_total_m3: volumen_total,
     volumen_objetos_m3: volumen_objetos,
     volumen_productos_m3: volumen_productos,
+    volumen_real_ocupado_m3: volumen_real_ocupado,
+    factor_aprovechamiento_vehiculo: factor,
     vehiculo: vehiculo.tipo,
     viajes,
     operarios,
