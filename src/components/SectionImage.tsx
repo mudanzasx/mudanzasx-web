@@ -7,7 +7,12 @@ import Image from "next/image";
 // sujeto centrado y margen uniforme. Por eso el contenedor NO añade otro fondo
 // ni padding (evita el doble marco/gris): solo aplica esquinas redondeadas a la
 // propia imagen y unifica el ancho.
-// - Mismo ancho máximo (420px), centrado; en móvil ocupa el ancho disponible.
+//
+// Ahora vive dentro de una de las dos columnas de la sección (escritorio) o
+// apilada arriba del contenido (móvil). El componente solo se ocupa de la
+// imagen en sí (proporción, esquinas, tamaño contenido) y deja que la sección
+// decida su lado y alineación mediante el grid.
+// - Ancho contenido (máx. 440px), centrado dentro de su columna.
 // - La imagen rellena el ancho sin deformar; el alto sigue su proporción real
 //   (width/height evitan el layout shift).
 export default function SectionImage({
@@ -22,13 +27,13 @@ export default function SectionImage({
   height: number;
 }) {
   return (
-    <div className="mx-auto mt-8 w-full max-w-[480px] md:mt-10">
+    <div className="mx-auto w-full max-w-[440px]">
       <Image
         src={src}
         alt={alt}
         width={width}
         height={height}
-        sizes="(min-width: 528px) 480px, calc(100vw - 48px)"
+        sizes="(min-width: 768px) 440px, calc(100vw - 48px)"
         loading="lazy"
         className="h-auto w-full rounded-2xl"
       />

@@ -49,20 +49,25 @@ export default function Faq() {
   return (
     <section id="faq" className="w-full border-t border-black/10">
       <div className="mx-auto max-w-[1100px] px-6 py-14 md:py-24">
-        <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
-          Preguntas frecuentes
-        </h2>
+        {/* Escritorio: dos columnas (imagen a la izquierda, acordeón a la
+            derecha), alineadas verticalmente al centro. Móvil: se apilan con la
+            imagen arriba y las preguntas debajo. */}
+        <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-12 lg:gap-16">
+          {/* Imagen destacada (ya trae su fondo gris de marca integrado). */}
+          <SectionImage
+            src="/faqs.webp"
+            alt="Operario de Mudanzas X resolviendo dudas frecuentes sobre la mudanza"
+            width={1024}
+            height={1024}
+          />
 
-        {/* Imagen destacada (recortada sin fondo) sobre contenedor gris de marca. */}
-        <SectionImage
-          src="/faqs.webp"
-          alt="Operario de Mudanzas X resolviendo dudas frecuentes sobre la mudanza"
-          width={1024}
-          height={1024}
-        />
+          <div>
+            <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
+              Preguntas frecuentes
+            </h2>
 
-        {/* Acordeón de preguntas (contenido intacto). */}
-        <div className="mx-auto mt-12 max-w-[760px] md:mt-16">
+            {/* Acordeón de preguntas (contenido intacto). */}
+            <div className="mt-10 md:mt-12">
             <div className="border-t border-black/10">
               {PREGUNTAS.map((item, i) => {
                 const open = abierta === i;
@@ -102,6 +107,8 @@ export default function Faq() {
                 );
               })}
             </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
