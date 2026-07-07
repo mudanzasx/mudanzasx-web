@@ -1,10 +1,10 @@
 import SectionImage from "./SectionImage";
 
 const PASOS = [
-  { titulo: "Conectar" },
-  { titulo: "Presupuesto cerrado" },
+  { titulo: "Contacto" },
+  { titulo: "Presupuesto" },
   { titulo: "Reserva" },
-  { titulo: "Nueva vida" },
+  { titulo: "Vida nueva" },
 ];
 
 export default function HowItWorks() {
