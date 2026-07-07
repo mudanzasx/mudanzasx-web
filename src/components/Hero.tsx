@@ -34,10 +34,6 @@ export default function Hero() {
           <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black">
             Mudanzas desde Barcelona a cualquier punto de la península.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-[1.6] text-black/70">
-            Un sistema que calcula tu mudanza con datos reales: volumen,
-            distancia y equipo. Precio claro antes de reservar.
-          </p>
         </div>
 
         {/* Bloque Origen/Destino estilo Uber */}
