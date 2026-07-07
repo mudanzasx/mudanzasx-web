@@ -18,6 +18,16 @@ export default function LegalShell({
       <header className="w-full bg-black">
         <div className="mx-auto flex max-w-[1200px] items-center justify-center px-6 py-4">
           <Link href="/" aria-label="Mudanzas X — inicio" className="flex items-center">
+            {/* Móvil: solo el icono (la X en blanco). Escritorio: logo completo. */}
+            <Image
+              src="/icon-white.svg"
+              alt="Mudanzas X"
+              width={512}
+              height={512}
+              priority
+              unoptimized
+              className="h-7 w-auto md:hidden"
+            />
             <Image
               src="/logo-white.svg"
               alt="Mudanzas X"
@@ -25,7 +35,7 @@ export default function LegalShell({
               height={512}
               priority
               unoptimized
-              className="h-7 w-auto md:h-8"
+              className="hidden h-8 w-auto md:block"
             />
           </Link>
         </div>

@@ -21,15 +21,8 @@ export default function Header() {
         scrolled ? "border-b border-black/10" : "border-b border-transparent"
       }`}
     >
-      <div className="relative mx-auto flex max-w-[1200px] items-center justify-end px-6 py-4 md:justify-between">
-        {/* En móvil el icono se centra en el header (posición absoluta) y el
-            botón "Llamar" queda a la derecha; en escritorio vuelve al flujo
-            normal (logo a la izquierda, botón a la derecha). */}
-        <a
-          href="#top"
-          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center md:static md:translate-x-0 md:translate-y-0"
-          aria-label="Mudanzas X — inicio"
-        >
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
+        <a href="#top" className="flex items-center" aria-label="Mudanzas X — inicio">
           {/* Móvil: solo el icono (la X). Escritorio: logo completo. */}
           <Image
             src="/icon-black.svg"
