@@ -4,6 +4,13 @@ import { useState } from "react";
 import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
+import { IconMap, IconClock } from "./SystemIcons";
+
+// Puntos de confianza (antes en TrustBand): refuerzo discreto bajo el botón.
+const CONFIANZA = [
+  { Icon: IconMap, texto: "Cobertura nacional" },
+  { Icon: IconClock, texto: "Operativa 365 días" },
+];
 
 export default function Hero() {
   const { requestQuote } = useQuote();
@@ -28,7 +35,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="top" className="w-full border-b border-black/10 bg-gris">
+    <section id="top" className="w-full bg-gris">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
         <div className="max-w-3xl">
           <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black">
@@ -106,6 +113,18 @@ export default function Hero() {
           >
             Calcular presupuesto
           </button>
+
+          {/* Puntos de confianza (reubicados desde la antigua TrustBand). */}
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+            {CONFIANZA.map(({ Icon, texto }) => (
+              <span key={texto} className="flex items-center gap-2">
+                <Icon size={18} className="shrink-0 text-black" />
+                <span className="text-[13px] font-medium tracking-tight text-black/70">
+                  {texto}
+                </span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </section>
