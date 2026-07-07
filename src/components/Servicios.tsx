@@ -15,7 +15,7 @@ const SERVICIOS = [
 
 export default function Servicios() {
   return (
-    <section id="servicios" className="w-full border-t border-black/10">
+    <section id="servicios" className="w-full border-t border-black/10 bg-gris">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
         {/* Escritorio: dos columnas (imagen a la derecha, contenido a la
             izquierda) para alternar el ritmo respecto a las otras secciones.
@@ -45,7 +45,7 @@ export default function Servicios() {
               {SERVICIOS.map(({ Icon, nombre }) => (
                 <div
                   key={nombre}
-                  className="flex items-center gap-3.5 rounded-2xl bg-gris px-4 py-4"
+                  className="flex items-center gap-3.5 rounded-2xl bg-white px-4 py-4 shadow-sm ring-1 ring-black/5"
                 >
                   <Icon size={26} className="shrink-0 text-black" />
                   <h3 className="text-sm font-medium leading-snug tracking-tight text-black">
