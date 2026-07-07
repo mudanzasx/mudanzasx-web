@@ -2,29 +2,10 @@ import SectionImage from "./SectionImage";
 import { IconRoute, IconData, IconLock, IconTruck } from "./SystemIcons";
 
 const PASOS = [
-  {
-    Icon: IconRoute,
-    titulo: "Conectar",
-    texto:
-      "Nos dices desde dónde y hasta dónde. Te llamamos para conocer los detalles de tu mudanza.",
-  },
-  {
-    Icon: IconData,
-    titulo: "Presupuesto cerrado",
-    texto: "Con tu inventario y accesos, cerramos un precio claro, sin sorpresas.",
-  },
-  {
-    Icon: IconLock,
-    titulo: "Reserva",
-    texto:
-      "Reservas tu fecha con el 50%, o el total con un 5% de descuento. Pago seguro.",
-  },
-  {
-    Icon: IconTruck,
-    titulo: "Nueva vida",
-    texto:
-      "Nos encargamos de todo el día de la mudanza. Tú solo empiezas tu nueva vida.",
-  },
+  { Icon: IconRoute, titulo: "Conectar" },
+  { Icon: IconData, titulo: "Presupuesto cerrado" },
+  { Icon: IconLock, titulo: "Reserva" },
+  { Icon: IconTruck, titulo: "Nueva vida" },
 ];
 
 export default function HowItWorks() {
@@ -56,7 +37,7 @@ export default function HowItWorks() {
               return (
                 <li
                   key={paso.titulo}
-                  className={`relative flex gap-4 ${ultimo ? "" : "pb-8"}`}
+                  className={`relative flex gap-4 ${ultimo ? "" : "pb-6"}`}
                 >
                   {/* Conector hacia el siguiente paso (une el centro de los
                       círculos, mostrando la progresión). */}
@@ -76,9 +57,6 @@ export default function HowItWorks() {
                     <h3 className="mt-0.5 text-lg font-medium tracking-tight text-black">
                       {paso.titulo}
                     </h3>
-                    <p className="mt-1 text-[15px] leading-[1.6] text-black/70">
-                      {paso.texto}
-                    </p>
                   </div>
                 </li>
               );

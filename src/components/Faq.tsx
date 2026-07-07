@@ -18,16 +18,8 @@ const PREGUNTAS = [
     a: "Primero cerramos tu presupuesto. Para reservar la fecha, pagas el 50% (o el 100% con un 5% de descuento). El resto se abona el día de la mudanza.",
   },
   {
-    q: "¿Desmontáis y montáis los muebles?",
-    a: "Sí: desmontaje, embalaje, carga, transporte, descarga y montaje. También gestionamos permisos de estacionamiento si hacen falta.",
-  },
-  {
     q: "¿Trabajáis fines de semana o festivos?",
     a: "La operativa funciona 24 horas, 365 días al año. La atención comercial es de lunes a viernes de 9:00 a 21:00 y sábados de 9:00 a 17:00.",
-  },
-  {
-    q: "¿Estáis asegurados?",
-    a: "Sí. Tenemos seguro de responsabilidad civil y seguro de las mercancías transportadas y manipuladas.",
   },
   {
     q: "¿Cuánto tardáis en darme el presupuesto?",

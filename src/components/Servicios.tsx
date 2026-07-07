@@ -42,13 +42,14 @@ export default function Servicios() {
               Servicios
             </h2>
 
-            {/* Tarjetas compactas (icono + nombre) en cuadro gris de marca con
-                el mismo radio que la imagen de la sección (rounded-2xl). */}
-            <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:mt-12">
+            {/* Tarjetas horizontales (icono a la izquierda, nombre a la derecha)
+                en cuadro gris de marca con el mismo radio que la imagen de la
+                sección (rounded-2xl). */}
+            <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:mt-12">
               {SERVICIOS.map(({ Icon, nombre }) => (
                 <div
                   key={nombre}
-                  className="flex h-full flex-col items-center justify-center gap-2.5 rounded-2xl bg-gris px-4 py-6 text-center"
+                  className="flex items-center gap-3.5 rounded-2xl bg-gris px-4 py-4"
                 >
                   <Icon size={26} className="shrink-0 text-black" />
                   <h3 className="text-sm font-medium leading-snug tracking-tight text-black">
