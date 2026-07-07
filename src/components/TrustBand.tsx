@@ -1,16 +1,14 @@
-import { IconMap, IconClock, IconShield, IconShieldCheck } from "./SystemIcons";
+import { IconMap, IconClock } from "./SystemIcons";
 
 const DATOS = [
   { Icon: IconMap, texto: "Cobertura nacional" },
   { Icon: IconClock, texto: "Operativa 365 días" },
-  { Icon: IconShield, texto: "Responsabilidad civil" },
-  { Icon: IconShieldCheck, texto: "Mercancías aseguradas" },
 ];
 
 export default function TrustBand() {
   return (
     <section className="w-full bg-gris">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-2 gap-x-6 gap-y-5 px-6 py-6 md:grid-cols-4 md:gap-x-8">
+      <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-center gap-x-10 gap-y-4 px-6 py-6 md:gap-x-16">
         {DATOS.map(({ Icon, texto }) => (
           <div key={texto} className="flex items-center gap-3">
             <Icon size={22} className="shrink-0 text-black" />
