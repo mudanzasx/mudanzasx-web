@@ -1,11 +1,10 @@
 import SectionImage from "./SectionImage";
-import { IconRoute, IconData, IconLock, IconTruck } from "./SystemIcons";
 
 const PASOS = [
-  { Icon: IconRoute, titulo: "Conectar" },
-  { Icon: IconData, titulo: "Presupuesto cerrado" },
-  { Icon: IconLock, titulo: "Reserva" },
-  { Icon: IconTruck, titulo: "Nueva vida" },
+  { titulo: "Conectar" },
+  { titulo: "Presupuesto cerrado" },
+  { titulo: "Reserva" },
+  { titulo: "Nueva vida" },
 ];
 
 export default function HowItWorks() {
@@ -32,7 +31,6 @@ export default function HowItWorks() {
             {/* Pasos del proceso: secuencia encadenada con conector vertical. */}
             <ol className="mt-10 flex flex-col md:mt-12">
             {PASOS.map((paso, i) => {
-              const Icon = paso.Icon;
               const ultimo = i === PASOS.length - 1;
               return (
                 <li
@@ -48,7 +46,9 @@ export default function HowItWorks() {
                     />
                   )}
                   <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gris text-black">
-                    <Icon size={22} />
+                    <span className="text-base font-semibold tabular-nums">
+                      {i + 1}
+                    </span>
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-lg font-medium tracking-tight text-black">
