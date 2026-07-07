@@ -161,7 +161,7 @@ export default function QuoteForm() {
         {/* El formulario ocupa la sección directamente (sin tarjeta): inputs
             blancos sobre el fondo gris de la sección. */}
         <h3 className="mb-5 text-xl font-medium tracking-tight text-black md:mb-6">
-          Te llamamos
+          Diseñamos tu mudanza en una llamada de 10 minutos
         </h3>
         <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">

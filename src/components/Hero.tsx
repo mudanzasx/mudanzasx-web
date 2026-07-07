@@ -4,13 +4,10 @@ import { useState } from "react";
 import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
-import { IconMap, IconClock } from "./SystemIcons";
+import { IconClock } from "./SystemIcons";
 
-// Puntos de confianza (antes en TrustBand): refuerzo discreto bajo el botón.
-const CONFIANZA = [
-  { Icon: IconMap, texto: "Cobertura nacional" },
-  { Icon: IconClock, texto: "Operativa 365 días" },
-];
+// Punto de confianza: refuerzo discreto bajo el botón.
+const CONFIANZA = [{ Icon: IconClock, texto: "Operativa 365 días" }];
 
 export default function Hero() {
   const { requestQuote } = useQuote();
@@ -39,7 +36,7 @@ export default function Hero() {
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
         <div className="max-w-3xl">
           <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black">
-            Mudanzas desde Barcelona a cualquier punto de la península.
+            Mudanzas desde o hacia Barcelona
           </h1>
         </div>
 

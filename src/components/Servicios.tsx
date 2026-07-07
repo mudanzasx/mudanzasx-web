@@ -2,18 +2,14 @@ import SectionImage from "./SectionImage";
 import {
   IconBuilding,
   IconTools,
-  IconBox,
-  IconLoad,
   IconTruck,
   IconRecycle,
 } from "./SystemIcons";
 
 const SERVICIOS = [
   { Icon: IconBuilding, nombre: "Gestión de permisos municipales" },
-  { Icon: IconTools, nombre: "Montaje y desmontaje" },
-  { Icon: IconBox, nombre: "Protección y embalaje" },
-  { Icon: IconLoad, nombre: "Carga y descarga" },
-  { Icon: IconTruck, nombre: "Transporte" },
+  { Icon: IconTools, nombre: "Montaje, desmontaje y protección" },
+  { Icon: IconTruck, nombre: "Transporte, carga y descarga" },
   { Icon: IconRecycle, nombre: "Retirada a punto limpio" },
 ];
 
