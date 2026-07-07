@@ -154,7 +154,7 @@ export default function QuoteForm() {
     <section
       id="presupuesto"
       ref={sectionRef}
-      className="w-full border-t border-black/10 scroll-mt-24"
+      className="w-full border-t border-black/10 bg-gris scroll-mt-24"
     >
       <div className="mx-auto max-w-[560px] px-6 py-14 md:py-24">
         {/* Tarjeta contenedora del formulario. */}
