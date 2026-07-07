@@ -66,7 +66,7 @@ export default function HowItWorks() {
                       className="absolute bottom-0 left-[22px] top-11 w-px -translate-x-1/2 bg-black/15"
                     />
                   )}
-                  <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-black/15 bg-gris text-black">
+                  <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gris text-black">
                     <Icon size={22} />
                   </div>
                   <div className="min-w-0">
