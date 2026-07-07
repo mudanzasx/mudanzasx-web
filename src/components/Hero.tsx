@@ -28,7 +28,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="top" className="w-full">
+    <section id="top" className="w-full border-b border-black/10 bg-gris">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
         <div className="max-w-3xl">
           <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black">
@@ -38,7 +38,7 @@ export default function Hero() {
 
         {/* Bloque Origen/Destino estilo Uber */}
         <div className="mt-10 max-w-xl">
-          <div className="relative rounded-2xl bg-gris px-4 py-2 md:px-5">
+          <div className="relative rounded-2xl bg-white px-4 py-2 shadow-sm ring-1 ring-black/5 md:px-5">
             {/*
               Carril izquierdo de 20px (columna del grid). Cada fila mide 56px (h-14),
               así el centro del marcador de Origen queda a 8+28=36px y el de Destino a
