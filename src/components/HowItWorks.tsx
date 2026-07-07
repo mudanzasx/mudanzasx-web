@@ -37,7 +37,7 @@ export default function HowItWorks() {
               return (
                 <li
                   key={paso.titulo}
-                  className={`relative flex gap-4 ${ultimo ? "" : "pb-6"}`}
+                  className={`relative flex items-center gap-4 ${ultimo ? "" : "pb-6"}`}
                 >
                   {/* Conector hacia el siguiente paso (une el centro de los
                       círculos, mostrando la progresión). */}
@@ -51,10 +51,7 @@ export default function HowItWorks() {
                     <Icon size={22} />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-xs font-medium tabular-nums tracking-[0.15em] text-black/40">
-                      0{i + 1}
-                    </span>
-                    <h3 className="mt-0.5 text-lg font-medium tracking-tight text-black">
+                    <h3 className="text-lg font-medium tracking-tight text-black">
                       {paso.titulo}
                     </h3>
                   </div>

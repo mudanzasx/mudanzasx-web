@@ -12,9 +12,10 @@ import {
   AVISO_EMAIL,
 } from "@/lib/validaciones";
 
-// Campo base: gris muy claro, redondeado, borde que se marca al enfocar.
+// Campo base: fondo blanco sobre la sección gris, redondeado, con borde sutil
+// que se marca al enfocar (el formulario ya no vive dentro de una tarjeta).
 const fieldClass =
-  "w-full rounded-lg bg-gris px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+  "w-full rounded-lg bg-white px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-black/10 transition-colors duration-150 focus:border-black";
 const errorClass = "mt-1.5 text-[13px] font-medium";
 
 export default function QuoteForm() {
@@ -157,13 +158,12 @@ export default function QuoteForm() {
       className="w-full border-t border-black/10 bg-gris scroll-mt-24"
     >
       <div className="mx-auto max-w-[560px] px-6 py-14 md:py-24">
-        {/* Tarjeta contenedora del formulario. */}
-        <div className="rounded-2xl border border-black/10 bg-white p-5 shadow-[0_2px_20px_rgba(0,0,0,0.05)] sm:p-6 md:p-8">
-          {/* Título del formulario dentro de la tarjeta. */}
-          <h3 className="mb-5 text-xl font-medium tracking-tight text-black md:mb-6">
-            Te llamamos
-          </h3>
-          <form onSubmit={handleSubmit}>
+        {/* El formulario ocupa la sección directamente (sin tarjeta): inputs
+            blancos sobre el fondo gris de la sección. */}
+        <h3 className="mb-5 text-xl font-medium tracking-tight text-black md:mb-6">
+          Te llamamos
+        </h3>
+        <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
               {/* Origen */}
               <div>
@@ -225,7 +225,7 @@ export default function QuoteForm() {
               {/* Teléfono (con +34 fijo) + Email */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <div className="flex items-stretch overflow-hidden rounded-lg border border-transparent bg-gris transition-colors duration-150 focus-within:border-black">
+                  <div className="flex items-stretch overflow-hidden rounded-lg border border-black/10 bg-white transition-colors duration-150 focus-within:border-black">
                     <span className="flex select-none items-center border-r border-black/10 pl-4 pr-3 text-base text-black/50">
                       +34
                     </span>
@@ -328,7 +328,6 @@ export default function QuoteForm() {
               {enviando ? "Enviando…" : "Presupuesto"}
             </button>
           </form>
-        </div>
       </div>
     </section>
   );

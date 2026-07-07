@@ -23,6 +23,16 @@ export default function Header() {
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
         <a href="#top" className="flex items-center" aria-label="Mudanzas X — inicio">
+          {/* Móvil: solo el icono (la X). Escritorio: logo completo. */}
+          <Image
+            src="/icon-black.svg"
+            alt="Mudanzas X"
+            width={512}
+            height={512}
+            priority
+            unoptimized
+            className="h-7 w-auto md:hidden"
+          />
           <Image
             src="/logo-black.svg"
             alt="Mudanzas X"
@@ -30,7 +40,7 @@ export default function Header() {
             height={512}
             priority
             unoptimized
-            className="h-7 w-auto md:h-8"
+            className="hidden h-8 w-auto md:block"
           />
         </a>
         <a

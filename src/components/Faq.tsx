@@ -54,18 +54,18 @@ export default function Faq() {
               Preguntas frecuentes
             </h2>
 
-            {/* Acordeón de preguntas (contenido intacto). */}
-            <div className="mt-10 md:mt-12">
-            <div className="border-t border-black/10">
+            {/* Acordeón: cada pregunta en un cuadro gris de marca con el mismo
+                radio que la imagen de la sección (rounded-2xl). */}
+            <div className="mt-10 flex flex-col gap-3 md:mt-12">
               {PREGUNTAS.map((item, i) => {
                 const open = abierta === i;
                 return (
-                  <div key={item.q} className="border-b border-black/10">
+                  <div key={item.q} className="rounded-2xl bg-gris">
                     <button
                       type="button"
                       onClick={() => setAbierta(open ? null : i)}
                       aria-expanded={open}
-                      className="flex w-full items-center justify-between gap-6 py-5 text-left"
+                      className="flex w-full items-center justify-between gap-6 px-5 py-4 text-left"
                     >
                       <span className="text-base font-medium tracking-tight text-black md:text-lg">
                         {item.q}
@@ -86,7 +86,7 @@ export default function Faq() {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <p className="pb-5 pr-8 text-[15px] leading-[1.6] text-black/70">
+                        <p className="px-5 pb-5 text-[15px] leading-[1.6] text-black/70">
                           {item.a}
                         </p>
                       </div>
@@ -94,7 +94,6 @@ export default function Faq() {
                   </div>
                 );
               })}
-            </div>
             </div>
           </div>
         </div>
