@@ -365,7 +365,12 @@ export default function PresupuestoForm({
       : 0;
   const ajuste = useMemo(() => {
     if (!resultado) return null;
-    return margenAjustado(n(precioAjustado), resultado.coste_base, ivaRate);
+    return margenAjustado(
+      n(precioAjustado),
+      resultado.coste_base,
+      ivaRate,
+      resultado.cargo_punto_limpio
+    );
   }, [precioAjustado, resultado, ivaRate]);
 
   const porSala = useMemo(() => {
@@ -745,6 +750,9 @@ function Resultado({
         {num(r.horas_trayecto, 1)} h) · {num(r.km_totales, 0)} km
       </p>
 
+      {/* Cada línea se redondea por separado para mostrarla; el total es el
+          precio_final real (lo que se cobra), por lo que la suma visual de las
+          líneas puede diferir ±0,01. Es cosmético: el importe cobrado manda. */}
       <div className="mt-4 border-t border-black/10 pt-3">
         <Linea label="Vehículo" value={formatPrecio(round2(r.coste_vehiculo))} />
         <Linea label="Distancia" value={formatPrecio(round2(r.coste_distancia))} />

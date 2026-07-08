@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   calcularPresupuesto,
+  margenAjustado,
   round2,
   FACTOR_APROVECHAMIENTO_DEFAULT,
   FACTOR_PARALELO_DEFAULT,
@@ -133,6 +134,18 @@ async function leerConfig(
       ? paralelo
       : FACTOR_PARALELO_DEFAULT;
 
+  // Divisores que DEBEN ser > 0: si una fila mal editada los deja en 0, el motor
+  // produciría Infinity (horas de trayecto o días). Se rechaza con error claro.
+  const divisores: (keyof ConfigPrecios)[] = ["velocidad_media_kmh", "jornada_h"];
+  const noPositivos = divisores.filter((k) => !(config[k] > 0));
+  if (noPositivos.length > 0)
+    return { error: `Parámetros que deben ser mayores que 0 en config_precios: ${noPositivos.join(", ")}.` };
+
+  // Margen e IVA nunca negativos: una fila mal editada no debe vender bajo coste
+  // ni restar impuestos.
+  config.margen = Math.max(0, config.margen);
+  config.iva = Math.max(0, config.iva);
+
   return { config };
 }
 
@@ -146,16 +159,21 @@ async function leerVehiculos(
     );
   if (error || !data || data.length === 0)
     return { error: "No se pudieron leer los vehículos." };
-  return {
-    vehiculos: data.map((v) => ({
+  // Solo vehículos con capacidad > 0: una capacidad 0 provocaría Infinity al
+  // calcular los viajes.
+  const vehiculos = data
+    .map((v) => ({
       tipo: String(v.tipo),
       capacidad_util_m3: aNumero(v.capacidad_util_m3),
       tarifa_dia: aNumero(v.tarifa_dia),
       precio_km_extra: aNumero(v.precio_km_extra),
       precio_km_combustible: aNumero(v.precio_km_combustible),
       disponible: v.disponible,
-    })),
-  };
+    }))
+    .filter((v) => v.capacidad_util_m3 > 0);
+  if (vehiculos.length === 0)
+    return { error: "No hay vehículos con capacidad válida (> 0)." };
+  return { vehiculos };
 }
 
 // Re-lee objetos por id (autoridad del servidor sobre volúmenes/atributos).
@@ -359,6 +377,22 @@ export async function guardarPresupuestoAction(
   const precio_final = round2(ajustado ?? r.precio_final);
   const volumen_m3 = round2(r.volumen_total_m3);
 
+  // Desglose que se guarda: debe cuadrar SIEMPRE con el precio_final real.
+  //   coste_base + margen + cargo_punto_limpio + iva = precio_final
+  // (el punto limpio es un pass-through fijo sin columna propia, igual que en el
+  // cálculo automático). Si el operario ajusta el precio a mano, el coste base es
+  // el real (no cambia al negociar) y se recalculan margen e IVA para ese precio;
+  // si no, se usan los del motor.
+  let costeBaseGuardado = r.coste_base;
+  let margenGuardado = r.margen_eur;
+  let ivaGuardado = r.iva_eur;
+  if (ajustado != null) {
+    const ivaRate = r.subtotal_pre_iva > 0 ? r.iva_eur / r.subtotal_pre_iva : 0;
+    const m = margenAjustado(ajustado, r.coste_base, ivaRate, r.cargo_punto_limpio);
+    margenGuardado = m.margen_eur;
+    ivaGuardado = m.iva_eur;
+  }
+
   // Fecha de la mudanza: opcional. Se normaliza a null si viene vacía o no es
   // una fecha ISO (YYYY-MM-DD) válida, para no meter basura en la columna date.
   const fechaMudanza =
@@ -394,13 +428,13 @@ export async function guardarPresupuestoAction(
     vehiculo: r.viajes > 1 ? `${r.vehiculo} ×${r.viajes}` : r.vehiculo,
     operarios: r.operarios,
     horas: round2(r.horas_totales),
-    coste_base: round2(r.coste_base),
+    coste_base: round2(costeBaseGuardado),
     coste_distancia: round2(r.coste_distancia),
     coste_personal: round2(r.coste_personal),
     coste_embalaje: round2(r.coste_embalaje),
     coste_extras: round2(r.coste_extras),
-    margen: round2(r.margen_eur),
-    iva: round2(r.iva_eur),
+    margen: round2(margenGuardado),
+    iva: round2(ivaGuardado),
     precio_final,
   };
 

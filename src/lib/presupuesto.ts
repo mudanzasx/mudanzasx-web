@@ -131,7 +131,7 @@ export type PresupuestoResultado = {
   horas_desmontaje: number;
   horas_montaje: number;
   horas_trayecto: number;
-  horas_totales: number; // horas-persona sobre las que se paga el personal (sin cambios)
+  horas_totales: number; // esfuerzo total en horas-persona (informativo; el personal se cobra por duración real)
   // Esfuerzo de manipulación (manejo + desmontaje + montaje), en horas-persona.
   horas_trabajo_persona: number;
   // Duración REAL de la mudanza (equipo en paralelo + trayecto + buffer).
@@ -283,7 +283,8 @@ export function calcularPresupuesto(
   // TRAYECTO no se paraleliza (lo conduce el camión una sola vez) ni el buffer.
   //   duración_trabajo = horas-persona / (operarios × factor_paralelo)
   //   duración_total   = duración_trabajo + trayecto + buffer
-  // OJO: el coste de personal NO usa esto; sigue sobre horas_totales (esfuerzo).
+  // El coste de personal se paga sobre ESTA duración real (el equipo cobra por el
+  // tiempo que está fuera de la base), no sobre las horas-persona.
   const horas_trabajo_persona = horas_manejo + horas_desmontaje + horas_montaje;
   const fParalelo =
     config.factor_paralelo && config.factor_paralelo > 0
@@ -297,14 +298,22 @@ export function calcularPresupuesto(
   const dias = Math.max(1, Math.ceil(duracion_total / config.jornada_h));
 
   // --- 6. Líneas de coste ---
-  const coste_vehiculo = vehiculo.tarifa_dia * dias * viajes;
+  // Vehículo = tarifa por DÍA de alquiler (sin × viajes). Un mismo camión que hace
+  // varios viajes el mismo día es un día de alquiler; el sobrecoste de más viajes
+  // ya está en la distancia (combustible/km × viajes) y, si alargan la operación,
+  // en los días.
+  const coste_vehiculo = vehiculo.tarifa_dia * dias;
 
   const km_extra = Math.max(0, km_totales - config.km_incluidos_dia * dias);
   const coste_distancia =
     km_extra * vehiculo.precio_km_extra +
     km_totales * vehiculo.precio_km_combustible;
 
-  const coste_personal = COSTE_PERSONAL_HORA * operarios * horas_totales;
+  // Personal = coste/hora × operarios × DURACIÓN REAL de la operación (todos los
+  // operarios cobran por todas las horas de reloj que dura la mudanza). NO se usan
+  // las horas-persona: multiplicar el esfuerzo repartido otra vez por operarios lo
+  // contaría doble y encarecería el presupuesto al añadir gente.
+  const coste_personal = COSTE_PERSONAL_HORA * operarios * duracion_total;
 
   const plantas_origen = plantasSinAscensor(
     accesos.origen_planta,
@@ -390,8 +399,9 @@ export function calcularPresupuesto(
 
 // --- Ajuste manual: márgenes derivados de un precio final editado a mano ---
 export type MargenAjustado = {
-  subtotal_ajustado: number; // sin IVA
-  margen_eur: number;
+  subtotal_ajustado: number; // sin IVA (incluye el punto limpio, que va sin margen)
+  iva_eur: number; // IVA correspondiente al precio ajustado
+  margen_eur: number; // beneficio real: subtotal sin IVA, sin punto limpio, menos el coste
   margen_pct: number;
   bajo_minimo: boolean; // margen < 10%
   bajo_coste: boolean; // vende por debajo de coste (pérdidas)
@@ -400,17 +410,23 @@ export type MargenAjustado = {
 export function margenAjustado(
   precioFinalAjustado: number,
   costeBase: number,
-  iva: number
+  iva: number,
+  cargoPuntoLimpio = 0
 ): MargenAjustado {
   const subtotal_ajustado = precioFinalAjustado / (1 + iva);
-  const margen_eur = subtotal_ajustado - costeBase;
+  const iva_eur = precioFinalAjustado - subtotal_ajustado;
+  // El punto limpio es un cargo fijo a precio de coste (sin margen): se descuenta
+  // del subtotal antes de medir el beneficio real, para no inflar el margen.
+  const subtotal_con_margen = subtotal_ajustado - cargoPuntoLimpio;
+  const margen_eur = subtotal_con_margen - costeBase;
   const margen_pct = costeBase > 0 ? (margen_eur / costeBase) * 100 : 0;
   return {
     subtotal_ajustado,
+    iva_eur,
     margen_eur,
     margen_pct,
     bajo_minimo: margen_pct < 10,
-    bajo_coste: subtotal_ajustado < costeBase,
+    bajo_coste: subtotal_con_margen < costeBase,
   };
 }
 
