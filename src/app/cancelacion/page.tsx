@@ -5,6 +5,7 @@ import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Condiciones de cancelación y cambios",
+  alternates: { canonical: "/cancelacion" },
   description:
     "Condiciones de cancelación de la mudanza, cambio de fecha, plazos de reembolso y derecho de desistimiento en Mudanzas X.",
 };

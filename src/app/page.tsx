@@ -8,6 +8,7 @@ import QuoteForm from "@/components/QuoteForm";
 import Footer from "@/components/Footer";
 import { QuoteProvider } from "@/components/QuoteContext";
 import { EMPRESA, TELEFONO } from "@/lib/config";
+import { PREGUNTAS } from "@/lib/faq";
 
 // Datos estructurados (JSON-LD) de la empresa para buscadores. Solo datos
 // reales; sin valoraciones ni precios inventados. La imagen es la del camión.
@@ -21,6 +22,7 @@ const jsonLd = {
   telephone: TELEFONO,
   email: EMPRESA.email,
   image: "https://www.mudanzasx.com/embalaje-cuidado-mueble.jpg",
+  priceRange: "€€",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Calle Unió, 15",
@@ -33,6 +35,41 @@ const jsonLd = {
     { "@type": "City", name: "Barcelona" },
     { "@type": "Country", name: "España" },
   ],
+  // Perfiles sociales reales (coinciden con los del footer).
+  sameAs: [
+    "https://facebook.com/mudanzasxai",
+    "https://instagram.com/mudanzasx_ai",
+    "https://tiktok.com/@mudanzasx_ai",
+    "https://youtube.com/@mudanzasx_ai",
+    "https://x.com/mudanzasx_ai",
+  ],
+  // Horario de atención comercial (el mismo del footer).
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "09:00",
+      closes: "21:00",
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: "Saturday",
+      opens: "09:00",
+      closes: "17:00",
+    },
+  ],
+};
+
+// FAQPage generado a partir de las MISMAS preguntas visibles en la web (Faq.tsx),
+// para que el rich result coincida exactamente con el contenido.
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: PREGUNTAS.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
 };
 
 export default function Home() {
@@ -41,6 +78,10 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
       {/* Topbar + Header pegados arriba: acompañan al usuario en todo el scroll
           como reclamo (descuento + CTA "Llamar"). Sticky conserva el hueco en el

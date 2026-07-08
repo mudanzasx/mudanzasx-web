@@ -6,6 +6,7 @@ import { EMPRESA } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Política de cookies",
+  alternates: { canonical: "/cookies" },
   description:
     "Qué cookies usa Mudanzas X (técnicas, analíticas y de marketing), para qué sirven y cómo aceptarlas, rechazarlas o configurarlas.",
 };

@@ -5,6 +5,7 @@ import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Política de privacidad",
+  alternates: { canonical: "/privacidad" },
   description:
     "Cómo trata Mudanzas X tus datos personales: responsable, finalidades, base jurídica, conservación, encargados, derechos y reclamación ante la AEPD.",
 };

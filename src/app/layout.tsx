@@ -44,7 +44,12 @@ export const metadata: Metadata = {
     title: "Mudanzas en Barcelona a toda la península | Mudanzas X",
     description: OG_DESCRIPTION,
     images: [
-      { url: "/og.png", width: 1200, height: 630, alt: "Mudanzas X" },
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Mudanzas X - mudanzas desde y hacia Barcelona",
+      },
     ],
   },
   twitter: {

@@ -5,6 +5,7 @@ import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Condiciones del servicio",
+  alternates: { canonical: "/condiciones" },
   description:
     "Condiciones generales de contratación del servicio de mudanzas de Mudanzas X: presupuesto, reserva y pago, obligaciones de las partes, seguros y responsabilidad.",
 };

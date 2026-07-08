@@ -5,6 +5,7 @@ import { EMPRESA, TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Aviso legal",
+  alternates: { canonical: "/aviso-legal" },
   description:
     "Datos identificativos del titular, condiciones de uso, propiedad intelectual y legislación aplicable del sitio web de Mudanzas X.",
 };
