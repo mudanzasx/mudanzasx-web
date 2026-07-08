@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { esEstadoComercial } from "@/lib/leads";
 
 export type GuardarLeadResult =
@@ -34,11 +34,7 @@ export async function guardarLead(
   id: string,
   input: GuardarLeadInput
 ): Promise<GuardarLeadResult> {
-  const supabase = await createSupabaseServerClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) {
     return { ok: false, error: "Sesión no válida. Vuelve a iniciar sesión." };
   }

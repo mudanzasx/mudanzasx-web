@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { esEstadoOperativo } from "@/lib/operaciones";
 
 export type GuardarOperacionResult =
@@ -27,11 +27,7 @@ export async function guardarOperacion(
   id: string,
   input: GuardarOperacionInput
 ): Promise<GuardarOperacionResult> {
-  const supabase = await createSupabaseServerClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) {
     return { ok: false, error: "Sesión no válida. Vuelve a iniciar sesión." };
   }

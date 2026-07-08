@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { getStripe } from "@/lib/stripe";
 import { round2 } from "@/lib/presupuesto";
 import { formatPrecio } from "@/lib/leads";
@@ -42,15 +42,12 @@ function calcularImportes(precioFinal: number, tipo: TipoCobro) {
   };
 }
 
-async function requireUser() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
-
+// URL base de confianza para las redirecciones de Stripe (success/cancel). Se
+// usa NEXT_PUBLIC_SITE_URL (fijada por nosotros); el header Host es manipulable,
+// así que solo se usa como fallback en desarrollo/preview si falta la variable.
 async function origen(): Promise<string> {
+  const desdeEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/+$/, "");
+  if (desdeEnv) return desdeEnv;
   const h = await headers();
   const host = h.get("host") ?? "localhost:3000";
   const proto =
@@ -65,7 +62,7 @@ export async function crearEnlacePago(
   presupuestoId: string,
   tipo: TipoCobro
 ): Promise<CrearEnlaceResult> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return { ok: false, error: "Sesión no válida." };
   if (tipo !== "reserva50" && tipo !== "total")
     return { ok: false, error: "Tipo de cobro no válido." };
@@ -192,7 +189,7 @@ export async function crearEnlacePago(
 export async function crearEnlaceResto(
   presupuestoId: string
 ): Promise<CrearEnlaceResult> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return { ok: false, error: "Sesión no válida." };
 
   const { data: presu, error: ePresu } = await supabase
@@ -296,7 +293,7 @@ export async function enviarEnlacePago(
   presupuestoId: string,
   tipo: TipoCobroEmail
 ): Promise<EnviarEmailPagoResult> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return { ok: false, error: "Sesión no válida." };
 
   const { data: presu } = await supabase

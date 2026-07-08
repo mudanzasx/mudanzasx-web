@@ -1,6 +1,6 @@
 "use server";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { formatFecha, formatPrecio, formatVolumen, textoODash } from "@/lib/leads";
 import {
   enviarEmailResumen,
@@ -11,14 +11,6 @@ import {
 export type EnviarResult =
   | { ok: true; email: string }
   | { ok: false; error: string };
-
-async function requireUser() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
 
 // Estructura mínima del snapshot jsonb del presupuesto (solo lo que necesitamos).
 type DetalleSnapshot = {
@@ -49,7 +41,7 @@ function textoDuracion(horas: unknown): string | null {
 export async function enviarResumenPresupuesto(
   presupuestoId: string
 ): Promise<EnviarResult> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return { ok: false, error: "Sesión no válida." };
 
   const { data: presu } = await supabase
@@ -129,7 +121,7 @@ export async function enviarResumenPresupuesto(
 
 // Envía al cliente la petición de valoración (reseña de Google). Comprueba email.
 export async function pedirValoracion(leadId: string): Promise<EnviarResult> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return { ok: false, error: "Sesión no válida." };
 
   const { data: lead } = await supabase

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import {
   calcularPresupuesto,
   margenAjustado,
@@ -82,14 +83,6 @@ const CLAVES_CONFIG: (keyof ConfigPrecios)[] = [
 
 function aNumero(valor: unknown): number {
   return Number(String(valor ?? "").replace(",", "."));
-}
-
-async function requireUser() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
 }
 
 type SupabaseServer = Awaited<ReturnType<typeof createSupabaseServerClient>>;
@@ -262,7 +255,7 @@ function normalizarAccesos(a: AccesosInput): AccesosInput {
 // --- Buscadores ---
 
 export async function buscarObjetos(query: string): Promise<ObjetoBusqueda[]> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return [];
   const term = (query ?? "").trim();
   let q = supabase
@@ -288,7 +281,7 @@ export async function buscarObjetos(query: string): Promise<ObjetoBusqueda[]> {
 }
 
 export async function buscarProductos(query: string): Promise<ProductoBusqueda[]> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return [];
   const term = (query ?? "").trim();
   let q = supabase
@@ -349,7 +342,7 @@ async function calcularInterno(
 export async function calcularPresupuestoAction(
   input: CalcularInput
 ): Promise<CalcularResultado> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return { ok: false, error: "Sesión no válida." };
   return calcularInterno(supabase, input);
 }
@@ -359,7 +352,7 @@ export async function calcularPresupuestoAction(
 export async function guardarPresupuestoAction(
   input: GuardarInput
 ): Promise<GuardarResultado> {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) return { ok: false, error: "Sesión no válida." };
 
   // Recalcula en el servidor: nunca se confía en números del cliente.

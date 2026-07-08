@@ -15,7 +15,61 @@ function asString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
+// --- Rate limiting por IP (mitigación básica anti-spam) ---
+// Ventana deslizante en memoria: máx. MAX_POR_VENTANA envíos por IP cada
+// VENTANA_MS. AVISO: la memoria NO se comparte entre instancias serverless (cada
+// lambda tiene la suya) ni sobrevive a un cold start, así que esto es solo una
+// primera barrera. La protección real será Cloudflare Turnstile (ver TODO abajo)
+// + rate-limit en el edge de Cloudflare.
+const VENTANA_MS = 10 * 60 * 1000; // 10 minutos
+const MAX_POR_VENTANA = 5;
+const accesosPorIp = new Map<string, number[]>();
+
+function ipDe(request: Request): string {
+  const xff = request.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0]!.trim();
+  return request.headers.get("x-real-ip")?.trim() || "desconocida";
+}
+
+// Registra el intento y devuelve true si la IP ha superado el límite. De paso
+// purga entradas caducadas para que el Map no crezca sin control.
+function superaLimite(ip: string): boolean {
+  const ahora = Date.now();
+  if (accesosPorIp.size > 5000) {
+    for (const [k, ts] of accesosPorIp) {
+      const vivos = ts.filter((t) => ahora - t < VENTANA_MS);
+      if (vivos.length === 0) accesosPorIp.delete(k);
+      else accesosPorIp.set(k, vivos);
+    }
+  }
+  const recientes = (accesosPorIp.get(ip) ?? []).filter(
+    (t) => ahora - t < VENTANA_MS
+  );
+  if (recientes.length >= MAX_POR_VENTANA) {
+    accesosPorIp.set(ip, recientes);
+    return true;
+  }
+  recientes.push(ahora);
+  accesosPorIp.set(ip, recientes);
+  return false;
+}
+
 export async function POST(request: Request) {
+  // Rate limit: antes de leer el cuerpo, para cortar floods barato.
+  if (superaLimite(ipDe(request))) {
+    return NextResponse.json(
+      { error: "Demasiadas solicitudes. Inténtalo de nuevo en unos minutos." },
+      { status: 429 }
+    );
+  }
+
+  // TODO(Cloudflare Turnstile): cuando se despliegue Cloudflare, verificar aquí
+  // el token del captcha ANTES de continuar. El cliente enviará `body.turnstileToken`
+  // y se validará contra https://challenges.cloudflare.com/turnstile/v0/siteverify
+  // con TURNSTILE_SECRET_KEY (variable de entorno server-only). Si el token falta
+  // o no es válido -> responder 400 sin crear el lead. De momento la protección
+  // es el rate-limit por IP de arriba.
+
   let body: LeadPayload;
   try {
     body = await request.json();

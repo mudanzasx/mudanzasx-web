@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { esEstadoComercial } from "@/lib/leads";
 import {
   esTelefonoEsValido,
@@ -43,11 +43,7 @@ function texto(v: string): string | null {
 export async function crearLead(
   input: CrearLeadInput
 ): Promise<CrearLeadResult> {
-  const supabase = await createSupabaseServerClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await requireAdmin();
   if (!user) {
     return { ok: false, error: "Sesión no válida. Vuelve a iniciar sesión." };
   }
