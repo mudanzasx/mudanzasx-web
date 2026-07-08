@@ -174,6 +174,10 @@ export default async function CalendarioPage({
         </div>
       )}
 
+      {/* En móvil el calendario se desplaza en horizontal para que las celdas
+          sigan siendo legibles y pulsables; en escritorio ocupa todo el ancho. */}
+      <div className="overflow-x-auto">
+        <div className="min-w-[700px]">
       {/* Cabecera de días de la semana */}
       <div className="grid grid-cols-7 border-l border-t border-hairline text-xs font-medium uppercase tracking-wide text-black/50">
         {DIAS_SEMANA.map((d) => (
@@ -222,6 +226,8 @@ export default async function CalendarioPage({
             </div>
           );
         })}
+      </div>
+        </div>
       </div>
 
       <Leyenda />

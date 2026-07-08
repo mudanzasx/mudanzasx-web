@@ -538,7 +538,7 @@ export default function PresupuestoForm({
       {/* ===== Distancia (tres tramos) ===== */}
       <div>
         <p className={labelClass}>Distancia (base en Canovelles, Barcelona)</p>
-        <div className="mt-2 grid grid-cols-3 gap-2">
+        <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
           <KmField label="Base → Origen" value={kmBaseOrigen} onChange={(v) => { setKmBaseOrigen(v); invalidar(); }} />
           <KmField label="Origen → Destino" value={kmOrigenDestino} onChange={(v) => { setKmOrigenDestino(v); invalidar(); }} />
           <KmField label="Destino → Base" value={kmDestinoBase} onChange={(v) => { setKmDestinoBase(v); invalidar(); }} />
