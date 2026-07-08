@@ -18,7 +18,7 @@ export default function Header() {
   return (
     <header
       className={`bg-white transition-[border-color] duration-200 ${
-        scrolled ? "border-b border-black/10" : "border-b border-transparent"
+        scrolled ? "border-b border-hairline" : "border-b border-transparent"
       }`}
     >
       <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
@@ -46,7 +46,7 @@ export default function Header() {
         <a
           href={`tel:${TELEFONO}`}
           aria-label="Llamar"
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-black p-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 md:px-5 md:py-2.5"
+          className="inline-flex items-center justify-center gap-2 rounded-pill bg-black p-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 md:px-5 md:py-2.5"
         >
           <Phone size={16} strokeWidth={1.75} />
           {/* En móvil solo el icono; el texto aparece en escritorio. */}

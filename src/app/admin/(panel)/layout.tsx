@@ -34,13 +34,13 @@ export default async function PanelLayout({
             <nav className="flex items-center gap-1 text-sm">
               <Link
                 href="/admin"
-                className="rounded-full px-3 py-1.5 font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+                className="rounded-pill px-3 py-1.5 font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               >
                 Clientes
               </Link>
               <Link
                 href="/admin/calendario"
-                className="rounded-full px-3 py-1.5 font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+                className="rounded-pill px-3 py-1.5 font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               >
                 Calendario
               </Link>
@@ -50,7 +50,7 @@ export default async function PanelLayout({
           <form action="/admin/logout" method="post">
             <button
               type="submit"
-              className="rounded-full px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
+              className="rounded-pill px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
             >
               Cerrar sesión
             </button>

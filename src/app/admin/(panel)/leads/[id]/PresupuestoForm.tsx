@@ -14,6 +14,7 @@ import {
   type ProductoLinea,
 } from "@/lib/presupuesto";
 import { formatPrecio, parsePlantaNum } from "@/lib/leads";
+import { btn } from "@/components/ui/button";
 import {
   buscarObjetos,
   buscarProductos,
@@ -22,7 +23,7 @@ import {
 } from "./presupuestoActions";
 
 const fieldClass =
-  "w-full rounded-lg bg-gris px-3 py-2 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors focus:border-black";
+  "w-full rounded-field bg-gris px-3 py-2 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors focus:border-black";
 const labelClass = "block text-xs font-medium text-black/60";
 
 type ObjLineaUI = {
@@ -399,7 +400,7 @@ export default function PresupuestoForm({
           className={fieldClass}
         />
         {qObj.trim().length >= 2 && (
-          <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-black/10">
+          <div className="mt-2 max-h-56 overflow-y-auto rounded-card border border-hairline">
             {resObj.length === 0 && (
               <p className="px-3 py-2 text-sm text-black/50">Sin resultados.</p>
             )}
@@ -427,7 +428,7 @@ export default function PresupuestoForm({
         {lineas.length > 0 && (
           <div className="mt-3 flex flex-col gap-2">
             {lineas.map((l) => (
-              <div key={String(l.id)} className="rounded-lg border border-black/10 p-3">
+              <div key={String(l.id)} className="rounded-card border border-hairline p-3">
                 <div className="flex items-center justify-between gap-3">
                   <span className="min-w-0 flex-1 truncate text-sm font-medium">
                     {l.objeto}
@@ -443,7 +444,7 @@ export default function PresupuestoForm({
                     <button
                       type="button"
                       onClick={() => quitarObj(l.id)}
-                      className="ml-1 rounded px-2 py-1 text-xs text-black/50 hover:bg-gris hover:text-black"
+                      className="ml-1 rounded-field px-2 py-1 text-xs text-black/50 hover:bg-gris hover:text-black"
                     >
                       Quitar
                     </button>
@@ -472,7 +473,7 @@ export default function PresupuestoForm({
       </div>
 
       {/* ===== Productos (los vendemos) ===== */}
-      <div className="rounded-lg border border-black/10 bg-gris/30 p-3">
+      <div className="rounded-card border border-hairline bg-gris/30 p-3">
         <p className={labelClass}>Productos — los vendemos nosotros</p>
         <p className="mb-2 text-[11px] text-black/40">
           Suman volumen y se cobran (coste × cantidad, con margen e IVA).
@@ -485,7 +486,7 @@ export default function PresupuestoForm({
           className={`${fieldClass} bg-white`}
         />
         {qProd.trim().length >= 1 && (
-          <div className="mt-2 max-h-44 overflow-y-auto rounded-lg border border-black/10 bg-white">
+          <div className="mt-2 max-h-44 overflow-y-auto rounded-card border border-hairline bg-white">
             {resProd.length === 0 && (
               <p className="px-3 py-2 text-sm text-black/50">Sin resultados.</p>
             )}
@@ -510,7 +511,7 @@ export default function PresupuestoForm({
             {productos.map((l) => (
               <div
                 key={String(l.id)}
-                className="flex items-center justify-between gap-3 rounded-lg border border-black/10 bg-white px-3 py-2"
+                className="flex items-center justify-between gap-3 rounded-card border border-hairline bg-white px-3 py-2"
               >
                 <span className="min-w-0 flex-1 truncate text-sm">
                   {l.nombre}
@@ -523,7 +524,7 @@ export default function PresupuestoForm({
                   <button
                     type="button"
                     onClick={() => quitarProd(l.id)}
-                    className="ml-1 rounded px-2 py-1 text-xs text-black/50 hover:bg-gris hover:text-black"
+                    className="ml-1 rounded-field px-2 py-1 text-xs text-black/50 hover:bg-gris hover:text-black"
                   >
                     Quitar
                   </button>
@@ -551,7 +552,7 @@ export default function PresupuestoForm({
           <button
             type="button"
             onClick={usarDatosCliente}
-            className="rounded-full border border-black/15 px-3 py-1 text-xs font-medium hover:bg-gris"
+            className={btn({ variant: "secondary", size: "sm" })}
           >
             Usar datos del cliente
           </button>
@@ -610,7 +611,7 @@ export default function PresupuestoForm({
         type="button"
         onClick={calcular}
         disabled={calculando}
-        className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-40"
+        className={btn({ variant: "primary", size: "md" })}
       >
         {calculando ? "Calculando…" : "Calcular"}
       </button>
@@ -658,7 +659,7 @@ function KmField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="0"
-        className="mt-1 w-full rounded-lg bg-gris px-2 py-2 text-sm outline-none border border-transparent focus:border-black"
+        className="mt-1 w-full rounded-field bg-gris px-2 py-2 text-sm outline-none border border-transparent focus:border-black"
       />
     </div>
   );
@@ -672,7 +673,7 @@ function Stepper({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center overflow-hidden rounded-md border border-black/15">
+    <div className="flex items-center overflow-hidden rounded-field border border-hairline">
       <button type="button" onClick={() => onChange(value - 1)} className="px-2 py-1 text-sm hover:bg-gris" aria-label="Menos">
         −
       </button>
@@ -681,7 +682,7 @@ function Stepper({
         min={1}
         value={value}
         onChange={(e) => onChange(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
-        className="w-12 border-x border-black/15 bg-white px-1 py-1 text-center text-sm outline-none"
+        className="w-12 border-x border-hairline bg-white px-1 py-1 text-center text-sm outline-none"
       />
       <button type="button" onClick={() => onChange(value + 1)} className="px-2 py-1 text-sm hover:bg-gris" aria-label="Más">
         +
@@ -731,7 +732,7 @@ function Resultado({
     x.toLocaleString("es-ES", { maximumFractionDigits: d });
 
   return (
-    <div className="rounded-lg border border-black/10 bg-gris/40 p-4">
+    <div className="rounded-card border border-hairline bg-gris/40 p-4">
       <div className="grid grid-cols-2 gap-x-4 sm:grid-cols-4">
         <Dato label="Volumen" value={`${num(r.volumen_total_m3, 2)} m³`} />
         <Dato label="Vehículo" value={r.viajes > 1 ? `${r.vehiculo} ×${r.viajes}` : r.vehiculo} />
@@ -753,7 +754,7 @@ function Resultado({
       {/* Cada línea se redondea por separado para mostrarla; el total es el
           precio_final real (lo que se cobra), por lo que la suma visual de las
           líneas puede diferir ±0,01. Es cosmético: el importe cobrado manda. */}
-      <div className="mt-4 border-t border-black/10 pt-3">
+      <div className="mt-4 border-t border-hairline pt-3">
         <Linea label="Vehículo" value={formatPrecio(round2(r.coste_vehiculo))} />
         <Linea label="Distancia" value={formatPrecio(round2(r.coste_distancia))} />
         <Linea label="Personal" value={formatPrecio(round2(r.coste_personal))} />
@@ -763,7 +764,7 @@ function Resultado({
         {r.recargo_urgencia_eur > 0 && (
           <Linea label="Recargo urgencia" value={formatPrecio(round2(r.recargo_urgencia_eur))} />
         )}
-        <div className="mt-1 border-t border-black/10 pt-1">
+        <div className="mt-1 border-t border-hairline pt-1">
           <Linea label="Coste base" value={formatPrecio(round2(r.coste_base))} />
         </div>
         <Linea label="Margen" value={formatPrecio(round2(r.margen_eur))} />
@@ -773,14 +774,14 @@ function Resultado({
         <Linea label="IVA" value={formatPrecio(round2(r.iva_eur))} />
       </div>
 
-      <div className="mt-4 flex items-baseline justify-between border-t border-black/10 pt-3">
+      <div className="mt-4 flex items-baseline justify-between border-t border-hairline pt-3">
         <span className="text-sm font-medium">Precio final</span>
         <span className="text-2xl font-semibold tabular-nums">
           {formatPrecio(round2(r.precio_final))}
         </span>
       </div>
 
-      <div className="mt-4 rounded-lg border border-black/10 bg-white p-3">
+      <div className="mt-4 rounded-card border border-hairline bg-white p-3">
         <label htmlFor="ajustado" className="block text-xs font-medium text-black/60">
           Precio final ajustado (negociación)
         </label>
@@ -792,7 +793,7 @@ function Resultado({
             step="0.01"
             value={precioAjustado}
             onChange={(e) => setPrecioAjustado(e.target.value)}
-            className="w-40 rounded-lg bg-gris px-3 py-2 text-sm tabular-nums outline-none border border-transparent focus:border-black"
+            className="w-40 rounded-field bg-gris px-3 py-2 text-sm tabular-nums outline-none border border-transparent focus:border-black"
           />
           <span className="text-sm text-black/50">€ (IVA incluido)</span>
         </div>
@@ -806,11 +807,11 @@ function Resultado({
               </span>
             </p>
             {ajuste.bajo_coste ? (
-              <p className="mt-1 rounded-md bg-red-600 px-3 py-2 font-semibold text-white">
+              <p className="mt-1 rounded-field bg-red-600 px-3 py-2 font-semibold text-white">
                 ⚠ Por debajo del coste base: vender a este precio da PÉRDIDAS.
               </p>
             ) : ajuste.bajo_minimo ? (
-              <p className="mt-1 rounded-md border border-red-600 px-3 py-2 font-medium text-red-600">
+              <p className="mt-1 rounded-field border border-red-600 px-3 py-2 font-medium text-red-600">
                 ⚠ Margen por debajo del 10%. Revisa antes de cerrar.
               </p>
             ) : null}
@@ -823,7 +824,7 @@ function Resultado({
           type="button"
           onClick={onGuardar}
           disabled={guardando}
-          className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-40"
+          className={btn({ variant: "primary", size: "md" })}
         >
           {guardando
             ? "Guardando…"

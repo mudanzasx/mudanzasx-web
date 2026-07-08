@@ -35,8 +35,8 @@ export default function Faq() {
   const [abierta, setAbierta] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="w-full border-t border-black/10">
-      <div className="mx-auto max-w-[1100px] px-6 py-14 md:py-24">
+    <section id="faq" className="w-full border-t border-hairline bg-white">
+      <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
         {/* Escritorio: dos columnas (imagen a la izquierda, acordeón a la
             derecha), alineadas verticalmente al centro. Móvil: se apilan con la
             imagen arriba y las preguntas debajo. */}
@@ -55,12 +55,12 @@ export default function Faq() {
             </h2>
 
             {/* Acordeón: cada pregunta en un cuadro gris de marca con el mismo
-                radio que la imagen de la sección (rounded-2xl). */}
+                radio que la imagen de la sección (rounded-card). */}
             <div className="mt-10 flex flex-col gap-3 md:mt-12">
               {PREGUNTAS.map((item, i) => {
                 const open = abierta === i;
                 return (
-                  <div key={item.q} className="rounded-2xl bg-gris">
+                  <div key={item.q} className="rounded-card border border-hairline bg-white shadow-card">
                     <button
                       type="button"
                       onClick={() => setAbierta(open ? null : i)}

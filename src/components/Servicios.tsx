@@ -15,7 +15,7 @@ const SERVICIOS = [
 
 export default function Servicios() {
   return (
-    <section id="servicios" className="w-full border-t border-black/10 bg-gris">
+    <section id="servicios" className="w-full border-t border-hairline bg-gris">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
         {/* Escritorio: dos columnas (imagen a la derecha, contenido a la
             izquierda) para alternar el ritmo respecto a las otras secciones.
@@ -40,12 +40,12 @@ export default function Servicios() {
 
             {/* Tarjetas horizontales (icono a la izquierda, nombre a la derecha)
                 en cuadro gris de marca con el mismo radio que la imagen de la
-                sección (rounded-2xl). */}
+                sección (rounded-card). */}
             <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 md:mt-12">
               {SERVICIOS.map(({ Icon, nombre }) => (
                 <div
                   key={nombre}
-                  className="flex items-center gap-3.5 rounded-2xl bg-white px-4 py-4 shadow-sm ring-1 ring-black/5"
+                  className="flex items-center gap-3.5 rounded-card border border-hairline bg-white px-4 py-4 shadow-card"
                 >
                   <Icon size={26} className="shrink-0 text-black" />
                   <h3 className="text-sm font-medium leading-snug tracking-tight text-black">

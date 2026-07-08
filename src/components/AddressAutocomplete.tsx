@@ -150,7 +150,7 @@ export default function AddressAutocomplete({
       {open && suggestions.length > 0 && (
         <ul
           role="listbox"
-          className="absolute inset-x-0 top-full z-50 mt-1 max-h-72 overflow-auto rounded-xl border border-black/10 bg-white py-1 text-left shadow-lg"
+          className="absolute inset-x-0 top-full z-50 mt-1 max-h-72 overflow-auto rounded-card border border-hairline bg-white py-1 text-left shadow-card"
         >
           {suggestions.map((s, i) => {
             const pred = s.placePrediction!;

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { formatPrecio } from "@/lib/leads";
 import { round2 } from "@/lib/presupuesto";
 import EstadoPill from "@/components/admin/EstadoPill";
+import { btn } from "@/components/ui/button";
 import {
   crearEnlacePago,
   crearEnlaceResto,
@@ -112,7 +113,7 @@ export default function PagoPresupuesto({
   }
 
   return (
-    <div className="mt-2 rounded-lg bg-gris/50 p-3">
+    <div className="mt-2 rounded-card bg-gris/50 p-3">
       <div className="mb-2 flex items-center justify-between">
         <p className="text-xs font-medium uppercase tracking-wide text-black/50">
           Cobro
@@ -142,7 +143,7 @@ export default function PagoPresupuesto({
             type="button"
             onClick={cobrarResto}
             disabled={creando}
-            className="rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-40"
+            className={btn({ variant: "primary", size: "sm" })}
           >
             Cobrar resto pendiente · {formatPrecio(pendiente)}
           </button>
@@ -154,7 +155,7 @@ export default function PagoPresupuesto({
             type="button"
             onClick={() => cobrar("reserva50")}
             disabled={creando}
-            className="rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-black/85 disabled:opacity-40"
+            className={btn({ variant: "primary", size: "sm" })}
           >
             Cobrar reserva (50%) · {formatPrecio(importeReserva)}
           </button>
@@ -162,7 +163,7 @@ export default function PagoPresupuesto({
             type="button"
             onClick={() => cobrar("total")}
             disabled={creando}
-            className="rounded-full border border-black/20 px-4 py-2 text-xs font-medium transition-colors hover:bg-white disabled:opacity-40"
+            className={btn({ variant: "secondary", size: "sm" })}
           >
             Cobrar total (100% −5%) · {formatPrecio(importeTotal)}
           </button>
@@ -187,12 +188,12 @@ export default function PagoPresupuesto({
               readOnly
               value={url}
               onFocus={(e) => e.currentTarget.select()}
-              className="min-w-0 flex-1 rounded-lg bg-white px-3 py-2 text-xs text-black outline-none border border-black/15"
+              className="min-w-0 flex-1 rounded-field bg-white px-3 py-2 text-xs text-black outline-none border border-hairline"
             />
             <button
               type="button"
               onClick={copiar}
-              className="shrink-0 rounded-full bg-black px-3 py-2 text-xs font-medium text-white hover:bg-black/85"
+              className={btn({ variant: "primary", size: "sm", className: "shrink-0" })}
             >
               {copiado ? "¡Copiado!" : "Copiar enlace"}
             </button>
@@ -204,7 +205,7 @@ export default function PagoPresupuesto({
               type="button"
               onClick={enviarEmail}
               disabled={enviando}
-              className="rounded-full border border-black/20 px-3 py-2 text-xs font-medium transition-colors hover:bg-white disabled:opacity-40"
+              className={btn({ variant: "secondary", size: "sm" })}
             >
               {enviando ? "Enviando…" : "Enviar por email al cliente"}
             </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { btn } from "@/components/ui/button";
 import { enviarResumenPresupuesto } from "./emailActions";
 
 // Botón para enviar al cliente el email de resumen del presupuesto. Muestra un
@@ -31,7 +32,7 @@ export default function EnviarResumenBoton({
         type="button"
         onClick={enviar}
         disabled={enviando}
-        className="rounded-full border border-black/20 px-3 py-2 text-xs font-medium transition-colors hover:bg-white disabled:opacity-40"
+        className={btn({ variant: "secondary", size: "sm" })}
       >
         {enviando ? "Enviando…" : "Enviar resumen por email"}
       </button>

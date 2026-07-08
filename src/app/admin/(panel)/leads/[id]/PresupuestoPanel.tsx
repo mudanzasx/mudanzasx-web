@@ -12,6 +12,7 @@ import PresupuestoForm, {
 } from "./PresupuestoForm";
 import PagoPresupuesto from "./PagoPresupuesto";
 import EnviarResumenBoton from "./EnviarResumenBoton";
+import { btn } from "@/components/ui/button";
 import { type Pago } from "./pagoActions";
 
 export type PresupuestoGuardado = {
@@ -86,15 +87,15 @@ export default function PresupuestoPanel({
             return (
               <div
                 key={p.id}
-                className={`rounded-lg border transition-colors ${
-                  activo ? "border-black" : "border-black/10"
+                className={`rounded-card border transition-colors ${
+                  activo ? "border-black" : "border-hairline"
                 }`}
               >
                 <button
                   type="button"
                   onClick={() => abrir(p)}
                   disabled={!puede}
-                  className={`flex w-full items-center justify-between gap-3 rounded-t-lg px-3 py-2 text-left text-sm transition-colors ${
+                  className={`flex w-full items-center justify-between gap-3 rounded-t-card px-3 py-2 text-left text-sm transition-colors ${
                     puede ? "hover:bg-gris" : "cursor-default"
                   } ${activo ? "bg-gris" : ""}`}
                 >
@@ -130,12 +131,12 @@ export default function PresupuestoPanel({
       {/* Acordeón: formulario de crear/editar presupuesto. Plegado por defecto
           para no ocupar espacio; se abre al pulsar la cabecera, al reabrir un
           presupuesto guardado o al pulsar "+ Nuevo presupuesto". */}
-      <div className="rounded-lg border border-black/10">
+      <div className="rounded-card border border-hairline">
         <button
           type="button"
           onClick={() => setFormOpen((o) => !o)}
           aria-expanded={formOpen}
-          className="flex w-full items-center justify-between gap-3 rounded-lg px-4 py-3 text-left transition-colors hover:bg-gris/60"
+          className="flex w-full items-center justify-between gap-3 rounded-card px-4 py-3 text-left transition-colors hover:bg-gris/60"
         >
           <span className="text-sm font-medium">
             {editId ? "Editar presupuesto" : "Nuevo presupuesto"}
@@ -154,7 +155,7 @@ export default function PresupuestoPanel({
           }`}
         >
           <div className="overflow-hidden">
-            <div className="border-t border-black/10 px-4 pb-4 pt-4">
+            <div className="border-t border-hairline px-4 pb-4 pt-4">
               <div className="mb-4 flex items-center justify-between">
                 <p className="text-xs text-black/50">
                   {editId
@@ -165,7 +166,7 @@ export default function PresupuestoPanel({
                   <button
                     type="button"
                     onClick={nuevo}
-                    className="rounded-full border border-black/15 px-3 py-1.5 text-xs font-medium hover:bg-gris"
+                    className={btn({ variant: "secondary", size: "sm" })}
                   >
                     + Nuevo presupuesto
                   </button>

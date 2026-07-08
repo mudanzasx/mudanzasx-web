@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { btn } from "@/components/ui/button";
 import { pedirValoracion } from "./emailActions";
 
 // Botón para pedir al cliente que valore el servicio (reseña de Google). Pensado
@@ -28,7 +29,7 @@ export default function PedirValoracionBoton({ leadId }: { leadId: string }) {
         type="button"
         onClick={enviar}
         disabled={enviando}
-        className="rounded-full border border-black/20 px-4 py-2 text-xs font-medium transition-colors hover:bg-gris disabled:opacity-40"
+        className={btn({ variant: "secondary", size: "sm" })}
       >
         {enviando ? "Enviando…" : "Pedir valoración"}
       </button>

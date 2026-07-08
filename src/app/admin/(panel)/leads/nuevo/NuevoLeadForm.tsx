@@ -16,6 +16,7 @@ import {
   AVISO_TELEFONO,
   AVISO_EMAIL,
 } from "@/lib/validaciones";
+import { btn } from "@/components/ui/button";
 import { crearLead, type CrearLeadInput } from "./actions";
 
 const INICIAL: CrearLeadInput = {
@@ -216,7 +217,7 @@ export default function NuevoLeadForm() {
         <button
           type="submit"
           disabled={pending || !puedeGuardar}
-          className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-40"
+          className={btn({ variant: "primary", size: "md" })}
         >
           {pending ? "Creando…" : "Crear lead"}
         </button>

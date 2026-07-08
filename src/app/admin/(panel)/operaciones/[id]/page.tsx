@@ -58,7 +58,7 @@ export default async function OperacionDetallePage({
 
   if (error) {
     return (
-      <div className="rounded-lg border border-black/10 bg-gris px-4 py-6 text-sm text-black/70">
+      <div className="rounded-card border border-hairline bg-gris px-4 py-6 text-sm text-black/70">
         No se pudo cargar la operación.{" "}
         <Link href="/admin/calendario" className="underline underline-offset-2">
           Volver al calendario
@@ -232,7 +232,7 @@ export default async function OperacionDetallePage({
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Cliente (solo lectura) */}
-        <section className="rounded-lg border border-black/10 p-5">
+        <section className="rounded-card border border-hairline p-5">
           <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-black/50">
             Cliente
           </h2>
@@ -258,7 +258,7 @@ export default async function OperacionDetallePage({
             )}
 
             {/* Estado de cobro de la mudanza (solo lectura). */}
-            <div className="mt-1 border-t border-black/10 pt-3">
+            <div className="mt-1 border-t border-hairline pt-3">
               <p className="mb-2 text-xs font-medium uppercase tracking-wide text-black/50">
                 Cobro
               </p>
@@ -301,7 +301,7 @@ function Campo({ label, valor }: { label: string; valor: string }) {
 function PagoEstado({ pago }: { pago: PagoResumen | null }) {
   if (!pago) {
     return (
-      <p className="rounded-lg border border-dashed border-black/15 px-3 py-2 text-sm text-black/50">
+      <p className="rounded-card border border-dashed border-hairline px-3 py-2 text-sm text-black/50">
         Sin pago registrado.
       </p>
     );
@@ -319,11 +319,11 @@ function PagoEstado({ pago }: { pago: PagoResumen | null }) {
         />
       </div>
       {hayPendiente ? (
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+        <p className="rounded-card bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
           Pago pendiente: {formatPrecio(pago.importe_pendiente)}
         </p>
       ) : (
-        <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+        <p className="rounded-card bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
           Pagado completo
         </p>
       )}

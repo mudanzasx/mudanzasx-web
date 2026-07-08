@@ -10,6 +10,7 @@ import {
 } from "@/lib/leads";
 import EstadoPill from "@/components/admin/EstadoPill";
 import LeadsFilters from "@/components/admin/LeadsFilters";
+import { btn } from "@/components/ui/button";
 
 const COLUMNAS: (keyof Lead)[] = [
   "id",
@@ -79,7 +80,7 @@ export default async function AdminDashboard({
         </div>
         <Link
           href="/admin/leads/nuevo"
-          className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85"
+          className={btn({ variant: "primary", size: "md" })}
         >
           + Nuevo lead
         </Link>
@@ -90,16 +91,16 @@ export default async function AdminDashboard({
       </div>
 
       {error ? (
-        <div className="rounded-lg border border-black/10 bg-gris px-4 py-6 text-sm text-black/70">
+        <div className="rounded-card border border-hairline bg-gris px-4 py-6 text-sm text-black/70">
           No se pudieron cargar los clientes. Inténtalo de nuevo más tarde.
         </div>
       ) : leads.length === 0 ? (
         <EmptyState filtrado={Boolean(term || estado)} />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-black/10">
+        <div className="overflow-x-auto rounded-card border border-hairline shadow-card">
           <table className="w-full min-w-[860px] border-collapse text-sm">
             <thead>
-              <tr className="border-b border-black/10 text-left text-xs uppercase tracking-wide text-black/50">
+              <tr className="border-b border-hairline text-left text-xs uppercase tracking-wide text-black/50">
                 <Th>Nombre</Th>
                 <Th>Teléfono</Th>
                 <Th>Ruta</Th>
@@ -113,7 +114,7 @@ export default async function AdminDashboard({
               {leads.map((lead) => (
                 <tr
                   key={lead.id}
-                  className="border-b border-black/5 transition-colors last:border-b-0 hover:bg-gris/60"
+                  className="border-b border-hairline transition-colors last:border-b-0 hover:bg-gris/60"
                 >
                   <Td>
                     <div className="flex flex-wrap items-center gap-2">
@@ -155,8 +156,8 @@ function Th({ children }: { children: React.ReactNode }) {
 // Aviso sobrio (ámbar apagado) de que al lead le queda dinero por cobrar.
 function BadgePagoPendiente() {
   return (
-    <span className="inline-flex items-center gap-1 whitespace-nowrap rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
-      <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
+    <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-pill bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
+      <span className="h-1.5 w-1.5 rounded-pill bg-amber-500" aria-hidden />
       Pago pendiente
     </span>
   );
@@ -174,7 +175,7 @@ function Td({
 
 function EmptyState({ filtrado }: { filtrado: boolean }) {
   return (
-    <div className="rounded-lg border border-dashed border-black/15 px-6 py-16 text-center">
+    <div className="rounded-card border border-dashed border-hairline px-6 py-16 text-center">
       <p className="text-base font-medium text-black">
         {filtrado ? "Sin resultados" : "Aún no hay clientes"}
       </p>
@@ -186,7 +187,7 @@ function EmptyState({ filtrado }: { filtrado: boolean }) {
       {filtrado && (
         <Link
           href="/admin"
-          className="mt-6 inline-block rounded-full border border-black/15 px-4 py-2 text-sm font-medium transition-colors hover:bg-gris"
+          className={btn({ variant: "secondary", size: "sm", className: "mt-6" })}
         >
           Ver todos
         </Link>

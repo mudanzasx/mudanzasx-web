@@ -3,10 +3,11 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ESTADOS_OPERATIVOS } from "@/lib/operaciones";
+import { btn } from "@/components/ui/button";
 import { guardarOperacion, type GuardarOperacionInput } from "./actions";
 
 const fieldClass =
-  "mt-1.5 w-full rounded-lg bg-gris px-3 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+  "mt-1.5 w-full rounded-field bg-gris px-3 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
 const labelClass = "block text-xs font-medium text-black/60";
 
 export type OperacionInicial = GuardarOperacionInput;
@@ -126,7 +127,7 @@ export default function OperacionForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-lg border border-black/10 p-5"
+      className="rounded-card border border-hairline p-5"
     >
       <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-black/50">
         Planificación
@@ -186,7 +187,7 @@ export default function OperacionForm({
               No hay operarios registrados.
             </p>
           ) : (
-            <div className="mt-1.5 flex flex-col gap-1.5 rounded-lg bg-gris p-3">
+            <div className="mt-1.5 flex flex-col gap-1.5 rounded-card bg-gris p-3">
               {operarios.map((op) => (
                 <label
                   key={op.id}
@@ -242,7 +243,7 @@ export default function OperacionForm({
 
         {/* Avisos de solape: informativos, no impiden guardar */}
         {(vehiculoSolapa.length > 0 || operariosSolapan.length > 0) && (
-          <div className="rounded-lg border border-black/20 bg-gris px-3 py-2.5 text-sm">
+          <div className="rounded-card border border-hairline bg-gris px-3 py-2.5 text-sm">
             {vehiculoSolapa.length > 0 && (
               <p className="text-black/80">
                 <strong className="font-semibold">Atención:</strong> este
@@ -269,7 +270,7 @@ export default function OperacionForm({
         <button
           type="submit"
           disabled={pending || sinCambios}
-          className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-40"
+          className={btn({ variant: "primary", size: "md" })}
         >
           {pending ? "Guardando…" : "Guardar"}
         </button>

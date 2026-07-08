@@ -9,7 +9,7 @@ import AnalyticsScripts from "@/components/cookies/AnalyticsScripts";
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 

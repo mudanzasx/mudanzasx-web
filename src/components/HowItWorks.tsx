@@ -9,7 +9,7 @@ const PASOS = [
 
 export default function HowItWorks() {
   return (
-    <section id="como-funciona" className="w-full border-t border-black/10">
+    <section id="como-funciona" className="w-full border-t border-hairline bg-white">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
         {/* Escritorio: dos columnas (imagen a la izquierda, contenido a la
             derecha), alineadas verticalmente al centro. Móvil: se apilan con la
@@ -45,7 +45,7 @@ export default function HowItWorks() {
                       className="absolute bottom-0 left-[22px] top-11 w-px -translate-x-1/2 bg-black/15"
                     />
                   )}
-                  <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gris text-black">
+                  <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-pill bg-gris text-black">
                     <span className="text-base font-semibold tabular-nums">
                       {i + 1}
                     </span>

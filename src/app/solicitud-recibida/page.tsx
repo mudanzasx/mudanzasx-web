@@ -3,6 +3,7 @@ import Link from "next/link";
 import Topbar from "@/components/Topbar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { btn } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Solicitud recibida",
@@ -27,7 +28,7 @@ export default function SolicitudRecibida() {
         <section className="mx-auto flex max-w-[560px] flex-col items-center px-6 py-20 text-center md:py-28">
           {/* Confirmación visual: check monolínea negro dentro de un disco gris,
               con entrada sutil (el disco aparece y el check se dibuja). */}
-          <div className="mx-confirm-badge flex h-24 w-24 items-center justify-center rounded-full bg-gris">
+          <div className="mx-confirm-badge flex h-24 w-24 items-center justify-center rounded-pill bg-gris">
             <svg viewBox="0 0 24 24" aria-hidden className="h-11 w-11">
               <path
                 d="M5 12.5l4.5 4.5L19 7"
@@ -68,7 +69,7 @@ export default function SolicitudRecibida() {
                       className="absolute bottom-0 left-[15px] top-8 w-px bg-black/10"
                     />
                   )}
-                  <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gris text-xs font-medium tabular-nums text-black">
+                  <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-pill bg-gris text-xs font-medium tabular-nums text-black">
                     {i + 1}
                   </span>
                   <p className="pt-[5px] text-[15px] leading-[1.55] text-black/70">
@@ -81,7 +82,7 @@ export default function SolicitudRecibida() {
 
           <Link
             href="/"
-            className="mx-fade-up mt-14 inline-flex items-center justify-center rounded-full border border-black/15 px-7 py-3 text-sm font-medium text-black transition-colors duration-150 hover:border-black/30 hover:bg-gris"
+            className={btn({ variant: "secondary", size: "md", className: "mx-fade-up mt-14" })}
             style={{ animationDelay: "0.45s" }}
           >
             Volver al inicio

@@ -95,11 +95,11 @@ export async function enviarEmailPago(params: {
   const url = params.url;
 
   const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">Hola ${nombre},</p>
-<p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#333333;">${esc(intro)}</p>
+<p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">${esc(intro)}</p>
 ${emailBoton(url, "Pagar de forma segura")}
-<p style="margin:22px 0 0;font-size:13px;line-height:1.6;color:#666666;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
+<p style="margin:22px 0 0;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.60);">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
 <p style="margin:6px 0 0;font-size:13px;line-height:1.5;word-break:break-all;"><a href="${url}" style="color:#000000;">${url}</a></p>
-<p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#666666;">El pago se procesa de forma segura a través de Stripe.</p>`;
+<p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.60);">El pago se procesa de forma segura a través de Stripe.</p>`;
 
   const html = emailLayout({ titulo: "Mudanzas X", preheader: intro, cuerpo });
   return enviar({ para: params.para, asunto, html });
@@ -142,7 +142,7 @@ export async function enviarEmailResumen(params: {
   let serviciosHtml = "";
   if (d.servicios.length > 0) {
     const lista = d.servicios.map((s) => esc(s)).join(" · ");
-    serviciosHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:#888888;">Servicios incluidos</p>
+    serviciosHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:rgba(0,0,0,0.45);">Servicios incluidos</p>
 <p style="margin:5px 0 0;font-size:14px;line-height:1.7;color:#000000;">${lista}</p>`;
   }
 
@@ -152,7 +152,7 @@ export async function enviarEmailResumen(params: {
   let objetosHtml = "";
   if (d.numObjetos > 0) {
     const txt = `${d.numObjetos} ${d.numObjetos === 1 ? "objeto" : "objetos"}`;
-    objetosHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:#888888;">Objetos de la mudanza</p>
+    objetosHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:rgba(0,0,0,0.45);">Objetos de la mudanza</p>
 <p style="margin:5px 0 0;font-size:14px;line-height:1.7;color:#000000;">${esc(txt)}</p>`;
   }
 
@@ -164,16 +164,16 @@ export async function enviarEmailResumen(params: {
       .join(" · ");
     const extra =
       d.productos.length > 8 ? ` · +${d.productos.length - 8} más` : "";
-    productosHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:#888888;">Productos</p>
+    productosHtml = `<p style="margin:18px 0 0;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:rgba(0,0,0,0.45);">Productos</p>
 <p style="margin:5px 0 0;font-size:14px;line-height:1.7;color:#000000;">${lista}${extra}</p>`;
   }
 
   const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">Hola ${nombre},</p>
-<p style="margin:0 0 22px;font-size:15px;line-height:1.7;color:#333333;">Aquí tienes el resumen de tu mudanza con Mudanzas X.</p>
+<p style="margin:0 0 22px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">Aquí tienes el resumen de tu mudanza con Mudanzas X.</p>
 ${panelResumen(filas)}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 0;">
 <tr>
-<td style="font-size:14px;color:#000000;vertical-align:bottom;">Precio final <span style="color:#888888;font-size:12px;">(IVA incluido)</span></td>
+<td style="font-size:14px;color:#000000;vertical-align:bottom;">Precio final <span style="color:rgba(0,0,0,0.45);font-size:12px;">(IVA incluido)</span></td>
 <td style="text-align:right;font-size:22px;font-weight:700;color:#000000;">${esc(
     d.precioTexto
   )}</td>
@@ -182,7 +182,7 @@ ${panelResumen(filas)}
 ${serviciosHtml}
 ${objetosHtml}
 ${productosHtml}
-<p style="margin:24px 0 22px;font-size:15px;line-height:1.7;color:#333333;">¿Quieres reservar tu fecha o tienes alguna duda? Llámanos y lo dejamos todo listo.</p>
+<p style="margin:24px 0 22px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">¿Quieres reservar tu fecha o tienes alguna duda? Llámanos y lo dejamos todo listo.</p>
 ${emailBoton(`tel:${TELEFONO}`, "Llámanos")}`;
 
   const html = emailLayout({
@@ -208,10 +208,10 @@ export async function enviarEmailValoracion(params: {
   const nombre = esc(params.nombre);
 
   const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">Hola ${nombre},</p>
-<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#333333;">Gracias por confiar en Mudanzas X para tu mudanza. Esperamos que todo haya ido a las mil maravillas.</p>
-<p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:#333333;">Nos encantaría saber cómo ha sido tu experiencia. Si nos dejas tu valoración, nos ayudas a mejorar y orientas a otras personas que buscan una mudanza de confianza. Solo te llevará un minuto.</p>
+<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">Gracias por confiar en Mudanzas X para tu mudanza. Esperamos que todo haya ido a las mil maravillas.</p>
+<p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">Nos encantaría saber cómo ha sido tu experiencia. Si nos dejas tu valoración, nos ayudas a mejorar y orientas a otras personas que buscan una mudanza de confianza. Solo te llevará un minuto.</p>
 ${emailBoton(REVIEW_URL, "Dejar mi valoración")}
-<p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#666666;">Gracias de antemano. Un saludo del equipo de Mudanzas X.</p>`;
+<p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.60);">Gracias de antemano. Un saludo del equipo de Mudanzas X.</p>`;
 
   const html = emailLayout({
     titulo: "¿Qué te ha parecido? · Mudanzas X",

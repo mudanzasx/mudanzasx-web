@@ -35,7 +35,7 @@ export default function SectionImage({
         height={height}
         sizes="(min-width: 768px) 440px, calc(100vw - 48px)"
         loading="lazy"
-        className="h-auto w-full rounded-2xl"
+        className="h-auto w-full rounded-card border border-hairline"
       />
     </div>
   );

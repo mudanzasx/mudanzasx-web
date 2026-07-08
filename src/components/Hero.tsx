@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
+import { btn } from "@/components/ui/button";
 // Punto de confianza: refuerzo discreto bajo el botón.
 const CONFIANZA = [{ texto: "Operativa 365 días" }];
 
@@ -40,7 +41,7 @@ export default function Hero() {
 
         {/* Bloque Origen/Destino estilo Uber */}
         <div className="mt-10 max-w-xl">
-          <div className="relative rounded-2xl bg-white px-4 py-2 shadow-sm ring-1 ring-black/5 md:px-5">
+          <div className="relative rounded-card border border-hairline bg-white px-4 py-2 shadow-card md:px-5">
             {/*
               Carril izquierdo de 20px (columna del grid). Cada fila mide 56px (h-14),
               así el centro del marcador de Origen queda a 8+28=36px y el de Destino a
@@ -54,7 +55,7 @@ export default function Hero() {
             {/* Fila Origen */}
             <div className="grid h-14 grid-cols-[20px_1fr] items-center">
               <span className="flex items-center justify-center">
-                <span className="block h-2.5 w-2.5 rounded-full bg-black" />
+                <span className="block h-2.5 w-2.5 rounded-pill bg-black" />
               </span>
               <AddressAutocomplete
                 value={origen}
@@ -65,14 +66,14 @@ export default function Hero() {
                 placeholder="¿Desde dónde?"
                 ariaLabel="Origen"
                 wrapperClassName="col-start-2"
-                className="w-full border-b border-black/10 bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
+                className="w-full border-b border-hairline bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
               />
             </div>
 
             {/* Fila Destino */}
             <div className="grid h-14 grid-cols-[20px_1fr] items-center">
               <span className="flex items-center justify-center">
-                <span className="block h-2.5 w-2.5 rounded-full bg-black" />
+                <span className="block h-2.5 w-2.5 rounded-pill bg-black" />
               </span>
               <AddressAutocomplete
                 value={destino}
@@ -90,7 +91,7 @@ export default function Hero() {
 
           {/* Aviso de número de calle obligatorio */}
           {intentado && (faltaOrigen || faltaDestino) && (
-            <p className="mt-2 text-[13px] font-medium text-amber-700">
+            <p className="mt-2 text-[13px] font-medium text-black">
               Indica el número de la calle en{" "}
               {faltaOrigen && faltaDestino
                 ? "el origen y el destino"
@@ -104,7 +105,11 @@ export default function Hero() {
           <button
             type="button"
             onClick={handleCalcular}
-            className="mt-4 w-full rounded-full bg-black px-8 py-4 text-base font-medium text-white transition-colors duration-150 hover:bg-black/85 sm:w-auto"
+            className={btn({
+              variant: "primary",
+              size: "lg",
+              className: "mt-4 w-full sm:w-auto",
+            })}
           >
             Calcular presupuesto
           </button>

@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 // Primitivos de campo compartidos por los formularios de lead del panel
 // (ficha de edición y alta manual), para mantener la coherencia visual.
 export const fieldClass =
-  "mt-1.5 w-full rounded-lg bg-gris px-3 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+  "mt-1.5 w-full rounded-field bg-gris px-3 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
 export const labelClass = "block text-xs font-medium text-black/60";
 
 export function Card({
@@ -16,7 +16,7 @@ export function Card({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-black/10 p-5">
+    <section className="rounded-card border border-hairline p-5">
       <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-black/50">
         {title}
       </h2>

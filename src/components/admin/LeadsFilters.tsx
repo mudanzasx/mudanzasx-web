@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ESTADOS_COMERCIALES } from "@/lib/leads";
 
 const fieldClass =
-  "w-full rounded-lg bg-gris px-4 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+  "w-full rounded-field bg-gris px-4 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
 
 // Controles de búsqueda/filtro. Empujan a query params y el servidor consulta.
 export default function LeadsFilters({

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ESTADOS_COMERCIALES } from "@/lib/leads";
 import { Card, Text, Check, fieldClass, labelClass } from "@/components/admin/LeadFields";
+import { btn } from "@/components/ui/button";
 import { guardarLead, type GuardarLeadInput } from "./actions";
 
 export type LeadInicial = GuardarLeadInput;
@@ -145,7 +146,7 @@ export default function EditLeadForm({
         <button
           type="submit"
           disabled={pending || sinCambios}
-          className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-40"
+          className={btn({ variant: "primary", size: "md" })}
         >
           {pending ? "Guardando…" : "Guardar"}
         </button>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { btn } from "@/components/ui/button";
 import {
   ESTADOS_OPERATIVOS,
   DIAS_SEMANA,
@@ -154,7 +155,7 @@ export default async function CalendarioPage({
           </NavLink>
           <Link
             href="/admin/calendario"
-            className="rounded-full border border-black/15 px-4 py-1.5 text-sm font-medium transition-colors hover:bg-gris"
+            className={btn({ variant: "secondary", size: "sm" })}
           >
             Hoy
           </Link>
@@ -168,22 +169,22 @@ export default async function CalendarioPage({
       </div>
 
       {error && (
-        <div className="mb-6 rounded-lg border border-black/10 bg-gris px-4 py-3 text-sm text-black/70">
+        <div className="mb-6 rounded-card border border-hairline bg-gris px-4 py-3 text-sm text-black/70">
           No se pudieron cargar las operaciones de este mes.
         </div>
       )}
 
       {/* Cabecera de días de la semana */}
-      <div className="grid grid-cols-7 border-l border-t border-black/10 text-xs font-medium uppercase tracking-wide text-black/50">
+      <div className="grid grid-cols-7 border-l border-t border-hairline text-xs font-medium uppercase tracking-wide text-black/50">
         {DIAS_SEMANA.map((d) => (
-          <div key={d} className="border-b border-r border-black/10 px-2 py-2">
+          <div key={d} className="border-b border-r border-hairline px-2 py-2">
             {d}
           </div>
         ))}
       </div>
 
       {/* Cuadrícula del mes */}
-      <div className="grid grid-cols-7 border-l border-black/10">
+      <div className="grid grid-cols-7 border-l border-hairline">
         {dias.map((dia) => {
           const ops = porDia.get(dia.iso) ?? [];
           const visibles = ops.slice(0, MAX_POR_DIA);
@@ -191,13 +192,13 @@ export default async function CalendarioPage({
           return (
             <div
               key={dia.iso}
-              className={`min-h-[112px] border-b border-r border-black/10 p-1.5 ${
+              className={`min-h-[112px] border-b border-r border-hairline p-1.5 ${
                 dia.enMes ? "bg-white" : "bg-gris/40"
               }`}
             >
               <div className="mb-1 flex items-center justify-between px-0.5">
                 <span
-                  className={`inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-xs ${
+                  className={`inline-flex h-6 min-w-6 items-center justify-center rounded-pill px-1 text-xs ${
                     dia.esHoy
                       ? "bg-black font-semibold text-white"
                       : dia.enMes
@@ -235,10 +236,10 @@ export default async function CalendarioPage({
               <Link
                 key={op.id}
                 href={`/admin/operaciones/${op.id}`}
-                className="flex items-center gap-2 rounded-lg border border-black/10 px-3 py-2 text-sm transition-colors hover:bg-gris"
+                className="flex items-center gap-2 rounded-field border border-hairline px-3 py-2 text-sm transition-colors hover:bg-gris"
               >
                 <span
-                  className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${dotEstado(
+                  className={`inline-block h-2.5 w-2.5 shrink-0 rounded-pill ${dotEstado(
                     op.estado_operativo
                   )}`}
                 />
@@ -262,11 +263,11 @@ function TarjetaOperacion({ op }: { op: OperacionCalendario }) {
   return (
     <Link
       href={`/admin/operaciones/${op.id}`}
-      className="block rounded-md border border-black/10 bg-white px-1.5 py-1 text-[11px] leading-tight transition-colors hover:bg-gris"
+      className="block rounded-field border border-hairline bg-white px-1.5 py-1 text-[11px] leading-tight transition-colors hover:bg-gris"
     >
       <div className="flex items-center gap-1">
         <span
-          className={`inline-block h-2 w-2 shrink-0 rounded-full ${dotEstado(
+          className={`inline-block h-2 w-2 shrink-0 rounded-pill ${dotEstado(
             op.estado_operativo
           )}`}
         />
@@ -295,7 +296,7 @@ function NavLink({
     <Link
       href={href}
       aria-label={label}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-black/15 text-sm transition-colors hover:bg-gris"
+      className="flex h-8 w-8 items-center justify-center rounded-pill border border-hairline text-sm transition-colors hover:bg-gris"
     >
       {children}
     </Link>
@@ -308,7 +309,7 @@ function Leyenda() {
       {ESTADOS_OPERATIVOS.map((e) => (
         <span key={e} className="flex items-center gap-1.5">
           <span
-            className={`inline-block h-2.5 w-2.5 rounded-full ${dotEstado(e)}`}
+            className={`inline-block h-2.5 w-2.5 rounded-pill ${dotEstado(e)}`}
           />
           {e}
         </span>

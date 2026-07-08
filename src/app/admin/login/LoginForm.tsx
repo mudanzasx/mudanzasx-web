@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { btn } from "@/components/ui/button";
 
 const labelClass = "block text-sm font-medium text-black";
 const fieldClass =
-  "mt-2 w-full rounded-lg bg-gris px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+  "mt-2 w-full rounded-field bg-gris px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -79,7 +80,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="mt-2 w-full rounded-full bg-black px-8 py-4 text-base font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-50"
+        className={btn({ variant: "primary", size: "lg", className: "mt-2 w-full" })}
       >
         {enviando ? "Entrando…" : "Entrar"}
       </button>

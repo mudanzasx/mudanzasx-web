@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
+import { btn } from "@/components/ui/button";
 import { useConsent } from "./ConsentContext";
 
 // Interruptor accesible para las categorías configurables.
@@ -26,12 +27,12 @@ function Toggle({
       aria-label={label}
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-150 ${
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-pill transition-colors duration-150 ${
         checked ? "bg-black" : "bg-black/15"
       } ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
     >
       <span
-        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform duration-150 ${
+        className={`inline-block h-5 w-5 transform rounded-pill bg-white shadow transition-transform duration-150 ${
           checked ? "translate-x-[22px]" : "translate-x-0.5"
         }`}
       />
@@ -49,7 +50,7 @@ function Categoria({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 border-t border-black/10 py-4">
+    <div className="flex items-start justify-between gap-4 border-t border-hairline py-4">
       <div>
         <p className="text-sm font-medium text-black">{titulo}</p>
         <p className="mt-1 text-[13px] leading-[1.6] text-black/60">{descripcion}</p>
@@ -104,7 +105,7 @@ export default function CookieBanner() {
           role="dialog"
           aria-live="polite"
           aria-label="Aviso de cookies"
-          className="fixed inset-x-0 bottom-0 z-[100] border-t border-black/10 bg-white/95 backdrop-blur"
+          className="fixed inset-x-0 bottom-0 z-[100] border-t border-hairline bg-white/95 backdrop-blur"
         >
           <div className="mx-auto max-w-[1200px] px-6 py-5 md:flex md:items-center md:gap-8">
             <p className="text-[13.5px] leading-[1.65] text-black/70 md:flex-1">
@@ -121,21 +122,21 @@ export default function CookieBanner() {
               <button
                 type="button"
                 onClick={openPreferences}
-                className="order-3 rounded-full border border-black/15 px-5 py-2.5 text-sm font-medium text-black transition-colors duration-150 hover:bg-gris sm:order-1"
+                className={btn({ variant: "secondary", size: "md", className: "order-3 sm:order-1" })}
               >
                 Configurar
               </button>
               <button
                 type="button"
                 onClick={rejectAll}
-                className="order-2 rounded-full border border-black/15 px-5 py-2.5 text-sm font-medium text-black transition-colors duration-150 hover:bg-gris"
+                className={btn({ variant: "secondary", size: "md", className: "order-2" })}
               >
                 Rechazar todas
               </button>
               <button
                 type="button"
                 onClick={acceptAll}
-                className="order-1 rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 sm:order-3"
+                className={btn({ variant: "primary", size: "md", className: "order-1 sm:order-3" })}
               >
                 Aceptar todas
               </button>
@@ -152,7 +153,7 @@ export default function CookieBanner() {
           aria-modal="true"
           aria-label="Configuración de cookies"
         >
-          <div className="w-full max-w-lg rounded-t-2xl bg-white p-6 shadow-xl sm:rounded-2xl sm:p-8">
+          <div className="w-full max-w-lg rounded-t-card bg-white p-6 shadow-card sm:rounded-card sm:p-8">
             <div className="flex items-start justify-between gap-4">
               <h2 className="text-lg font-medium tracking-[-0.01em] text-black">
                 Configuración de cookies
@@ -161,7 +162,7 @@ export default function CookieBanner() {
                 type="button"
                 onClick={closePreferences}
                 aria-label="Cerrar"
-                className="-mr-1 -mt-1 rounded-full p-1.5 text-black/50 transition-colors duration-150 hover:bg-gris hover:text-black"
+                className="-mr-1 -mt-1 rounded-pill p-1.5 text-black/50 transition-colors duration-150 hover:bg-gris hover:text-black"
               >
                 <X size={18} strokeWidth={1.75} />
               </button>
@@ -208,25 +209,25 @@ export default function CookieBanner() {
               </Categoria>
             </div>
 
-            <div className="mt-6 flex flex-col gap-2.5 border-t border-black/10 pt-5 sm:flex-row sm:justify-end">
+            <div className="mt-6 flex flex-col gap-2.5 border-t border-hairline pt-5 sm:flex-row sm:justify-end">
               <button
                 type="button"
                 onClick={rejectAll}
-                className="rounded-full border border-black/15 px-5 py-2.5 text-sm font-medium text-black transition-colors duration-150 hover:bg-gris"
+                className={btn({ variant: "secondary", size: "md" })}
               >
                 Rechazar todas
               </button>
               <button
                 type="button"
                 onClick={acceptAll}
-                className="rounded-full border border-black/15 px-5 py-2.5 text-sm font-medium text-black transition-colors duration-150 hover:bg-gris"
+                className={btn({ variant: "secondary", size: "md" })}
               >
                 Aceptar todas
               </button>
               <button
                 type="button"
                 onClick={() => savePreferences({ analytics, marketing })}
-                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85"
+                className={btn({ variant: "primary", size: "md" })}
               >
                 Guardar preferencias
               </button>

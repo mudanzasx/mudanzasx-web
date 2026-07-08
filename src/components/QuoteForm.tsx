@@ -11,11 +11,12 @@ import {
   AVISO_TELEFONO,
   AVISO_EMAIL,
 } from "@/lib/validaciones";
+import { btn } from "@/components/ui/button";
 
 // Campo base: fondo blanco sobre la sección gris, redondeado, con borde sutil
 // que se marca al enfocar (el formulario ya no vive dentro de una tarjeta).
 const fieldClass =
-  "w-full rounded-lg bg-white px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-black/10 transition-colors duration-150 focus:border-black";
+  "w-full rounded-field bg-white px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-hairline transition-colors duration-150 focus:border-black";
 const errorClass = "mt-1.5 text-[13px] font-medium";
 
 export default function QuoteForm() {
@@ -155,14 +156,14 @@ export default function QuoteForm() {
     <section
       id="presupuesto"
       ref={sectionRef}
-      className="w-full border-t border-black/10 bg-gris scroll-mt-24"
+      className="w-full border-t border-hairline bg-gris scroll-mt-24"
     >
       <div className="mx-auto max-w-[560px] px-6 py-14 md:py-24">
         {/* El formulario ocupa la sección directamente (sin tarjeta): inputs
             blancos sobre el fondo gris de la sección. */}
-        <h3 className="mb-5 text-xl font-medium tracking-tight text-black md:mb-6">
+        <h2 className="mb-5 text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black md:mb-6">
           Diseñamos tu mudanza en una llamada de 10 minutos
-        </h3>
+        </h2>
         <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
               {/* Origen */}
@@ -181,7 +182,7 @@ export default function QuoteForm() {
                   className={fieldClass}
                 />
                 {intentado && faltaOrigenNum && (
-                  <p className={`${errorClass} text-amber-700`}>
+                  <p className={`${errorClass} text-black`}>
                     Indica el número de la calle.
                   </p>
                 )}
@@ -203,7 +204,7 @@ export default function QuoteForm() {
                   className={fieldClass}
                 />
                 {intentado && faltaDestinoNum && (
-                  <p className={`${errorClass} text-amber-700`}>
+                  <p className={`${errorClass} text-black`}>
                     Indica el número de la calle.
                   </p>
                 )}
@@ -225,8 +226,8 @@ export default function QuoteForm() {
               {/* Teléfono (con +34 fijo) + Email */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <div className="flex items-stretch overflow-hidden rounded-lg border border-black/10 bg-white transition-colors duration-150 focus-within:border-black">
-                    <span className="flex select-none items-center border-r border-black/10 pl-4 pr-3 text-base text-black/50">
+                  <div className="flex items-stretch overflow-hidden rounded-field border border-hairline bg-white transition-colors duration-150 focus-within:border-black">
+                    <span className="flex select-none items-center border-r border-hairline pl-4 pr-3 text-base text-black/50">
                       +34
                     </span>
                     <input
@@ -257,7 +258,7 @@ export default function QuoteForm() {
                     />
                   </div>
                   {telefonoError && (
-                    <p className={`${errorClass} text-red-600`} role="alert">
+                    <p className={`${errorClass} text-black`} role="alert">
                       {telefonoError}
                     </p>
                   )}
@@ -286,7 +287,7 @@ export default function QuoteForm() {
                     className={fieldClass}
                   />
                   {emailError && (
-                    <p className={`${errorClass} text-red-600`} role="alert">
+                    <p className={`${errorClass} text-black`} role="alert">
                       {emailError}
                     </p>
                   )}
@@ -315,7 +316,7 @@ export default function QuoteForm() {
             </label>
 
             {error && (
-              <p className="mt-4 text-[15px] text-red-600" role="alert">
+              <p className="mt-4 text-[15px] font-medium text-black" role="alert">
                 {error}
               </p>
             )}
@@ -323,7 +324,11 @@ export default function QuoteForm() {
             <button
               type="submit"
               disabled={enviando}
-              className="mt-5 w-full rounded-full bg-black px-8 py-4 text-base font-medium text-white transition-colors duration-150 hover:bg-black/85 disabled:opacity-50"
+              className={btn({
+                variant: "primary",
+                size: "lg",
+                className: "mt-5 w-full",
+              })}
             >
               {enviando ? "Enviando…" : "Presupuesto"}
             </button>

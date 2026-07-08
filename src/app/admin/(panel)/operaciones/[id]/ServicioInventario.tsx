@@ -66,7 +66,7 @@ export default function ServicioInventario({
   const accesos = detalle?.accesos ?? null;
 
   return (
-    <section className="rounded-lg border border-black/10 p-5">
+    <section className="rounded-card border border-hairline p-5">
       <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-black/50">
         Servicio e inventario
       </h2>
@@ -132,7 +132,7 @@ export default function ServicioInventario({
                           {servicios.map((s) => (
                             <span
                               key={s.key}
-                              className="whitespace-nowrap rounded-full bg-gris px-2 py-0.5 text-[11px] font-medium text-black/70"
+                              className="whitespace-nowrap rounded-pill bg-gris px-2 py-0.5 text-[11px] font-medium text-black/70"
                             >
                               {s.label}
                             </span>
