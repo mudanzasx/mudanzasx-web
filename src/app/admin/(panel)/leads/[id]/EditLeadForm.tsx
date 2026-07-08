@@ -4,6 +4,12 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ESTADOS_COMERCIALES } from "@/lib/leads";
 import { Card, Text, Check, fieldClass, labelClass } from "@/components/admin/LeadFields";
+import {
+  esTelefonoEsValido,
+  esEmailValido,
+  AVISO_TELEFONO,
+  AVISO_EMAIL,
+} from "@/lib/validaciones";
 import { btn } from "@/components/ui/button";
 import { guardarLead, type GuardarLeadInput } from "./actions";
 
@@ -24,6 +30,8 @@ export default function EditLeadForm({
   const [mensaje, setMensaje] = useState<
     { tipo: "ok" | "error"; texto: string } | null
   >(null);
+  const [telefonoError, setTelefonoError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   // Fuente de verdad = el servidor. Si el lead recién leído (props `inicial`)
   // difiere del último snapshot que sincronizamos, reinicializamos el formulario
@@ -38,7 +46,16 @@ export default function EditLeadForm({
     setSnapshot(inicial);
     setF(inicial);
     setMensaje(null);
+    setTelefonoError(null);
+    setEmailError(null);
   }
+
+  // Teléfono y email son opcionales en la ficha, pero deben ser válidos si se
+  // rellenan (un contacto inválido rompe luego el cobro o el envío de emails).
+  const validarTelefono = (v: string) =>
+    v.trim() === "" || esTelefonoEsValido(v) ? null : AVISO_TELEFONO;
+  const validarEmail = (v: string) =>
+    v.trim() === "" || esEmailValido(v) ? null : AVISO_EMAIL;
 
   const sinCambios = (Object.keys(inicial) as (keyof LeadInicial)[]).every(
     (k) => f[k] === inicial[k]
@@ -51,6 +68,11 @@ export default function EditLeadForm({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const telErr = validarTelefono(f.telefono);
+    const emErr = validarEmail(f.email);
+    setTelefonoError(telErr);
+    setEmailError(emErr);
+    if (telErr || emErr) return;
     setMensaje(null);
     startTransition(async () => {
       const res = await guardarLead(id, f);
@@ -68,8 +90,28 @@ export default function EditLeadForm({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card title="Contacto">
           <Text label="Nombre" value={f.nombre} onChange={(v) => set("nombre", v)} />
-          <Text label="Teléfono" value={f.telefono} onChange={(v) => set("telefono", v)} />
-          <Text label="Email" type="email" value={f.email} onChange={(v) => set("email", v)} />
+          <Text
+            label="Teléfono"
+            type="tel"
+            value={f.telefono}
+            onChange={(v) => {
+              set("telefono", v);
+              if (telefonoError && validarTelefono(v) === null) setTelefonoError(null);
+            }}
+            onBlur={() => setTelefonoError(validarTelefono(f.telefono))}
+            error={telefonoError}
+          />
+          <Text
+            label="Email"
+            type="email"
+            value={f.email}
+            onChange={(v) => {
+              set("email", v);
+              if (emailError && validarEmail(v) === null) setEmailError(null);
+            }}
+            onBlur={() => setEmailError(validarEmail(f.email))}
+            error={emailError}
+          />
         </Card>
 
         <Card title="Origen">
@@ -154,7 +196,7 @@ export default function EditLeadForm({
           <span
             role="status"
             className={`text-sm ${
-              mensaje.tipo === "ok" ? "text-black/60" : "text-red-600"
+              mensaje.tipo === "ok" ? "text-black/60" : "text-black"
             }`}
           >
             {mensaje.texto}

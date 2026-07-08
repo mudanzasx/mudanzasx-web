@@ -165,6 +165,10 @@ export default function PresupuestoForm({
 
   // Resultado
   const [resultado, setResultado] = useState<PresupuestoResultado | null>(null);
+  // Al cambiar datos, el resultado NO se borra: se marca obsoleto (atenuado +
+  // aviso) para que el operario entienda que debe recalcular, en vez de verlo
+  // desaparecer sin explicación.
+  const [obsoleto, setObsoleto] = useState(false);
   const [precioAjustado, setPrecioAjustado] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [guardado, setGuardado] = useState(false);
@@ -205,7 +209,8 @@ export default function PresupuestoForm({
   }, [qProd]);
 
   function invalidar() {
-    setResultado(null);
+    // Solo marca obsoleto si ya hay un resultado que mostrar atenuado.
+    if (resultado) setObsoleto(true);
     setGuardado(false);
   }
 
@@ -328,10 +333,12 @@ export default function PresupuestoForm({
       });
       if (res.ok) {
         setResultado(res.resultado);
+        setObsoleto(false);
         setPrecioAjustado(round2(res.resultado.precio_final).toFixed(2));
       } else {
         setError(res.error);
         setResultado(null);
+        setObsoleto(false);
       }
     });
   }
@@ -625,6 +632,7 @@ export default function PresupuestoForm({
       {resultado && (
         <Resultado
           r={resultado}
+          obsoleto={obsoleto}
           precioAjustado={precioAjustado}
           setPrecioAjustado={(v) => {
             setPrecioAjustado(v);
@@ -711,6 +719,7 @@ function Dato({ label, value }: { label: string; value: string }) {
 
 function Resultado({
   r,
+  obsoleto,
   precioAjustado,
   setPrecioAjustado,
   ajuste,
@@ -720,6 +729,7 @@ function Resultado({
   editando,
 }: {
   r: PresupuestoResultado;
+  obsoleto: boolean;
   precioAjustado: string;
   setPrecioAjustado: (v: string) => void;
   ajuste: ReturnType<typeof margenAjustado> | null;
@@ -733,6 +743,12 @@ function Resultado({
 
   return (
     <div className="rounded-card border border-hairline bg-gris/40 p-4">
+      {obsoleto && (
+        <p className="mb-3 rounded-field bg-white px-3 py-2 text-sm font-medium text-black">
+          Los datos han cambiado. Pulsa «Calcular» para actualizar el precio.
+        </p>
+      )}
+      <div className={obsoleto ? "pointer-events-none opacity-50" : ""}>
       <div className="grid grid-cols-2 gap-x-4 sm:grid-cols-4">
         <Dato label="Volumen" value={`${num(r.volumen_total_m3, 2)} m³`} />
         <Dato label="Vehículo" value={r.viajes > 1 ? `${r.vehiculo} ×${r.viajes}` : r.vehiculo} />
@@ -823,7 +839,7 @@ function Resultado({
         <button
           type="button"
           onClick={onGuardar}
-          disabled={guardando}
+          disabled={guardando || obsoleto}
           className={btn({ variant: "primary", size: "md" })}
         >
           {guardando
@@ -837,6 +853,7 @@ function Resultado({
             Presupuesto guardado (borrador).
           </span>
         )}
+      </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ESTADOS_COMERCIALES } from "@/lib/leads";
 
 const fieldClass =
@@ -27,6 +27,16 @@ export default function LeadsFilters({
     const qs = params.toString();
     router.push(qs ? `/admin?${qs}` : "/admin");
   }
+
+  // Filtrado en vivo: al dejar de teclear (~350ms) aplicamos la búsqueda sin
+  // pulsar Enter, para que se comporte como el <select> instantáneo. Evitamos
+  // navegar en el montaje inicial o si el texto ya coincide con la `q` actual.
+  useEffect(() => {
+    if (texto.trim() === q.trim()) return;
+    const t = setTimeout(() => aplicar({ q: texto }), 350);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [texto]);
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">

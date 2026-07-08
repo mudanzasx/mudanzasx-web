@@ -140,6 +140,11 @@ export default async function CalendarioPage({
   const prev = mesAnterior(year, month);
   const next = mesSiguiente(year, month);
 
+  // Días del mes visible con operaciones, para la agenda móvil (cronológica).
+  const diasConOps = dias
+    .map((d, i) => ({ d, weekday: DIAS_SEMANA[i % 7], ops: porDia.get(d.iso) ?? [] }))
+    .filter((x) => x.d.enMes && x.ops.length > 0);
+
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -174,10 +179,45 @@ export default async function CalendarioPage({
         </div>
       )}
 
-      {/* En móvil el calendario se desplaza en horizontal para que las celdas
-          sigan siendo legibles y pulsables; en escritorio ocupa todo el ancho. */}
-      <div className="overflow-x-auto">
-        <div className="min-w-[700px]">
+      {/* Móvil: agenda cronológica por día. La cuadrícula de 7 columnas es
+          ilegible a ~390px y ocultaría operaciones (el "+N más"); la agenda las
+          lista todas. */}
+      <div className="md:hidden">
+        {diasConOps.length === 0 ? (
+          <p className="rounded-card border border-hairline bg-gris px-4 py-6 text-center text-sm text-black/50">
+            No hay operaciones programadas este mes.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-5">
+            {diasConOps.map(({ d, weekday, ops }) => (
+              <div key={d.iso}>
+                <h2 className="mb-2 flex items-baseline gap-2 text-sm font-medium text-black">
+                  <span
+                    className={
+                      d.esHoy
+                        ? "inline-flex h-6 min-w-6 items-center justify-center rounded-pill bg-black px-1.5 text-white"
+                        : ""
+                    }
+                  >
+                    {d.dia}
+                  </span>
+                  <span className="text-black/50">
+                    {weekday} de {nombreMes(month)}
+                  </span>
+                </h2>
+                <div className="flex flex-col gap-2">
+                  {ops.map((op) => (
+                    <FilaAgenda key={op.id} op={op} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Escritorio: cuadrícula mensual. */}
+      <div className="hidden md:block">
       {/* Cabecera de días de la semana */}
       <div className="grid grid-cols-7 border-l border-t border-hairline text-xs font-medium uppercase tracking-wide text-black/50">
         {DIAS_SEMANA.map((d) => (
@@ -218,16 +258,18 @@ export default async function CalendarioPage({
                   <TarjetaOperacion key={op.id} op={op} />
                 ))}
                 {resto > 0 && (
-                  <span className="px-1 text-[11px] font-medium text-black/50">
+                  <Link
+                    href={`/admin/calendario/${dia.iso}`}
+                    className="px-1 text-[11px] font-medium text-black/50 underline-offset-2 transition-colors hover:text-black hover:underline"
+                  >
                     +{resto} más
-                  </span>
+                  </Link>
                 )}
               </div>
             </div>
           );
         })}
       </div>
-        </div>
       </div>
 
       <Leyenda />
@@ -285,6 +327,35 @@ function TarjetaOperacion({ op }: { op: OperacionCalendario }) {
         {hora && <span className="tabular-nums">{hora} · </span>}
         {op.tipo?.trim() || "sin vehículo"}
       </div>
+    </Link>
+  );
+}
+
+// Fila de la agenda móvil: más legible que la tarjeta de la cuadrícula (hora,
+// cliente y vehículo en una línea), con acceso al detalle de la operación.
+function FilaAgenda({ op }: { op: OperacionCalendario }) {
+  const hora = formatHora(op.hora);
+  return (
+    <Link
+      href={`/admin/operaciones/${op.id}`}
+      className="flex items-center gap-3 rounded-card border border-hairline bg-white px-4 py-3 transition-colors hover:bg-gris"
+    >
+      <span
+        className={`inline-block h-2.5 w-2.5 shrink-0 rounded-pill ${dotEstado(
+          op.estado_operativo
+        )}`}
+      />
+      {hora && (
+        <span className="shrink-0 text-sm font-medium tabular-nums text-black">
+          {hora}
+        </span>
+      )}
+      <span className="min-w-0 flex-1 truncate font-medium text-black">
+        {op.nombre?.trim() || "Cliente"}
+      </span>
+      <span className="shrink-0 text-sm text-black/50">
+        {op.tipo?.trim() || "sin vehículo"}
+      </span>
     </Link>
   );
 }

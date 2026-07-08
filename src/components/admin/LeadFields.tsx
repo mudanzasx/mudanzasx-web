@@ -52,7 +52,7 @@ export function Text({
         className={fieldClass}
       />
       {error && (
-        <p className="mt-1.5 text-[13px] font-medium text-red-600" role="alert">
+        <p className="mt-1.5 text-[13px] font-medium text-black" role="alert">
           {error}
         </p>
       )}

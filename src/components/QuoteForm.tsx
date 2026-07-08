@@ -43,9 +43,11 @@ export default function QuoteForm() {
   const [destinoNum, setDestinoNum] = useState(false);
   const [intentado, setIntentado] = useState(false);
 
-  // Errores de contacto (teléfono y email) mostrados junto a cada campo.
+  // Errores mostrados junto a cada campo (validación propia, inline y monocroma).
   const [telefonoError, setTelefonoError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [nombreError, setNombreError] = useState<string | null>(null);
+  const [aceptaError, setAceptaError] = useState<string | null>(null);
 
   // Teléfono: 9 dígitos válidos (el prefijo +34 lo pone el propio campo).
   const validarTelefono = (v: string) =>
@@ -119,14 +121,31 @@ export default function QuoteForm() {
     e.preventDefault();
     setIntentado(true);
 
-    // Teléfono y email deben ser válidos para poder contactar al cliente.
+    // Validación propia (sin globos nativos): contacto, nombre y aceptación.
     const telErr = validarTelefono(form.telefono);
     const emErr = validarEmail(form.email);
+    const nomErr = form.nombre.trim() ? null : "Indica tu nombre y apellidos.";
+    const aceptaErr = form.acepta
+      ? null
+      : "Debes aceptar la Política de privacidad.";
     setTelefonoError(telErr);
     setEmailError(emErr);
+    setNombreError(nomErr);
+    setAceptaError(aceptaErr);
 
-    // La dirección de origen y destino debe incluir número de calle.
-    if ((exigirNumero && (!origenNum || !destinoNum)) || telErr || emErr) {
+    const origenVacio = form.origen.trim() === "";
+    const destinoVacio = form.destino.trim() === "";
+
+    // La dirección de origen y destino es obligatoria y debe incluir número.
+    if (
+      origenVacio ||
+      destinoVacio ||
+      (exigirNumero && (!origenNum || !destinoNum)) ||
+      telErr ||
+      emErr ||
+      nomErr ||
+      aceptaErr
+    ) {
       return;
     }
     setError(null);
@@ -164,7 +183,7 @@ export default function QuoteForm() {
         <h2 className="mb-5 text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black md:mb-6">
           Diseñamos tu mudanza en una llamada de 10 minutos
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
             <div className="flex flex-col gap-4">
               {/* Origen */}
               <div>
@@ -181,11 +200,15 @@ export default function QuoteForm() {
                   ariaLabel="Dirección de origen"
                   className={fieldClass}
                 />
-                {intentado && faltaOrigenNum && (
+                {intentado && form.origen.trim() === "" ? (
+                  <p className={`${errorClass} text-black`}>
+                    Indica la dirección de origen.
+                  </p>
+                ) : intentado && faltaOrigenNum ? (
                   <p className={`${errorClass} text-black`}>
                     Indica el número de la calle.
                   </p>
-                )}
+                ) : null}
               </div>
 
               {/* Destino */}
@@ -203,25 +226,39 @@ export default function QuoteForm() {
                   ariaLabel="Dirección de destino"
                   className={fieldClass}
                 />
-                {intentado && faltaDestinoNum && (
+                {intentado && form.destino.trim() === "" ? (
+                  <p className={`${errorClass} text-black`}>
+                    Indica la dirección de destino.
+                  </p>
+                ) : intentado && faltaDestinoNum ? (
                   <p className={`${errorClass} text-black`}>
                     Indica el número de la calle.
                   </p>
-                )}
+                ) : null}
               </div>
 
               {/* Nombre */}
-              <input
-                id="nombre"
-                ref={nombreRef}
-                type="text"
-                value={form.nombre}
-                onChange={update("nombre")}
-                required
-                aria-label="Nombre y apellidos"
-                placeholder="Nombre y apellidos"
-                className={fieldClass}
-              />
+              <div>
+                <input
+                  id="nombre"
+                  ref={nombreRef}
+                  type="text"
+                  value={form.nombre}
+                  onChange={(e) => {
+                    update("nombre")(e);
+                    if (nombreError) setNombreError(null);
+                  }}
+                  aria-label="Nombre y apellidos"
+                  aria-invalid={nombreError ? true : undefined}
+                  placeholder="Nombre y apellidos"
+                  className={fieldClass}
+                />
+                {nombreError && (
+                  <p className={`${errorClass} text-black`} role="alert">
+                    {nombreError}
+                  </p>
+                )}
+              </div>
 
               {/* Teléfono (con +34 fijo) + Email */}
               <div className="grid gap-4 sm:grid-cols-2">
@@ -299,8 +336,11 @@ export default function QuoteForm() {
               <input
                 type="checkbox"
                 checked={form.acepta}
-                onChange={update("acepta")}
-                required
+                onChange={(e) => {
+                  update("acepta")(e);
+                  if (aceptaError) setAceptaError(null);
+                }}
+                aria-invalid={aceptaError ? true : undefined}
                 className="mt-0.5 h-4 w-4 shrink-0 accent-black"
               />
               <span>
@@ -314,6 +354,11 @@ export default function QuoteForm() {
                 .
               </span>
             </label>
+            {aceptaError && (
+              <p className={`${errorClass} text-black`} role="alert">
+                {aceptaError}
+              </p>
+            )}
 
             {error && (
               <p className="mt-4 text-[15px] font-medium text-black" role="alert">

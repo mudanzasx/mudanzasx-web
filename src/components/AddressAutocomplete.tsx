@@ -8,7 +8,8 @@ import { usePlaces, type Suggestion } from "@/lib/googleMaps";
 // una, comprueba si incluye número de calle (street_number).
 //
 // `onChange(value, hasNumber)` se llama:
-//  - al teclear: hasNumber = false (hay que elegir una sugerencia con número);
+//  - al teclear: hasNumber = true si el texto ya contiene un número (no obliga a
+//    elegir una sugerencia); si no, false hasta elegir una con número;
 //  - al elegir una sugerencia: hasNumber = si la dirección lleva street_number.
 // Si Google no está disponible, degrada a input normal y reporta hasNumber=true
 // para no bloquear el formulario.
@@ -85,7 +86,9 @@ export default function AddressAutocomplete({
 
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     const v = e.target.value;
-    onChange(v, failed); // al teclear no hay número validado (salvo degradación)
+    // Se da por válido el número si Maps degradó (failed) o si el texto escrito a
+    // mano ya incluye un número (no se obliga a elegir una sugerencia).
+    onChange(v, failed || /\d/.test(v));
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => buscar(v), 200);
   }

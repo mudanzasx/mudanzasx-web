@@ -114,13 +114,13 @@ export default async function AdminDashboard({
               {leads.map((lead) => (
                 <tr
                   key={lead.id}
-                  className="border-b border-hairline transition-colors last:border-b-0 hover:bg-gris/60"
+                  className="relative cursor-pointer border-b border-hairline transition-colors last:border-b-0 hover:bg-gris/60"
                 >
                   <Td>
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
                         href={`/admin/leads/${lead.id}`}
-                        className="font-medium text-black underline-offset-2 hover:underline"
+                        className="font-medium text-black underline-offset-2 after:absolute after:inset-0 after:content-[''] hover:underline"
                       >
                         {textoODash(lead.nombre)}
                       </Link>
