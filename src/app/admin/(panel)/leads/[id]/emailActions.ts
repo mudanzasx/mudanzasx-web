@@ -102,7 +102,7 @@ export async function enviarResumenPresupuesto(
 
   const res = await enviarEmailResumen({
     para: email,
-    nombre: (lead?.nombre ?? "").trim() || "cliente",
+    nombre: (lead?.nombre ?? "").trim(),
     datos: {
       origen: textoODash(lead?.origen_direccion),
       destino: textoODash(lead?.destino_direccion),
@@ -138,7 +138,7 @@ export async function pedirValoracion(leadId: string): Promise<EnviarResult> {
 
   const res = await enviarEmailValoracion({
     para: email,
-    nombre: (lead.nombre ?? "").trim() || "cliente",
+    nombre: (lead.nombre ?? "").trim(),
   });
   if (!res.ok) return { ok: false, error: res.error };
   return { ok: true, email };

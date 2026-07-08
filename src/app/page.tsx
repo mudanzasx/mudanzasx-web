@@ -17,7 +17,7 @@ const jsonLd = {
   "@type": "MovingCompany",
   name: "Mudanzas X",
   description:
-    "Mudanzas desde Barcelona a toda la península ibérica: presupuesto con datos reales, cobertura nacional y servicio con seguro.",
+    "Mudanzas desde Barcelona a toda la península: presupuesto con datos reales, cobertura nacional y servicio con seguro.",
   url: "https://www.mudanzasx.com",
   telephone: TELEFONO,
   email: EMPRESA.email,

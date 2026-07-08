@@ -65,7 +65,7 @@ export default function QuoteForm() {
   const telefonoRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
 
-  // Cuando el hero pulsa "Calcular presupuesto": rellena, hace scroll y enfoca.
+  // Cuando el hero pulsa "Solicitar presupuesto": rellena, hace scroll y enfoca.
   useEffect(() => {
     if (prefill.nonce === 0) return;
 
@@ -330,7 +330,7 @@ export default function QuoteForm() {
                 className: "mt-5 w-full",
               })}
             >
-              {enviando ? "Enviando…" : "Presupuesto"}
+              {enviando ? "Enviando…" : "Solicitar presupuesto"}
             </button>
           </form>
       </div>

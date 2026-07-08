@@ -111,7 +111,7 @@ export default function Hero() {
               className: "mt-4 w-full sm:w-auto",
             })}
           >
-            Calcular presupuesto
+            Solicitar presupuesto
           </button>
 
           {/* Puntos de confianza (reubicados desde la antigua TrustBand). */}

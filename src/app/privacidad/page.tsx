@@ -58,7 +58,7 @@ export default function Privacidad() {
         <li>
           <strong>Datos de la mudanza:</strong> dirección de origen y de destino, y
           los detalles que nos proporciones sobre el servicio (volumen, tipo de
-          vivienda, fechas, elementos a transportar, etc.).
+          vivienda, fechas, objetos a transportar, etc.).
         </li>
       </ul>
       <p>Utilizamos estos datos para las siguientes finalidades:</p>

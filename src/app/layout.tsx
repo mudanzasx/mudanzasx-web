@@ -22,7 +22,7 @@ const montserrat = Montserrat({
 // futuras rutas por ciudad (mudanzas Barcelona → [Ciudad]) basta con exportar
 // su propia `metadata` con title/description específicos.
 const OG_DESCRIPTION =
-  "Mudanzas desde Barcelona a toda la península. Pide tu presupuesto en un minuto: precio calculado con datos reales, cobertura nacional y servicio con seguro.";
+  "Mudanzas desde Barcelona a toda la península. Pide tu presupuesto online: precio calculado con datos reales, cobertura nacional y servicio con seguro.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.mudanzasx.com"),

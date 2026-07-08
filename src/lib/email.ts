@@ -92,9 +92,10 @@ export async function enviarEmailPago(params: {
 }): Promise<EnvioResultado> {
   const { asunto, intro } = contenidoPago(params.tipo, params.importeTexto);
   const nombre = esc(params.nombre);
+  const saludo = nombre ? `Hola ${nombre},` : "Hola,";
   const url = params.url;
 
-  const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">Hola ${nombre},</p>
+  const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">${saludo}</p>
 <p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">${esc(intro)}</p>
 ${emailBoton(url, "Pagar de forma segura")}
 <p style="margin:22px 0 0;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.60);">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
@@ -129,6 +130,7 @@ export async function enviarEmailResumen(params: {
   datos: ResumenDatos;
 }): Promise<EnvioResultado> {
   const nombre = esc(params.nombre);
+  const saludo = nombre ? `Hola ${nombre},` : "Hola,";
   const d = params.datos;
 
   const filas =
@@ -168,7 +170,7 @@ export async function enviarEmailResumen(params: {
 <p style="margin:5px 0 0;font-size:14px;line-height:1.7;color:#000000;">${lista}${extra}</p>`;
   }
 
-  const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">Hola ${nombre},</p>
+  const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">${saludo}</p>
 <p style="margin:0 0 22px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">Aquí tienes el resumen de tu mudanza con Mudanzas X.</p>
 ${panelResumen(filas)}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 0;">
@@ -182,8 +184,8 @@ ${panelResumen(filas)}
 ${serviciosHtml}
 ${objetosHtml}
 ${productosHtml}
-<p style="margin:24px 0 22px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">¿Quieres reservar tu fecha o tienes alguna duda? Llámanos y lo dejamos todo listo.</p>
-${emailBoton(`tel:${TELEFONO}`, "Llámanos")}`;
+<p style="margin:24px 0 22px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">¿Quieres reservar tu fecha o tienes alguna duda? Estamos a una llamada.</p>
+${emailBoton(`tel:${TELEFONO}`, "Llamar")}`;
 
   const html = emailLayout({
     titulo: "Resumen de tu mudanza · Mudanzas X",
@@ -206,21 +208,22 @@ export async function enviarEmailValoracion(params: {
   nombre: string;
 }): Promise<EnvioResultado> {
   const nombre = esc(params.nombre);
+  const saludo = nombre ? `Hola ${nombre},` : "Hola,";
 
-  const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">Hola ${nombre},</p>
-<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">Gracias por confiar en Mudanzas X para tu mudanza. Esperamos que todo haya ido a las mil maravillas.</p>
-<p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">Nos encantaría saber cómo ha sido tu experiencia. Si nos dejas tu valoración, nos ayudas a mejorar y orientas a otras personas que buscan una mudanza de confianza. Solo te llevará un minuto.</p>
+  const cuerpo = `<p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#000000;">${saludo}</p>
+<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">Gracias por confiar en Mudanzas X para tu mudanza. Esperamos que todo haya salido según lo previsto.</p>
+<p style="margin:0 0 24px;font-size:15px;line-height:1.7;color:rgba(0,0,0,0.80);">Si has quedado conforme, puedes dejarnos tu valoración. Nos ayuda a mejorar y orienta a otras personas.</p>
 ${emailBoton(REVIEW_URL, "Dejar mi valoración")}
 <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:rgba(0,0,0,0.60);">Gracias de antemano. Un saludo del equipo de Mudanzas X.</p>`;
 
   const html = emailLayout({
-    titulo: "¿Qué te ha parecido? · Mudanzas X",
+    titulo: "Tu valoración · Mudanzas X",
     preheader: "Cuéntanos cómo ha ido tu mudanza con Mudanzas X.",
     cuerpo,
   });
   return enviar({
     para: params.para,
-    asunto: "¿Qué te ha parecido tu mudanza? · Mudanzas X",
+    asunto: "Tu valoración · Mudanzas X",
     html,
   });
 }

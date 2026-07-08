@@ -19,7 +19,7 @@ export default function Condiciones() {
         condiciones») regulan la contratación del servicio de mudanzas ofrecido
         por {EMPRESA.titular}, con NIF {EMPRESA.nif} y domicilio en{" "}
         {EMPRESA.domicilio} (en adelante, «Mudanzas X»), a través del sitio web{" "}
-        {EMPRESA.web}. Para cualquier consulta puedes contactar en{" "}
+        {EMPRESA.web}. Para cualquier consulta, se puede contactar en{" "}
         <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a> o en el teléfono{" "}
         <a href={`tel:${TELEFONO}`}>{TELEFONO_TEXTO}</a>. La solicitud y aceptación
         de un presupuesto implica la aceptación plena de estas condiciones.
@@ -28,7 +28,7 @@ export default function Condiciones() {
       <h2>2. Descripción del servicio</h2>
       <p>
         Mudanzas X presta servicios de mudanzas desde Barcelona a cualquier punto
-        de la península ibérica y viceversa. En función de lo acordado en cada
+        de la península y viceversa. En función de lo acordado en cada
         presupuesto, el servicio puede incluir el embalaje de los enseres, la
         carga, el transporte, la descarga, el montaje y desmontaje de mobiliario y
         la gestión de permisos de estacionamiento u ocupación de vía pública.

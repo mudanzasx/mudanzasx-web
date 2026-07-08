@@ -48,7 +48,7 @@ export default function SolicitudRecibida() {
             className="mx-fade-up mt-4 text-lg leading-[1.6] text-black/60"
             style={{ animationDelay: "0.25s" }}
           >
-            Te contactamos hoy mismo con tu presupuesto cerrado.
+            Te contactamos el mismo día laborable con tu presupuesto.
           </p>
 
           {/* Próximos pasos: secuencia numerada sobria, círculos grises unidos

@@ -9,7 +9,7 @@ type Prefill = {
   // formulario no vuelva a exigirlo sobre una dirección ya validada).
   origenValida: boolean;
   destinoValida: boolean;
-  // nonce se incrementa en cada "Calcular presupuesto" para disparar el efecto
+  // nonce se incrementa en cada "Solicitar presupuesto" para disparar el efecto
   // en el formulario aunque los valores no cambien.
   nonce: number;
 };

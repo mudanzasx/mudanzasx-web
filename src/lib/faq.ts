@@ -8,11 +8,11 @@ export const PREGUNTAS = [
   },
   {
     q: "¿Cómo se calcula el precio?",
-    a: "Con datos reales: volumen de lo que mueves, distancia entre origen y destino, número de operarios y horas. No trabajamos con estimaciones a ojo.",
+    a: "Con datos reales: volumen de tus objetos, distancia entre origen y destino, el equipo necesario y las horas. No trabajamos con estimaciones a ojo.",
   },
   {
     q: "¿Qué necesito pagar para reservar?",
-    a: "Primero cerramos tu presupuesto. Para reservar la fecha, pagas el 50% (o el 100% con un 5% de descuento). El resto se abona el día de la mudanza.",
+    a: "Primero cerramos tu presupuesto. Para reservar la fecha, pagas el 50% (o el 100% con un 5% de descuento por pago anticipado). El resto se abona el día de la mudanza.",
   },
   {
     q: "¿Trabajáis fines de semana o festivos?",

@@ -346,7 +346,7 @@ export async function enviarEnlacePago(
 
   const res = await enviarEmailPago({
     para: email,
-    nombre: (lead?.nombre ?? "").trim() || "cliente",
+    nombre: (lead?.nombre ?? "").trim(),
     tipo,
     importeTexto: formatPrecio(importe),
     url,
