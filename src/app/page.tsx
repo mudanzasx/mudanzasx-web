@@ -1,6 +1,5 @@
 import Topbar from "@/components/Topbar";
 import Header from "@/components/Header";
-import SectionNav from "@/components/SectionNav";
 import Hero from "@/components/Hero";
 import Manifiesto from "@/components/Manifiesto";
 import HowItWorks from "@/components/HowItWorks";
@@ -85,15 +84,15 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
-      {/* Topbar + Header + barra de secciones pegados arriba: acompañan al
-          usuario en todo el scroll (reclamo del descuento, CTA "Llamar" y
-          scrollspy de secciones). Sticky conserva el hueco en el flujo, así que
-          el contenido no queda tapado ni salta el layout. El id permite a
-          SectionNav medir la altura real del bloque y calcular sus offsets. */}
+      {/* Topbar + Header (con la navegación de secciones integrada) pegados
+          arriba: acompañan al usuario en todo el scroll (reclamo del descuento,
+          CTA "Llamar" y scrollspy). Sticky conserva el hueco en el flujo, así
+          que el contenido no queda tapado ni salta el layout. El id permite al
+          Header medir la altura real del bloque para el rootMargin y los
+          offsets. */}
       <div id="mx-fixed-top" className="sticky top-0 z-50">
         <Topbar />
         <Header />
-        <SectionNav />
       </div>
       <QuoteProvider>
         <main className="flex-1">

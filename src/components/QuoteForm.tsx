@@ -290,20 +290,20 @@ export default function QuoteForm() {
             única. La clase mx-glass-card gestiona el fallback a blanco sólido y
             prefers-reduced-transparency. Los campos y textos van sólidos. */}
         <div className="mx-glass-card relative overflow-hidden rounded-card border border-hairline">
-          {/* Barra de progreso fina (~3px) pegada al borde superior interior
-              (como la barra de carga de una app). Invertida: pista NEGRA plena
-              (línea negra que cruza el canto superior) y relleno GRIS de marca,
-              así el avance aclara la línea de izquierda a derecha; avanza un
-              tramo por cada campo obligatorio válido. Sin texto ni porcentaje.
-              El overflow-hidden de la tarjeta la recorta al radio superior.
-              Transición suave; se anula con prefers-reduced-motion. */}
+          {/* Barra de progreso fina (3px) pegada al borde superior interior
+              (como la barra de carga de una app). Sin pista: con progreso 0 el
+              canto superior se ve limpio. El relleno es una línea NEGRA plena
+              que crece desde la izquierda (scaleX con origen izquierdo) conforme
+              se validan los campos; sin texto ni porcentaje. El overflow-hidden
+              de la tarjeta la recorta al radio superior. Transición suave sobre
+              transform; se anula con prefers-reduced-motion. */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 top-0 z-10 h-[3px] bg-black"
+            className="absolute inset-x-0 top-0 z-10 h-[3px]"
           >
             <div
-              className="h-full bg-gris transition-[width] duration-300 ease-out motion-reduce:transition-none"
-              style={{ width: `${completos * 20}%` }}
+              className="h-full w-full origin-left bg-black transition-transform duration-300 ease-out motion-reduce:transition-none"
+              style={{ transform: `scaleX(${completos / 5})` }}
             />
           </div>
 

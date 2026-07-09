@@ -40,11 +40,15 @@ html {
    bajo la barra y no tapado. Cambia por breakpoint porque la altura del bloque
    fijo es mayor en escritorio. */
 :root {
-  --fixed-top: 136px;
+  /* Móvil: topbar (~26px) + header en 2 filas (fila principal ~52px + fila de
+     navegación ~31px). */
+  --fixed-top: 112px;
 }
 @media (min-width: 768px) {
+  /* Escritorio: topbar (~32px) + header en 1 fila (~60px) con la navegación
+     integrada, sin fila extra. */
   :root {
-    --fixed-top: 146px;
+    --fixed-top: 96px;
   }
 }
 #como-funciona,
