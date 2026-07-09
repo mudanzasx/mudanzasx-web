@@ -1,11 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { field } from "@/components/ui/field";
 
 // Primitivos de campo compartidos por los formularios de lead del panel
 // (ficha de edición y alta manual), para mantener la coherencia visual.
-export const fieldClass =
-  "mt-1.5 w-full rounded-field bg-gris px-3 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+export const fieldClass = field({ className: "mt-1.5" });
 export const labelClass = "block text-xs font-medium text-black/60";
 
 export function Card({

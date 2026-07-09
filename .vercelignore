@@ -1,0 +1,3 @@
+# Documentación interna (resúmenes de fases y auditoría): se conserva en git
+# pero no se sube al despliegue de Vercel.
+outputs/

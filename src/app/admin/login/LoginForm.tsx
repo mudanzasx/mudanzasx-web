@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { btn } from "@/components/ui/button";
+import { field } from "@/components/ui/field";
 
 const labelClass = "block text-sm font-medium text-black";
-const fieldClass =
-  "mt-2 w-full rounded-field bg-gris px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+const fieldClass = field({ size: "lg", className: "mt-2" });
 
 export default function LoginForm() {
   const router = useRouter();

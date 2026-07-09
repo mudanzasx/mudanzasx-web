@@ -1,8 +1,6 @@
 // Iconos de marca en SVG inline. lucide-react ya no incluye iconos de marca,
 // así que se definen aquí con trazos coherentes con el resto de la interfaz.
-import type { SVGProps } from "react";
-
-type IconProps = SVGProps<SVGSVGElement> & { size?: number };
+import type { IconProps } from "@/components/ui/icon";
 
 function base({ size = 20, ...props }: IconProps) {
   return {

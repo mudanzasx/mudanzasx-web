@@ -15,6 +15,7 @@ import {
 } from "@/lib/presupuesto";
 import { formatPrecio, parsePlantaNum } from "@/lib/leads";
 import { btn } from "@/components/ui/button";
+import { field } from "@/components/ui/field";
 import {
   buscarObjetos,
   buscarProductos,
@@ -22,8 +23,7 @@ import {
   guardarPresupuestoAction,
 } from "./presupuestoActions";
 
-const fieldClass =
-  "w-full rounded-field bg-gris px-3 py-2 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors focus:border-black";
+const fieldClass = field({ size: "sm" });
 const labelClass = "block text-xs font-medium text-black/60";
 
 type ObjLineaUI = {

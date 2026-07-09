@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ESTADOS_COMERCIALES } from "@/lib/leads";
+import { field } from "@/components/ui/field";
 
-const fieldClass =
-  "w-full rounded-field bg-gris px-4 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
+const fieldClass = field();
 
 // Controles de búsqueda/filtro. Empujan a query params y el servidor consulta.
 export default function LeadsFilters({

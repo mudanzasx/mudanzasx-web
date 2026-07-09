@@ -12,11 +12,11 @@ import {
   AVISO_EMAIL,
 } from "@/lib/validaciones";
 import { btn } from "@/components/ui/button";
+import { field } from "@/components/ui/field";
 
-// Campo base: fondo blanco sobre la sección gris, redondeado, con borde sutil
-// que se marca al enfocar (el formulario ya no vive dentro de una tarjeta).
-const fieldClass =
-  "w-full rounded-field bg-white px-4 py-3 text-base text-black placeholder-black/40 outline-none border border-hairline transition-colors duration-150 focus:border-black";
+// Campo base: fondo blanco sobre la sección gris (el formulario ya no vive
+// dentro de una tarjeta), con borde sutil que se marca al enfocar.
+const fieldClass = field({ variant: "public", size: "lg" });
 const errorClass = "mt-1.5 text-[13px] font-medium";
 
 export default function QuoteForm() {

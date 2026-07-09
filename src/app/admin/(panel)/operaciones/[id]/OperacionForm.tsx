@@ -4,11 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ESTADOS_OPERATIVOS } from "@/lib/operaciones";
 import { btn } from "@/components/ui/button";
+import { fieldClass, labelClass } from "@/components/admin/LeadFields";
 import { guardarOperacion, type GuardarOperacionInput } from "./actions";
-
-const fieldClass =
-  "mt-1.5 w-full rounded-field bg-gris px-3 py-2.5 text-sm text-black placeholder-black/40 outline-none border border-transparent transition-colors duration-150 focus:border-black";
-const labelClass = "block text-xs font-medium text-black/60";
 
 export type OperacionInicial = GuardarOperacionInput;
 

@@ -376,7 +376,7 @@ export async function guardarPresupuestoAction(
   // cálculo automático). Si el operario ajusta el precio a mano, el coste base es
   // el real (no cambia al negociar) y se recalculan margen e IVA para ese precio;
   // si no, se usan los del motor.
-  let costeBaseGuardado = r.coste_base;
+  const costeBaseGuardado = r.coste_base;
   let margenGuardado = r.margen_eur;
   let ivaGuardado = r.iva_eur;
   if (ajustado != null) {

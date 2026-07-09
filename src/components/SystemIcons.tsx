@@ -1,8 +1,7 @@
 // Familia propia de iconos monolínea (trazo 2px sobre rejilla 24, geométricos).
 // Coherentes entre "Cómo funciona", "Servicios" y la banda de confianza.
-import type { ReactNode, SVGProps } from "react";
-
-type IconProps = SVGProps<SVGSVGElement> & { size?: number };
+import type { ReactNode } from "react";
+import type { IconProps } from "@/components/ui/icon";
 
 function Icon({
   size = 28,
