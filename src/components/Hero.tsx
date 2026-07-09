@@ -33,106 +33,116 @@ export default function Hero() {
 
   return (
     <section id="top" className="w-full bg-gris">
-      <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
-        {/* Banner gráfico decorativo (SVG inline, aria-hidden): cabecera tipo
-            perfil sobre el gris del hero. Más alto en móvil (2:1) que en
-            escritorio (3:1) para que no quede una tira insignificante.
-            overflow-hidden recorta los arcos contra las esquinas redondeadas. */}
-        <div className="mb-10 aspect-[2/1] w-full overflow-hidden rounded-card bg-black sm:aspect-[5/2] md:mb-12 md:aspect-[3/1]">
-          <HeroBanner />
-        </div>
+      {/* 1. FRANJA VISUAL (decorativa): franja negra a ancho completo con el
+          gráfico de marca (SVG inline). Va justo debajo del bloque fijo y
+          overflow-hidden recorta el SVG. Preparada para imagen futura: basta
+          sustituir <HeroBanner /> por <Image fill className="object-cover" … />
+          sin tocar la estructura (ya es relative + overflow-hidden con alto
+          fijo). */}
+      <div
+        aria-hidden="true"
+        className="relative h-[200px] w-full overflow-hidden bg-black md:h-[300px]"
+      >
+        <HeroBanner />
+      </div>
 
-        <div className="max-w-3xl">
-          <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black">
-            Mudanzas desde y hacia Barcelona
-          </h1>
-        </div>
-
-        {/* Bloque Origen/Destino estilo Uber */}
-        <div className="mt-10 max-w-xl">
-          <div className="relative rounded-card border border-hairline bg-white px-4 py-2 shadow-card md:px-5">
-            {/*
-              Carril izquierdo de 20px (columna del grid). Cada fila mide 56px (h-14),
-              así el centro del marcador de Origen queda a 8+28=36px y el de Destino a
-              8+56+28=92px. La línea conecta exactamente ambos centros: top 36px, alto 56px.
-            */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute top-[36px] left-[26px] h-[56px] w-px -translate-x-1/2 bg-black/30 md:left-[30px]"
-            />
-
-            {/* Fila Origen */}
-            <div className="grid h-14 grid-cols-[20px_1fr] items-center">
-              <span className="flex items-center justify-center">
-                <span className="block h-2.5 w-2.5 rounded-pill bg-black" />
-              </span>
-              <AddressAutocomplete
-                value={origen}
-                onChange={(v, hasNumber) => {
-                  setOrigen(v);
-                  setOrigenNum(hasNumber);
-                }}
-                placeholder="¿Desde dónde?"
-                ariaLabel="Origen"
-                wrapperClassName="col-start-2"
-                className="w-full border-b border-hairline bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
-              />
-            </div>
-
-            {/* Fila Destino */}
-            <div className="grid h-14 grid-cols-[20px_1fr] items-center">
-              <span className="flex items-center justify-center">
-                <span className="block h-2.5 w-2.5 rounded-pill bg-black" />
-              </span>
-              <AddressAutocomplete
-                value={destino}
-                onChange={(v, hasNumber) => {
-                  setDestino(v);
-                  setDestinoNum(hasNumber);
-                }}
-                placeholder="¿Hasta dónde?"
-                ariaLabel="Destino"
-                wrapperClassName="col-start-2"
-                className="w-full bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
-              />
-            </div>
+      {/* 2. PANEL DE CONTENIDO: sube sobre la franja (solape con margen superior
+          negativo), esquinas superiores redondeadas generosas e inferiores
+          rectas, fondo gris. z-10 para quedar por encima de la franja. */}
+      <div className="relative z-10 -mt-7 rounded-t-[28px] bg-gris md:-mt-10 md:rounded-t-[40px]">
+        <div className="mx-auto max-w-[1200px] px-6 pb-14 pt-10 md:pb-24 md:pt-14">
+          <div className="max-w-3xl">
+            <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black">
+              Mudanzas desde y hacia Barcelona
+            </h1>
           </div>
 
-          {/* Aviso de número de calle obligatorio */}
-          {intentado && (faltaOrigen || faltaDestino) && (
-            <p className="mt-2 text-[13px] font-medium text-black">
-              Indica el número de la calle en{" "}
-              {faltaOrigen && faltaDestino
-                ? "el origen y el destino"
-                : faltaOrigen
-                  ? "el origen"
-                  : "el destino"}
-              .
-            </p>
-          )}
+          {/* Bloque Origen/Destino estilo Uber */}
+          <div className="mt-10 max-w-xl">
+            <div className="relative rounded-card border border-hairline bg-white px-4 py-2 shadow-card md:px-5">
+              {/*
+                Carril izquierdo de 20px (columna del grid). Cada fila mide 56px (h-14),
+                así el centro del marcador de Origen queda a 8+28=36px y el de Destino a
+                8+56+28=92px. La línea conecta exactamente ambos centros: top 36px, alto 56px.
+              */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute top-[36px] left-[26px] h-[56px] w-px -translate-x-1/2 bg-black/30 md:left-[30px]"
+              />
 
-          <button
-            type="button"
-            onClick={handleCalcular}
-            className={btn({
-              variant: "primary",
-              size: "lg",
-              className: "mt-4 w-full sm:w-auto",
-            })}
-          >
-            Solicitar presupuesto
-          </button>
+              {/* Fila Origen */}
+              <div className="grid h-14 grid-cols-[20px_1fr] items-center">
+                <span className="flex items-center justify-center">
+                  <span className="block h-2.5 w-2.5 rounded-pill bg-black" />
+                </span>
+                <AddressAutocomplete
+                  value={origen}
+                  onChange={(v, hasNumber) => {
+                    setOrigen(v);
+                    setOrigenNum(hasNumber);
+                  }}
+                  placeholder="¿Desde dónde?"
+                  ariaLabel="Origen"
+                  wrapperClassName="col-start-2"
+                  className="w-full border-b border-hairline bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
+                />
+              </div>
 
-          {/* Puntos de confianza (reubicados desde la antigua TrustBand). */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 md:justify-start">
-            {CONFIANZA.map(({ texto }) => (
-              <span
-                key={texto}
-                className="text-[13px] font-medium tracking-tight text-black/70"
-              >
-                {texto}
-              </span>
-            ))}
+              {/* Fila Destino */}
+              <div className="grid h-14 grid-cols-[20px_1fr] items-center">
+                <span className="flex items-center justify-center">
+                  <span className="block h-2.5 w-2.5 rounded-pill bg-black" />
+                </span>
+                <AddressAutocomplete
+                  value={destino}
+                  onChange={(v, hasNumber) => {
+                    setDestino(v);
+                    setDestinoNum(hasNumber);
+                  }}
+                  placeholder="¿Hasta dónde?"
+                  ariaLabel="Destino"
+                  wrapperClassName="col-start-2"
+                  className="w-full bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Aviso de número de calle obligatorio */}
+            {intentado && (faltaOrigen || faltaDestino) && (
+              <p className="mt-2 text-[13px] font-medium text-black">
+                Indica el número de la calle en{" "}
+                {faltaOrigen && faltaDestino
+                  ? "el origen y el destino"
+                  : faltaOrigen
+                    ? "el origen"
+                    : "el destino"}
+                .
+              </p>
+            )}
+
+            <button
+              type="button"
+              onClick={handleCalcular}
+              className={btn({
+                variant: "primary",
+                size: "lg",
+                className: "mt-4 w-full active:scale-[0.98] sm:w-auto",
+              })}
+            >
+              Solicitar presupuesto
+            </button>
+
+            {/* Puntos de confianza (reubicados desde la antigua TrustBand). */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 md:justify-start">
+              {CONFIANZA.map(({ texto }) => (
+                <span
+                  key={texto}
+                  className="text-[13px] font-medium tracking-tight text-black/70"
+                >
+                  {texto}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
