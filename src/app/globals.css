@@ -216,3 +216,63 @@ body {
     stroke-dashoffset: 0;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Ondas del botón "Llamar" (pulse ring) — sobrio y "antimarketing".
+   Dos anillos negros de opacidad muy baja nacen en el borde del botón, se
+   expanden y se desvanecen (ease-out). El ciclo es largo (10s): hacen una
+   ráfaga de 2 ondas seguidas y luego descansan ~8s, así el botón está quieto
+   la mayor parte del tiempo y no cansa. Se dibujan detrás y no capturan clics.
+   --------------------------------------------------------------------------- */
+.mx-call::before,
+.mx-call::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+  opacity: 0;
+  /* El anillo parte exactamente del contorno del botón y crece hacia fuera. */
+  transform: scale(1);
+  animation: mx-callring 10s ease-out infinite;
+}
+/* Segundo anillo desfasado: forma la "ráfaga" de dos ondas seguidas. */
+.mx-call::after {
+  animation-delay: 0.7s;
+}
+
+@keyframes mx-callring {
+  0% {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+  /* La onda vive solo el primer ~16% del ciclo (~1.6s); el resto, invisible. */
+  16% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+/* Al interactuar (hover/foco) el botón ya se refuerza con su cambio de fondo;
+   detenemos las ondas para no competir con el estado activo. */
+.mx-call:hover::before,
+.mx-call:hover::after,
+.mx-call:focus-within::before,
+.mx-call:focus-within::after {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+/* Movimiento reducido: sin ondas. */
+@media (prefers-reduced-motion: reduce) {
+  .mx-call::before,
+  .mx-call::after {
+    animation: none;
+    opacity: 0;
+  }
+}
