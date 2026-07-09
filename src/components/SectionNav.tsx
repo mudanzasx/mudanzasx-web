@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 
 // Secciones de la landing en orden de aparición. El id coincide con el del
-// <section> correspondiente ya presente en el DOM.
+// <section> correspondiente ya presente en el DOM ("top" es el hero).
 const SECTIONS = [
+  { id: "top", label: "Inicio" },
   { id: "como-funciona", label: "Cómo funciona" },
   { id: "servicios", label: "Servicios" },
   { id: "faq", label: "Preguntas" },
@@ -15,9 +16,10 @@ const SECTIONS = [
 const CTA_ID = "presupuesto";
 
 export default function SectionNav() {
-  // id de la sección activa; null cuando el usuario está en el hero (arriba
-  // del todo, antes de la primera sección): no se resalta ninguna entrada.
-  const [active, setActive] = useState<string | null>(null);
+  // id de la sección activa. Se inicia en el hero ("top") para que al cargar
+  // arriba del todo "Inicio" ya salga resaltado sin parpadeo; el observer lo
+  // corrige de inmediato si la página carga desplazada (enlace directo).
+  const [active, setActive] = useState<string | null>("top");
 
   useEffect(() => {
     const els = SECTIONS.map((s) => document.getElementById(s.id)).filter(
@@ -45,9 +47,10 @@ export default function SectionNav() {
             else visible.delete(e.target.id);
           }
           // Activa la primera sección (en orden de documento) dentro de la
-          // banda; si no hay ninguna (hero), no se resalta nada.
+          // banda. El hero ("top") entra en la lista, así que arriba del todo
+          // "Inicio" queda activo.
           const first = SECTIONS.find((s) => visible.has(s.id));
-          setActive(first ? first.id : null);
+          if (first) setActive(first.id);
         },
         // Banda de detección: desde justo debajo del bloque fijo hasta el 45%
         // del viewport, para que solo una sección "mande" a la vez.
@@ -76,9 +79,10 @@ export default function SectionNav() {
       aria-label="Secciones de la página"
       className="border-t border-b border-hairline bg-white"
     >
-      {/* En móvil el scroll horizontal queda confinado aquí (barra oculta),
-          así las 4 etiquetas nunca desbordan la página. */}
-      <ul className="mx-auto flex max-w-[1200px] items-center gap-5 overflow-x-auto px-6 py-2 text-xs tracking-tight [scrollbar-width:none] md:gap-7 md:py-2.5 md:text-[13px] [&::-webkit-scrollbar]:hidden">
+      {/* Compacta: padding vertical mínimo y tipografía pequeña. En móvil el
+          scroll horizontal queda confinado aquí (barra oculta), así las 5
+          etiquetas nunca desbordan la página. */}
+      <ul className="mx-auto flex max-w-[1200px] items-center gap-4 overflow-x-auto px-5 py-1.5 text-xs tracking-tight [scrollbar-width:none] md:gap-6 md:px-6 md:py-2 md:text-[13px] [&::-webkit-scrollbar]:hidden">
         {SECTIONS.map((s) => {
           const isActive = active === s.id;
           const isCta = s.id === CTA_ID;
