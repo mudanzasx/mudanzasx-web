@@ -2,6 +2,7 @@ import Topbar from "@/components/Topbar";
 import Header from "@/components/Header";
 import SectionNav from "@/components/SectionNav";
 import Hero from "@/components/Hero";
+import Manifiesto from "@/components/Manifiesto";
 import HowItWorks from "@/components/HowItWorks";
 import Servicios from "@/components/Servicios";
 import Faq from "@/components/Faq";
@@ -97,6 +98,7 @@ export default function Home() {
       <QuoteProvider>
         <main className="flex-1">
           <Hero />
+          <Manifiesto />
           <HowItWorks />
           <Servicios />
           <Faq />
