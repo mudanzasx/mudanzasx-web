@@ -24,11 +24,12 @@ const errorClass = "mt-1.5 text-[13px] font-medium";
 
 // Ondas de marca del fondo de la sección (detrás de la tarjeta): 10 arcos
 // concéntricos negros con el mismo centro, espaciado geométrico (×1,35) y
-// opacidad interpolada 0.12 → 0.02. Versión para fondo claro (negro tenue) de
-// las ondas de la banda de manifiesto; parecen emanar del formulario.
+// opacidad interpolada 0.24 → 0.02. Reforzadas para que se perciban a través
+// del vidrio; los arcos interiores (los más marcados) cruzan por detrás de la
+// tarjeta y se atenúan hacia los bordes de la sección de forma natural.
 const ONDA_ARCOS = Array.from({ length: 10 }, (_, i) => ({
   r: Math.round(70 * Math.pow(1.35, i)),
-  opacity: Math.round((0.12 - (0.1 * i) / 9) * 1000) / 1000,
+  opacity: Math.round((0.24 - (0.22 * i) / 9) * 1000) / 1000,
 }));
 
 // Marca de validación discreta dentro del campo (derecha): check de trazo fino
@@ -288,36 +289,38 @@ export default function QuoteForm() {
             blanco traslúcido + desenfoque del fondo (ondas), hairline y sombra
             única. La clase mx-glass-card gestiona el fallback a blanco sólido y
             prefers-reduced-transparency. Los campos y textos van sólidos. */}
-        <div className="mx-glass-card relative overflow-hidden rounded-card border border-hairline shadow-card">
-          {/* Barra de progreso fina pegada al borde superior interior (como la
-              barra de carga de una app). Pista negra tenue (rgba(0,0,0,0.10),
-              un "pelo" oscuro), relleno negro pleno para que el avance
-              contraste; avanza un tramo por cada campo obligatorio válido. Sin
-              texto ni porcentaje. Transición suave; se anula con
-              prefers-reduced-motion. */}
+        <div className="mx-glass-card relative overflow-hidden rounded-card border border-hairline">
+          {/* Barra de progreso fina (~3px) pegada al borde superior interior
+              (como la barra de carga de una app). Invertida: pista NEGRA plena
+              (línea negra que cruza el canto superior) y relleno GRIS de marca,
+              así el avance aclara la línea de izquierda a derecha; avanza un
+              tramo por cada campo obligatorio válido. Sin texto ni porcentaje.
+              El overflow-hidden de la tarjeta la recorta al radio superior.
+              Transición suave; se anula con prefers-reduced-motion. */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 top-0 z-10 h-1 bg-black/10"
+            className="absolute inset-x-0 top-0 z-10 h-[3px] bg-black"
           >
             <div
-              className="h-full bg-black transition-[width] duration-300 ease-out motion-reduce:transition-none"
+              className="h-full bg-gris transition-[width] duration-300 ease-out motion-reduce:transition-none"
               style={{ width: `${completos * 20}%` }}
             />
           </div>
 
-          <div className="p-6 md:p-8">
-            {/* Cabecera: titular corto + badge del tiempo estimado. Sin párrafo. */}
-            <div className="mb-6 flex items-center gap-3">
-              <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] text-black">
-                Te llamamos
-              </h2>
-              <span className="inline-flex items-center gap-1.5 rounded-pill bg-gris px-2.5 py-1 text-xs font-medium text-black">
-                <IconClock size={13} strokeWidth={1.75} />
-                10 min
-              </span>
-            </div>
+          <form onSubmit={handleSubmit} noValidate>
+            {/* Cuerpo traslúcido: cabecera y campos sobre el vidrio. */}
+            <div className="p-6 md:p-8">
+              {/* Cabecera: titular corto + badge del tiempo estimado. Sin párrafo. */}
+              <div className="mb-6 flex items-center gap-3">
+                <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] text-black">
+                  Te llamamos
+                </h2>
+                <span className="inline-flex items-center gap-1.5 rounded-pill bg-gris px-2.5 py-1 text-xs font-medium text-black">
+                  <IconClock size={13} strokeWidth={1.75} />
+                  10 min
+                </span>
+              </div>
 
-            <form onSubmit={handleSubmit} noValidate>
               <div className="flex flex-col gap-4">
                 {/* Origen */}
                 <div>
@@ -505,9 +508,15 @@ export default function QuoteForm() {
                   {aceptaError}
                 </p>
               )}
+            </div>
 
+            {/* Pie sólido anclado (zona de acción): blanco puro, sin vidrio ni
+                transparencia; separado del cuerpo por una hairline y siguiendo el
+                radio inferior de la tarjeta (overflow-hidden del contenedor). El
+                ojo cae de forma natural aquí. Contiene Turnstile y el botón. */}
+            <div className="flex flex-col gap-4 border-t border-hairline bg-white px-6 py-5 md:px-8 md:py-6">
               {turnstileHabilitado && (
-                <div className="mt-5">
+                <div>
                   <Turnstile
                     ref={turnstileRef}
                     onToken={(t) => {
@@ -530,20 +539,21 @@ export default function QuoteForm() {
               )}
 
               {error && (
-                <p className="mt-4 text-[15px] font-medium text-black" role="alert">
+                <p className="text-[15px] font-medium text-black" role="alert">
                   {error}
                 </p>
               )}
 
               {/* Remate al 100%: cuando los 5 campos son válidos, el botón
-                  muestra un check discreto (cambio de estado sobrio). */}
+                  muestra un check discreto (cambio de estado sobrio). El botón
+                  ocupa el ancho del pie, como una app bancaria. */}
               <button
                 type="submit"
                 disabled={enviando}
                 className={btn({
                   variant: "primary",
                   size: "lg",
-                  className: "mt-6 w-full",
+                  className: "w-full",
                 })}
               >
                 {enviando ? (
@@ -569,8 +579,8 @@ export default function QuoteForm() {
                   </>
                 )}
               </button>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </section>
