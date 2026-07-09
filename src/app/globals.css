@@ -40,7 +40,7 @@ html {
    bajo la barra y no tapado. Cambia por breakpoint porque la altura del bloque
    fijo es mayor en escritorio. */
 :root {
-  --fixed-top: 138px;
+  --fixed-top: 136px;
 }
 @media (min-width: 768px) {
   :root {

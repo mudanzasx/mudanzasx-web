@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 
 // Secciones de la landing en orden de aparición. El id coincide con el del
 // <section> correspondiente ya presente en el DOM ("top" es el hero).
+// `short` es la etiqueta abreviada que se usa solo en móvil para que las 5
+// entradas quepan enteras (~360px). "Comenzar" nunca se abrevia ni se corta.
 const SECTIONS = [
-  { id: "top", label: "Inicio" },
-  { id: "como-funciona", label: "Cómo funciona" },
-  { id: "servicios", label: "Servicios" },
-  { id: "faq", label: "Preguntas" },
-  { id: "presupuesto", label: "Comenzar" },
+  { id: "top", label: "Inicio", short: "Inicio" },
+  { id: "como-funciona", label: "Cómo funciona", short: "Proceso" },
+  { id: "servicios", label: "Servicios", short: "Servicios" },
+  { id: "faq", label: "Preguntas", short: "FAQ" },
+  { id: "presupuesto", label: "Comenzar", short: "Comenzar" },
 ] as const;
 
 // Última entrada: es la llamada a la acción y va siempre destacada.
@@ -79,10 +81,11 @@ export default function SectionNav() {
       aria-label="Secciones de la página"
       className="border-t border-b border-hairline bg-white"
     >
-      {/* Compacta: padding vertical mínimo y tipografía pequeña. En móvil el
-          scroll horizontal queda confinado aquí (barra oculta), así las 5
-          etiquetas nunca desbordan la página. */}
-      <ul className="mx-auto flex max-w-[1200px] items-center gap-4 overflow-x-auto px-5 py-1.5 text-xs tracking-tight [scrollbar-width:none] md:gap-6 md:px-6 md:py-2 md:text-[13px] [&::-webkit-scrollbar]:hidden">
+      {/* Compacta y sin scroll horizontal: en móvil las 5 entradas se reparten
+          el ancho (justify-between) con etiquetas cortas, así todas —incluida
+          "Comenzar"— quedan visibles a la vez. En escritorio se centran con
+          las etiquetas completas. */}
+      <ul className="mx-auto flex max-w-[1200px] items-center justify-between gap-1 px-3 py-1.5 text-[11px] tracking-tight md:justify-center md:gap-6 md:px-6 md:py-2 md:text-[13px]">
         {SECTIONS.map((s) => {
           const isActive = active === s.id;
           const isCta = s.id === CTA_ID;
@@ -90,11 +93,11 @@ export default function SectionNav() {
           // activa. Su estado activo se refuerza al oscurecer el subrayado.
           const highlighted = isActive || isCta;
           return (
-            <li key={s.id} className="shrink-0">
+            <li key={s.id} className="min-w-0">
               <a
                 href={`#${s.id}`}
                 aria-current={isActive ? "true" : undefined}
-                className={`inline-block rounded-field px-1.5 py-0.5 whitespace-nowrap outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-black/40 ${
+                className={`inline-block rounded-field px-1 py-0.5 whitespace-nowrap outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-black/40 md:px-1.5 ${
                   highlighted
                     ? "font-medium text-black"
                     : "font-normal text-black/40 hover:text-black/70"
@@ -106,7 +109,11 @@ export default function SectionNav() {
                     : ""
                 }`}
               >
-                {s.label}
+                {/* Etiqueta corta en móvil, completa en escritorio. Solo una se
+                    muestra (display) en cada breakpoint, así el lector de
+                    pantalla lee únicamente la visible. */}
+                <span className="md:hidden">{s.short}</span>
+                <span className="hidden md:inline">{s.label}</span>
               </a>
             </li>
           );
