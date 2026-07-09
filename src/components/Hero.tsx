@@ -5,6 +5,7 @@ import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
 import { btn } from "@/components/ui/button";
+import HeroBanner from "./HeroBanner";
 // Punto de confianza: refuerzo discreto bajo el botón.
 const CONFIANZA = [{ texto: "Operativa 365 días" }];
 
@@ -33,6 +34,14 @@ export default function Hero() {
   return (
     <section id="top" className="w-full bg-gris">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
+        {/* Banner gráfico decorativo (SVG inline, aria-hidden): cabecera tipo
+            perfil sobre el gris del hero. Más alto en móvil (2:1) que en
+            escritorio (3:1) para que no quede una tira insignificante.
+            overflow-hidden recorta los arcos contra las esquinas redondeadas. */}
+        <div className="mb-10 aspect-[2/1] w-full overflow-hidden rounded-card bg-black sm:aspect-[5/2] md:mb-12 md:aspect-[3/1]">
+          <HeroBanner />
+        </div>
+
         <div className="max-w-3xl">
           <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black">
             Mudanzas desde y hacia Barcelona
