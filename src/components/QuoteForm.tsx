@@ -201,7 +201,7 @@ export default function QuoteForm() {
     <section
       id="presupuesto"
       ref={sectionRef}
-      className="w-full border-t border-hairline bg-gris scroll-mt-24"
+      className="w-full border-t border-hairline bg-gris"
     >
       <div className="mx-auto max-w-[560px] px-6 py-14 md:py-24">
         {/* El formulario ocupa la sección directamente (sin tarjeta): inputs

@@ -34,6 +34,34 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Altura del bloque fijo superior (topbar + header + barra de secciones). Se
+   expone como variable para usarla de scroll-margin-top en las secciones
+   destino de la barra, de modo que al navegar el título quede visible justo
+   bajo la barra y no tapado. Cambia por breakpoint porque la altura del bloque
+   fijo es mayor en escritorio. */
+:root {
+  --fixed-top: 140px;
+}
+@media (min-width: 768px) {
+  :root {
+    --fixed-top: 150px;
+  }
+}
+#como-funciona,
+#servicios,
+#faq,
+#presupuesto {
+  scroll-margin-top: var(--fixed-top);
+}
+
+/* Movimiento reducido: el scroll de la barra de secciones es un salto directo,
+   sin animación. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
