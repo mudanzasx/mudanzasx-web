@@ -22,6 +22,15 @@ import Turnstile, { type TurnstileHandle } from "./Turnstile";
 const fieldClass = field({ variant: "public", size: "lg", className: "pr-11" });
 const errorClass = "mt-1.5 text-[13px] font-medium";
 
+// Ondas de marca del fondo de la sección (detrás de la tarjeta): 10 arcos
+// concéntricos negros con el mismo centro, espaciado geométrico (×1,35) y
+// opacidad interpolada 0.12 → 0.02. Versión para fondo claro (negro tenue) de
+// las ondas de la banda de manifiesto; parecen emanar del formulario.
+const ONDA_ARCOS = Array.from({ length: 10 }, (_, i) => ({
+  r: Math.round(70 * Math.pow(1.35, i)),
+  opacity: Math.round((0.12 - (0.1 * i) / 9) * 1000) / 1000,
+}));
+
 // Marca de validación discreta dentro del campo (derecha): check de trazo fino
 // en negro (nunca verde; paleta estricta). Aparece/desaparece con una
 // transición breve; se anula con prefers-reduced-motion.
@@ -247,19 +256,48 @@ export default function QuoteForm() {
     <section
       id="presupuesto"
       ref={sectionRef}
-      className="w-full border-t border-hairline bg-gris"
+      className="relative w-full overflow-hidden border-t border-hairline bg-gris"
     >
-      <div className="mx-auto max-w-[460px] px-6 py-14 md:py-24">
-        {/* Tarjeta contenida tipo panel de login: blanca sobre el gris de la
-            sección, esquinas --radius-card, hairline y sombra única. */}
-        <div className="relative overflow-hidden rounded-card border border-hairline bg-white shadow-card">
+      {/* Ondas de marca detrás de la tarjeta: estáticas, monocromas, sin
+          capturar clics. Origen en el centro de la sección (tras la tarjeta),
+          arcos que se salen del encuadre; overflow-hidden de la sección los
+          recorta en los bordes. El trazo se mantiene fino y constante. */}
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        viewBox="0 0 1000 1000"
+        preserveAspectRatio="xMidYMid slice"
+      >
+        {ONDA_ARCOS.map((a, i) => (
+          <circle
+            key={i}
+            cx={500}
+            cy={500}
+            r={a.r}
+            fill="none"
+            stroke="#000000"
+            strokeOpacity={a.opacity}
+            strokeWidth={1.25}
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+      </svg>
+
+      <div className="relative z-10 mx-auto max-w-[460px] px-6 py-14 md:py-24">
+        {/* Tarjeta tipo panel de login con vidrio esmerilado sutil: fondo
+            blanco traslúcido + desenfoque del fondo (ondas), hairline y sombra
+            única. La clase mx-glass-card gestiona el fallback a blanco sólido y
+            prefers-reduced-transparency. Los campos y textos van sólidos. */}
+        <div className="mx-glass-card relative overflow-hidden rounded-card border border-hairline shadow-card">
           {/* Barra de progreso fina pegada al borde superior interior (como la
-              barra de carga de una app). Pista gris, relleno negro; avanza un
-              tramo por cada campo obligatorio válido. Sin texto ni porcentaje.
-              Transición suave; se anula con prefers-reduced-motion. */}
+              barra de carga de una app). Pista negra tenue (rgba(0,0,0,0.10),
+              un "pelo" oscuro), relleno negro pleno para que el avance
+              contraste; avanza un tramo por cada campo obligatorio válido. Sin
+              texto ni porcentaje. Transición suave; se anula con
+              prefers-reduced-motion. */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 top-0 z-10 h-1 bg-gris"
+            className="absolute inset-x-0 top-0 z-10 h-1 bg-black/10"
           >
             <div
               className="h-full bg-black transition-[width] duration-300 ease-out motion-reduce:transition-none"

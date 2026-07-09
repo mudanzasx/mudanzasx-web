@@ -54,6 +54,35 @@ html {
   scroll-margin-top: var(--fixed-top);
 }
 
+/* Tarjeta de vidrio esmerilado del formulario de presupuesto: fondo blanco
+   traslúcido con desenfoque del fondo (las ondas de marca de la sección se
+   intuyen por debajo). Solo el fondo de la tarjeta es traslúcido; los campos,
+   el badge, el botón y los textos van sólidos aparte para mantener el contraste.
+   - Por defecto: blanco sólido (fallback para navegadores sin backdrop-filter,
+     que si no mostrarían la tarjeta traslúcida sin desenfoque, sucia sobre las
+     ondas).
+   - Con soporte de backdrop-filter: blanco al 90% + blur(12px) moderado.
+   - prefers-reduced-transparency: vuelve a blanco sólido sin desenfoque. */
+.mx-glass-card {
+  background-color: #ffffff;
+}
+@supports (
+  (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))
+) {
+  .mx-glass-card {
+    background-color: rgba(255, 255, 255, 0.9);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .mx-glass-card {
+    background-color: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 /* Movimiento reducido: el scroll de la barra de secciones es un salto directo,
    sin animación. */
 @media (prefers-reduced-motion: reduce) {
