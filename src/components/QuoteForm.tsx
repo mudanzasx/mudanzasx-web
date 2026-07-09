@@ -13,6 +13,7 @@ import {
 } from "@/lib/validaciones";
 import { btn } from "@/components/ui/button";
 import { field } from "@/components/ui/field";
+import Turnstile, { type TurnstileHandle } from "./Turnstile";
 
 // Campo base: fondo blanco sobre la sección gris (el formulario ya no vive
 // dentro de una tarjeta), con borde sutil que se marca al enfocar.
@@ -35,6 +36,14 @@ export default function QuoteForm() {
   });
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Cloudflare Turnstile (captcha). Activo solo si hay site key configurada.
+  const turnstileHabilitado = Boolean(
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+  );
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileError, setTurnstileError] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   // Validación del número de calle (Google Places). Si Google no está
   // disponible, no se exige (degradación) para no bloquear el envío.
@@ -148,11 +157,25 @@ export default function QuoteForm() {
     ) {
       return;
     }
+
+    // Verificación de seguridad: si el widget aún no ha resuelto el desafío, no
+    // se envía (el servidor también lo rechazaría).
+    if (turnstileHabilitado && !turnstileToken) {
+      setTurnstileError(
+        "Verificación de seguridad pendiente. Espera un momento e inténtalo de nuevo."
+      );
+      return;
+    }
+
     setError(null);
     setEnviando(true);
     try {
       // Se guarda el teléfono completo con prefijo (+34 + 9 dígitos).
-      const payload = { ...form, telefono: `+34 ${form.telefono}` };
+      const payload = {
+        ...form,
+        telefono: `+34 ${form.telefono}`,
+        turnstileToken,
+      };
       const res = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -168,6 +191,9 @@ export default function QuoteForm() {
         "No se pudo enviar la solicitud. Revisa los datos e inténtalo de nuevo."
       );
       setEnviando(false);
+      // Turnstile invalida el token al usarse: se reinicia para poder reintentar.
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     }
   };
 
@@ -358,6 +384,29 @@ export default function QuoteForm() {
               <p className={`${errorClass} text-black`} role="alert">
                 {aceptaError}
               </p>
+            )}
+
+            {turnstileHabilitado && (
+              <div className="mt-5">
+                <Turnstile
+                  ref={turnstileRef}
+                  onToken={(t) => {
+                    setTurnstileToken(t);
+                    setTurnstileError(null);
+                  }}
+                  onError={() => {
+                    setTurnstileToken(null);
+                    setTurnstileError(
+                      "No se pudo cargar la verificación de seguridad. Recarga la página e inténtalo de nuevo."
+                    );
+                  }}
+                />
+                {turnstileError && (
+                  <p className={`${errorClass} text-black`} role="alert">
+                    {turnstileError}
+                  </p>
+                )}
+              </div>
             )}
 
             {error && (

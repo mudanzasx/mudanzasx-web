@@ -9,18 +9,18 @@ type LeadPayload = {
   origen?: unknown;
   destino?: unknown;
   acepta?: unknown;
+  turnstileToken?: unknown;
 };
 
 function asString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-// --- Rate limiting por IP (mitigación básica anti-spam) ---
+// --- Rate limiting por IP (capa adicional anti-spam) ---
 // Ventana deslizante en memoria: máx. MAX_POR_VENTANA envíos por IP cada
 // VENTANA_MS. AVISO: la memoria NO se comparte entre instancias serverless (cada
-// lambda tiene la suya) ni sobrevive a un cold start, así que esto es solo una
-// primera barrera. La protección real será Cloudflare Turnstile (ver TODO abajo)
-// + rate-limit en el edge de Cloudflare.
+// lambda tiene la suya) ni sobrevive a un cold start. Es una capa complementaria
+// a la verificación de Cloudflare Turnstile (abajo), no un sustituto.
 const VENTANA_MS = 10 * 60 * 1000; // 10 minutos
 const MAX_POR_VENTANA = 5;
 const accesosPorIp = new Map<string, number[]>();
@@ -54,6 +54,35 @@ function superaLimite(ip: string): boolean {
   return false;
 }
 
+// Verifica el token de Cloudflare Turnstile contra el endpoint de siteverify.
+// Fail-closed: un fallo de red o un token inválido devuelven un motivo y el lead
+// NO se crea.
+async function verificarTurnstile(
+  token: string,
+  ip: string
+): Promise<{ ok: boolean; motivo?: "network" | "invalido" }> {
+  const secret = process.env.TURNSTILE_SECRET_KEY!;
+  const form = new URLSearchParams();
+  form.set("secret", secret);
+  form.set("response", token);
+  if (ip && ip !== "desconocida") form.set("remoteip", ip);
+  try {
+    const res = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: form,
+      }
+    );
+    const data = (await res.json()) as { success?: boolean };
+    return data.success ? { ok: true } : { ok: false, motivo: "invalido" };
+  } catch (e) {
+    console.error("[turnstile] Error de red verificando el token:", e);
+    return { ok: false, motivo: "network" };
+  }
+}
+
 export async function POST(request: Request) {
   // Rate limit: antes de leer el cuerpo, para cortar floods barato.
   if (superaLimite(ipDe(request))) {
@@ -63,18 +92,41 @@ export async function POST(request: Request) {
     );
   }
 
-  // TODO(Cloudflare Turnstile): cuando se despliegue Cloudflare, verificar aquí
-  // el token del captcha ANTES de continuar. El cliente enviará `body.turnstileToken`
-  // y se validará contra https://challenges.cloudflare.com/turnstile/v0/siteverify
-  // con TURNSTILE_SECRET_KEY (variable de entorno server-only). Si el token falta
-  // o no es válido -> responder 400 sin crear el lead. De momento la protección
-  // es el rate-limit por IP de arriba.
-
   let body: LeadPayload;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "JSON no válido." }, { status: 400 });
+  }
+
+  // Verificación de Cloudflare Turnstile ANTES de validar o insertar. Solo se
+  // aplica si el secret está configurado (en producción lo está); si falta, se
+  // omite y se registra, para no dejar el formulario inutilizable en entornos
+  // sin la clave.
+  if (process.env.TURNSTILE_SECRET_KEY) {
+    const turnstileToken = asString(body.turnstileToken);
+    if (!turnstileToken) {
+      return NextResponse.json(
+        { error: "Verificación de seguridad pendiente. Inténtalo de nuevo." },
+        { status: 400 }
+      );
+    }
+    const verif = await verificarTurnstile(turnstileToken, ipDe(request));
+    if (!verif.ok) {
+      // Red caída -> 503 (fail-closed); token inválido/caducado -> 403.
+      const status = verif.motivo === "network" ? 503 : 403;
+      return NextResponse.json(
+        {
+          error:
+            "No se pudo verificar la seguridad. Recarga la página e inténtalo de nuevo.",
+        },
+        { status }
+      );
+    }
+  } else {
+    console.error(
+      "[turnstile] TURNSTILE_SECRET_KEY no configurada: se omite la verificación."
+    );
   }
 
   const nombre = asString(body.nombre);
