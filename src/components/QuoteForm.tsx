@@ -13,12 +13,41 @@ import {
 } from "@/lib/validaciones";
 import { btn } from "@/components/ui/button";
 import { field } from "@/components/ui/field";
+import { IconClock } from "@/components/SystemIcons";
 import Turnstile, { type TurnstileHandle } from "./Turnstile";
 
-// Campo base: fondo blanco sobre la sección gris (el formulario ya no vive
-// dentro de una tarjeta), con borde sutil que se marca al enfocar.
-const fieldClass = field({ variant: "public", size: "lg" });
+// Campo base dentro de la tarjeta: fondo blanco, borde sutil que se marca al
+// enfocar. `pr-11` reserva sitio a la derecha para la marca de validación, así
+// no hay salto de layout cuando el check aparece.
+const fieldClass = field({ variant: "public", size: "lg", className: "pr-11" });
 const errorClass = "mt-1.5 text-[13px] font-medium";
+
+// Marca de validación discreta dentro del campo (derecha): check de trazo fino
+// en negro (nunca verde; paleta estricta). Aparece/desaparece con una
+// transición breve; se anula con prefers-reduced-motion.
+function CheckMark({ show }: { show: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-black transition-all duration-200 ease-out motion-reduce:transition-none ${
+        show ? "scale-100 opacity-100" : "scale-90 opacity-0"
+      }`}
+    >
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M5 12.5l4 4 10-11" />
+      </svg>
+    </span>
+  );
+}
 
 export default function QuoteForm() {
   const { prefill } = useQuote();
@@ -114,6 +143,23 @@ export default function QuoteForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefill.nonce]);
 
+  // Validez por campo (en vivo) para la barra de progreso y las marcas de
+  // validación. Un campo de dirección es válido si tiene texto y número de
+  // calle (o si Google no está disponible y no se exige número).
+  const origenOk = form.origen.trim() !== "" && (origenNum || !exigirNumero);
+  const destinoOk = form.destino.trim() !== "" && (destinoNum || !exigirNumero);
+  const nombreOk = form.nombre.trim() !== "";
+  const telefonoOk = esTelefonoEsValido(form.telefono);
+  const emailOk = esEmailValido(form.email);
+  // 5 campos obligatorios = 5 tramos de la barra.
+  const completos =
+    Number(origenOk) +
+    Number(destinoOk) +
+    Number(nombreOk) +
+    Number(telefonoOk) +
+    Number(emailOk);
+  const listo = completos === 5;
+
   const update =
     (key: keyof typeof form) =>
     (
@@ -203,93 +249,125 @@ export default function QuoteForm() {
       ref={sectionRef}
       className="w-full border-t border-hairline bg-gris"
     >
-      <div className="mx-auto max-w-[560px] px-6 py-14 md:py-24">
-        {/* El formulario ocupa la sección directamente (sin tarjeta): inputs
-            blancos sobre el fondo gris de la sección. */}
-        <h2 className="mb-5 text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black md:mb-6">
-          Diseñamos tu mudanza en una llamada de 10 minutos
-        </h2>
-        <form onSubmit={handleSubmit} noValidate>
-            <div className="flex flex-col gap-4">
-              {/* Origen */}
-              <div>
-                <AddressAutocomplete
-                  id="origen"
-                  inputRef={origenRef}
-                  value={form.origen}
-                  onChange={(v, hasNumber) => {
-                    setForm((prev) => ({ ...prev, origen: v }));
-                    setOrigenNum(hasNumber);
-                  }}
-                  required
-                  placeholder="Dirección de origen"
-                  ariaLabel="Dirección de origen"
-                  className={fieldClass}
-                />
-                {intentado && form.origen.trim() === "" ? (
-                  <p className={`${errorClass} text-black`}>
-                    Indica la dirección de origen.
-                  </p>
-                ) : intentado && faltaOrigenNum ? (
-                  <p className={`${errorClass} text-black`}>
-                    Indica el número de la calle.
-                  </p>
-                ) : null}
-              </div>
+      <div className="mx-auto max-w-[460px] px-6 py-14 md:py-24">
+        {/* Tarjeta contenida tipo panel de login: blanca sobre el gris de la
+            sección, esquinas --radius-card, hairline y sombra única. */}
+        <div className="relative overflow-hidden rounded-card border border-hairline bg-white shadow-card">
+          {/* Barra de progreso fina pegada al borde superior interior (como la
+              barra de carga de una app). Pista gris, relleno negro; avanza un
+              tramo por cada campo obligatorio válido. Sin texto ni porcentaje.
+              Transición suave; se anula con prefers-reduced-motion. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 z-10 h-1 bg-gris"
+          >
+            <div
+              className="h-full bg-black transition-[width] duration-300 ease-out motion-reduce:transition-none"
+              style={{ width: `${completos * 20}%` }}
+            />
+          </div>
 
-              {/* Destino */}
-              <div>
-                <AddressAutocomplete
-                  id="destino"
-                  inputRef={destinoRef}
-                  value={form.destino}
-                  onChange={(v, hasNumber) => {
-                    setForm((prev) => ({ ...prev, destino: v }));
-                    setDestinoNum(hasNumber);
-                  }}
-                  required
-                  placeholder="Dirección de destino"
-                  ariaLabel="Dirección de destino"
-                  className={fieldClass}
-                />
-                {intentado && form.destino.trim() === "" ? (
-                  <p className={`${errorClass} text-black`}>
-                    Indica la dirección de destino.
-                  </p>
-                ) : intentado && faltaDestinoNum ? (
-                  <p className={`${errorClass} text-black`}>
-                    Indica el número de la calle.
-                  </p>
-                ) : null}
-              </div>
+          <div className="p-6 md:p-8">
+            {/* Cabecera: titular corto + badge del tiempo estimado. Sin párrafo. */}
+            <div className="mb-6 flex items-center gap-3">
+              <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] text-black">
+                Te llamamos
+              </h2>
+              <span className="inline-flex items-center gap-1.5 rounded-pill bg-gris px-2.5 py-1 text-xs font-medium text-black">
+                <IconClock size={13} strokeWidth={1.75} />
+                10 min
+              </span>
+            </div>
 
-              {/* Nombre */}
-              <div>
-                <input
-                  id="nombre"
-                  ref={nombreRef}
-                  type="text"
-                  value={form.nombre}
-                  onChange={(e) => {
-                    update("nombre")(e);
-                    if (nombreError) setNombreError(null);
-                  }}
-                  aria-label="Nombre y apellidos"
-                  aria-invalid={nombreError ? true : undefined}
-                  placeholder="Nombre y apellidos"
-                  className={fieldClass}
-                />
-                {nombreError && (
-                  <p className={`${errorClass} text-black`} role="alert">
-                    {nombreError}
-                  </p>
-                )}
-              </div>
-
-              {/* Teléfono (con +34 fijo) + Email */}
-              <div className="grid gap-4 sm:grid-cols-2">
+            <form onSubmit={handleSubmit} noValidate>
+              <div className="flex flex-col gap-4">
+                {/* Origen */}
                 <div>
-                  <div className="flex items-stretch overflow-hidden rounded-field border border-hairline bg-white transition-colors duration-150 focus-within:border-black">
+                  <div className="relative">
+                    <AddressAutocomplete
+                      id="origen"
+                      inputRef={origenRef}
+                      value={form.origen}
+                      onChange={(v, hasNumber) => {
+                        setForm((prev) => ({ ...prev, origen: v }));
+                        setOrigenNum(hasNumber);
+                      }}
+                      required
+                      placeholder="Dirección de origen"
+                      ariaLabel="Dirección de origen"
+                      className={fieldClass}
+                    />
+                    <CheckMark show={origenOk} />
+                  </div>
+                  {intentado && form.origen.trim() === "" ? (
+                    <p className={`${errorClass} text-black`}>
+                      Indica la dirección de origen.
+                    </p>
+                  ) : intentado && faltaOrigenNum ? (
+                    <p className={`${errorClass} text-black`}>
+                      Indica el número de la calle.
+                    </p>
+                  ) : null}
+                </div>
+
+                {/* Destino */}
+                <div>
+                  <div className="relative">
+                    <AddressAutocomplete
+                      id="destino"
+                      inputRef={destinoRef}
+                      value={form.destino}
+                      onChange={(v, hasNumber) => {
+                        setForm((prev) => ({ ...prev, destino: v }));
+                        setDestinoNum(hasNumber);
+                      }}
+                      required
+                      placeholder="Dirección de destino"
+                      ariaLabel="Dirección de destino"
+                      className={fieldClass}
+                    />
+                    <CheckMark show={destinoOk} />
+                  </div>
+                  {intentado && form.destino.trim() === "" ? (
+                    <p className={`${errorClass} text-black`}>
+                      Indica la dirección de destino.
+                    </p>
+                  ) : intentado && faltaDestinoNum ? (
+                    <p className={`${errorClass} text-black`}>
+                      Indica el número de la calle.
+                    </p>
+                  ) : null}
+                </div>
+
+                {/* Nombre */}
+                <div>
+                  <div className="relative">
+                    <input
+                      id="nombre"
+                      ref={nombreRef}
+                      type="text"
+                      value={form.nombre}
+                      onChange={(e) => {
+                        update("nombre")(e);
+                        if (nombreError) setNombreError(null);
+                      }}
+                      aria-label="Nombre y apellidos"
+                      aria-invalid={nombreError ? true : undefined}
+                      placeholder="Nombre y apellidos"
+                      className={fieldClass}
+                    />
+                    <CheckMark show={nombreOk} />
+                  </div>
+                  {nombreError && (
+                    <p className={`${errorClass} text-black`} role="alert">
+                      {nombreError}
+                    </p>
+                  )}
+                </div>
+
+                {/* Teléfono (con +34 fijo) */}
+                <div>
+                  <div className="relative flex items-stretch overflow-hidden rounded-field border border-hairline bg-white transition-colors duration-150 focus-within:border-black">
                     <span className="flex select-none items-center border-r border-hairline pl-4 pr-3 text-base text-black/50">
                       +34
                     </span>
@@ -317,8 +395,9 @@ export default function QuoteForm() {
                       aria-label="Teléfono"
                       placeholder="600 000 000"
                       aria-invalid={telefonoError ? true : undefined}
-                      className="w-full min-w-0 bg-transparent py-3 pl-3 pr-4 text-base text-black placeholder-black/40 outline-none"
+                      className="w-full min-w-0 bg-transparent py-3 pl-3 pr-11 text-base text-black placeholder-black/40 outline-none"
                     />
+                    <CheckMark show={telefonoOk} />
                   </div>
                   {telefonoError && (
                     <p className={`${errorClass} text-black`} role="alert">
@@ -327,28 +406,32 @@ export default function QuoteForm() {
                   )}
                 </div>
 
+                {/* Email */}
                 <div>
-                  <input
-                    id="email"
-                    ref={emailRef}
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      setForm((prev) => ({ ...prev, email: v }));
-                      if (emailError && esEmailValido(v)) setEmailError(null);
-                    }}
-                    onBlur={() =>
-                      setEmailError(
-                        form.email.trim() ? validarEmail(form.email) : null
-                      )
-                    }
-                    required
-                    aria-label="Email"
-                    placeholder="Email"
-                    aria-invalid={emailError ? true : undefined}
-                    className={fieldClass}
-                  />
+                  <div className="relative">
+                    <input
+                      id="email"
+                      ref={emailRef}
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setForm((prev) => ({ ...prev, email: v }));
+                        if (emailError && esEmailValido(v)) setEmailError(null);
+                      }}
+                      onBlur={() =>
+                        setEmailError(
+                          form.email.trim() ? validarEmail(form.email) : null
+                        )
+                      }
+                      required
+                      aria-label="Email"
+                      placeholder="Email"
+                      aria-invalid={emailError ? true : undefined}
+                      className={fieldClass}
+                    />
+                    <CheckMark show={emailOk} />
+                  </div>
                   {emailError && (
                     <p className={`${errorClass} text-black`} role="alert">
                       {emailError}
@@ -356,77 +439,101 @@ export default function QuoteForm() {
                   )}
                 </div>
               </div>
-            </div>
 
-            <label className="mt-5 flex items-start gap-3 text-[14px] leading-[1.5] text-black/70">
-              <input
-                type="checkbox"
-                checked={form.acepta}
-                onChange={(e) => {
-                  update("acepta")(e);
-                  if (aceptaError) setAceptaError(null);
-                }}
-                aria-invalid={aceptaError ? true : undefined}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-black"
-              />
-              <span>
-                He leído y acepto la{" "}
-                <a
-                  href="/privacidad"
-                  className="text-black underline underline-offset-2"
-                >
-                  Política de privacidad
-                </a>
-                .
-              </span>
-            </label>
-            {aceptaError && (
-              <p className={`${errorClass} text-black`} role="alert">
-                {aceptaError}
-              </p>
-            )}
-
-            {turnstileHabilitado && (
-              <div className="mt-5">
-                <Turnstile
-                  ref={turnstileRef}
-                  onToken={(t) => {
-                    setTurnstileToken(t);
-                    setTurnstileError(null);
+              <label className="mt-5 flex items-start gap-3 text-[14px] leading-[1.5] text-black/70">
+                <input
+                  type="checkbox"
+                  checked={form.acepta}
+                  onChange={(e) => {
+                    update("acepta")(e);
+                    if (aceptaError) setAceptaError(null);
                   }}
-                  onError={() => {
-                    setTurnstileToken(null);
-                    setTurnstileError(
-                      "No se pudo cargar la verificación de seguridad. Recarga la página e inténtalo de nuevo."
-                    );
-                  }}
+                  aria-invalid={aceptaError ? true : undefined}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-black"
                 />
-                {turnstileError && (
-                  <p className={`${errorClass} text-black`} role="alert">
-                    {turnstileError}
-                  </p>
+                <span>
+                  He leído y acepto la{" "}
+                  <a
+                    href="/privacidad"
+                    className="text-black underline underline-offset-2"
+                  >
+                    Política de privacidad
+                  </a>
+                  .
+                </span>
+              </label>
+              {aceptaError && (
+                <p className={`${errorClass} text-black`} role="alert">
+                  {aceptaError}
+                </p>
+              )}
+
+              {turnstileHabilitado && (
+                <div className="mt-5">
+                  <Turnstile
+                    ref={turnstileRef}
+                    onToken={(t) => {
+                      setTurnstileToken(t);
+                      setTurnstileError(null);
+                    }}
+                    onError={() => {
+                      setTurnstileToken(null);
+                      setTurnstileError(
+                        "No se pudo cargar la verificación de seguridad. Recarga la página e inténtalo de nuevo."
+                      );
+                    }}
+                  />
+                  {turnstileError && (
+                    <p className={`${errorClass} text-black`} role="alert">
+                      {turnstileError}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {error && (
+                <p className="mt-4 text-[15px] font-medium text-black" role="alert">
+                  {error}
+                </p>
+              )}
+
+              {/* Remate al 100%: cuando los 5 campos son válidos, el botón
+                  muestra un check discreto (cambio de estado sobrio). */}
+              <button
+                type="submit"
+                disabled={enviando}
+                className={btn({
+                  variant: "primary",
+                  size: "lg",
+                  className: "mt-6 w-full",
+                })}
+              >
+                {enviando ? (
+                  "Enviando…"
+                ) : (
+                  <>
+                    {listo && (
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.25"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12.5l4 4 10-11" />
+                      </svg>
+                    )}
+                    Solicitar presupuesto
+                  </>
                 )}
-              </div>
-            )}
-
-            {error && (
-              <p className="mt-4 text-[15px] font-medium text-black" role="alert">
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={enviando}
-              className={btn({
-                variant: "primary",
-                size: "lg",
-                className: "mt-5 w-full",
-              })}
-            >
-              {enviando ? "Enviando…" : "Solicitar presupuesto"}
-            </button>
-          </form>
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </section>
   );
