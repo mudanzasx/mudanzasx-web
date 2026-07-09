@@ -17,7 +17,7 @@ export default function Header() {
 
   return (
     <header
-      className={`bg-white transition-[border-color] duration-200 ${
+      className={`overflow-x-clip bg-white transition-[border-color] duration-200 ${
         scrolled ? "border-b border-hairline" : "border-b border-transparent"
       }`}
     >

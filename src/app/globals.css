@@ -230,7 +230,7 @@ body {
   position: absolute;
   inset: 0;
   border-radius: var(--radius-pill);
-  border: 1.5px solid rgba(0, 0, 0, 0.28);
+  border: 2px solid rgba(0, 0, 0, 0.45);
   pointer-events: none;
   opacity: 0;
   /* El anillo parte exactamente del contorno del botón y crece hacia fuera. */
@@ -244,17 +244,17 @@ body {
 
 @keyframes mx-callring {
   0% {
-    opacity: 0.28;
+    opacity: 0.45;
     transform: scale(1);
   }
   /* La onda vive solo el primer ~16% del ciclo (~1.6s); el resto, invisible. */
   16% {
     opacity: 0;
-    transform: scale(1.55);
+    transform: scale(1.9);
   }
   100% {
     opacity: 0;
-    transform: scale(1.55);
+    transform: scale(1.9);
   }
 }
 
