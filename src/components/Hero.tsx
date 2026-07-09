@@ -5,7 +5,7 @@ import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
 import { btn } from "@/components/ui/button";
-import HeroBanner from "./HeroBanner";
+import Image from "next/image";
 // Punto de confianza: refuerzo discreto bajo el botón.
 const CONFIANZA = [{ texto: "Operativa 365 días" }];
 
@@ -33,17 +33,24 @@ export default function Hero() {
 
   return (
     <section id="top" className="w-full bg-gris">
-      {/* 1. FRANJA VISUAL (decorativa): franja negra a ancho completo con el
-          gráfico de marca (SVG inline). Va justo debajo del bloque fijo y
-          overflow-hidden recorta el SVG. Preparada para imagen futura: basta
-          sustituir <HeroBanner /> por <Image fill className="object-cover" … />
-          sin tocar la estructura (ya es relative + overflow-hidden con alto
-          fijo). */}
-      <div
-        aria-hidden="true"
-        className="relative h-[200px] w-full overflow-hidden bg-black md:h-[300px]"
-      >
-        <HeroBanner />
+      {/* 1. FRANJA VISUAL: franja a ancho completo con la imagen de marca (render
+          monocromo de la península con las rutas desde Barcelona). Va justo
+          debajo del bloque fijo. Alto fijo por breakpoint → sin CLS. Fondo negro
+          de respaldo mientras carga la imagen (evita destellos blancos).
+          Es el LCP: se carga con prioridad. object-cover recorta con gracia; en
+          móvil el encuadre se sesga a la derecha para no perder el nodo de
+          origen. */}
+      <div className="relative h-[200px] w-full overflow-hidden bg-black md:h-[300px]">
+        <Image
+          src="/hero-peninsula.webp"
+          alt="Rutas de mudanza de Mudanzas X desde Barcelona hacia toda la península"
+          fill
+          priority
+          fetchPriority="high"
+          quality={82}
+          sizes="100vw"
+          className="object-cover object-[68%_center] md:object-center"
+        />
       </div>
 
       {/* 2. PANEL DE CONTENIDO: sube sobre la franja (solape con margen superior
