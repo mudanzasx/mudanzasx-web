@@ -37,9 +37,11 @@ export default function Hero() {
           monocromo de la península con las rutas desde Barcelona). Va justo
           debajo del bloque fijo. Alto fijo por breakpoint → sin CLS. Fondo negro
           de respaldo mientras carga la imagen (evita destellos blancos).
-          Es el LCP: se carga con prioridad. object-cover recorta con gracia; en
-          móvil el encuadre se sesga a la derecha para no perder el nodo de
-          origen. */}
+          Es el LCP: se carga con prioridad. object-cover recorta con gracia; el
+          encuadre se ajusta por breakpoint para no perder el nodo de origen: en
+          móvil (recorte horizontal) se sesga a la derecha (68%); en escritorio
+          (recorte vertical) se baja a 78% para mostrar el nodo y las rutas y no
+          la franja negra superior. */}
       <div className="relative h-[200px] w-full overflow-hidden bg-black md:h-[300px]">
         <Image
           src="/hero-peninsula.webp"
@@ -49,7 +51,7 @@ export default function Hero() {
           fetchPriority="high"
           quality={82}
           sizes="100vw"
-          className="object-cover object-[68%_center] md:object-center"
+          className="object-cover object-[68%_center] md:object-[center_78%]"
         />
       </div>
 
