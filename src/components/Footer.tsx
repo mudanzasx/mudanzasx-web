@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MapPin, Mail, Phone, Clock } from "lucide-react";
+import { MapPin, Mail, Phone } from "lucide-react";
 import { TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 import {
   FacebookIcon,
@@ -63,10 +63,7 @@ export default function Footer() {
 
           {/* Horario */}
           <div>
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <Clock size={16} strokeWidth={1.5} className="shrink-0" />
-              Horario comercial
-            </p>
+            <p className="text-sm font-medium">Horario comercial</p>
             <p className="mt-4 text-sm leading-[1.7] text-white/70">
               Lunes a viernes 9:00-21:00
               <br />
