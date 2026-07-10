@@ -316,7 +316,7 @@ export default function QuoteForm() {
                   Te llamamos
                 </h2>
                 <span className="inline-flex items-center gap-1.5 rounded-pill bg-gris px-2.5 py-1 text-xs font-medium text-black">
-                  <IconClock size={13} strokeWidth={1.75} />
+                  <IconClock size={14} />
                   10 min
                 </span>
               </div>
