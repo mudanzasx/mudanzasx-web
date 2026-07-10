@@ -1,18 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useState, type ReactElement } from "react";
-import { IconBuilding, IconTools, IconTruck, IconRecycle } from "./SystemIcons";
-import type { IconProps } from "@/components/ui/icon";
+import { useState } from "react";
+import { Truck, Wrench, Landmark, Recycle, type LucideIcon } from "lucide-react";
 
 // Único servicio de la empresa (mudanza de vivienda) desglosado en sus 4 partes.
-// Cada una tiene su icono, su nombre y la imagen que se mostrará arriba al
-// seleccionarla. Cuando existe imagen real se define `img` + `alt`; mientras no
-// exista, ambos quedan a undefined y la zona superior muestra el marcador gris.
+// Cada una tiene su icono (lucide-react), su nombre y la imagen que se mostrará
+// arriba al seleccionarla. Cuando existe imagen real se define `img` + `alt`;
+// mientras no exista, ambos quedan a undefined y la zona superior muestra el
+// marcador gris.
 type Servicio = {
   id: string;
   nombre: string;
-  Icon: (p: IconProps) => ReactElement;
+  Icon: LucideIcon;
   img?: string; // ruta de la imagen final (16:9, 1376x768); undefined = aún marcador
   alt?: string; // texto alternativo; solo presente cuando hay imagen real
 };
@@ -20,24 +20,24 @@ type Servicio = {
 const SERVICIOS: Servicio[] = [
   // Sin imagen real todavía: al añadir public/servicio-montaje.webp, define aquí
   // img + alt igual que transporte/permisos y el marcador pasa a <Image> solo.
-  { id: "montaje", nombre: "Montaje, desmontaje y protección", Icon: IconTools },
+  { id: "montaje", nombre: "Montaje, desmontaje y protección", Icon: Wrench },
   {
     id: "transporte",
     nombre: "Transporte, carga y descarga",
-    Icon: IconTruck,
+    Icon: Truck,
     img: "/servicio-transporte.webp",
     alt: "Camión de mudanzas de Mudanzas X preparado para carga y transporte",
   },
   {
     id: "permisos",
     nombre: "Gestión de permisos municipales",
-    Icon: IconBuilding,
+    Icon: Landmark,
     img: "/servicio-permisos.webp",
     alt: "Señalización de reserva de estacionamiento para una mudanza de Mudanzas X",
   },
   // Sin imagen real todavía: al añadir public/servicio-retirada.webp, define aquí
   // img + alt igual que transporte/permisos y el marcador pasa a <Image> solo.
-  { id: "retirada", nombre: "Retirada a punto limpio", Icon: IconRecycle },
+  { id: "retirada", nombre: "Retirada a punto limpio", Icon: Recycle },
 ];
 
 export default function Servicios() {
@@ -108,7 +108,7 @@ export default function Servicios() {
                     on ? "bg-black text-white" : "bg-white text-black hover:bg-black/[0.03]"
                   }`}
                 >
-                  <s.Icon size={24} className="shrink-0" />
+                  <s.Icon size={24} strokeWidth={1.5} className="shrink-0" />
                   <span className="text-sm font-medium leading-snug tracking-tight">
                     {s.nombre}
                   </span>

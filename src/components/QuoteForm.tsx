@@ -13,7 +13,7 @@ import {
 } from "@/lib/validaciones";
 import { btn } from "@/components/ui/button";
 import { field } from "@/components/ui/field";
-import { IconClock } from "@/components/SystemIcons";
+import { Clock } from "lucide-react";
 import Turnstile, { type TurnstileHandle } from "./Turnstile";
 
 // Campo base dentro de la tarjeta: fondo blanco, borde sutil que se marca al
@@ -316,7 +316,7 @@ export default function QuoteForm() {
                   Te llamamos
                 </h2>
                 <span className="inline-flex items-center gap-1.5 rounded-pill bg-gris px-2.5 py-1 text-xs font-medium text-black">
-                  <IconClock size={14} />
+                  <Clock size={14} strokeWidth={1.5} />
                   10 min
                 </span>
               </div>

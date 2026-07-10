@@ -167,7 +167,7 @@ export default function Header() {
             aria-label="Llamar"
             className="relative z-[1] inline-flex items-center justify-center gap-2 rounded-pill bg-black p-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 md:px-5 md:py-2.5"
           >
-            <Phone size={16} strokeWidth={1.75} />
+            <Phone size={16} strokeWidth={1.5} />
             {/* En móvil solo el icono; el texto aparece en escritorio. */}
             <span className="hidden md:inline">Llamar</span>
           </a>

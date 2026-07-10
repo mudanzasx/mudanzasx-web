@@ -164,7 +164,7 @@ export default function CookieBanner() {
                 aria-label="Cerrar"
                 className="-mr-1 -mt-1 rounded-pill p-1.5 text-black/50 transition-colors duration-150 hover:bg-gris hover:text-black"
               >
-                <X size={18} strokeWidth={1.75} />
+                <X size={18} strokeWidth={1.5} />
               </button>
             </div>
 
