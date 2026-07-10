@@ -1,24 +1,43 @@
 "use client";
 
+import Image from "next/image";
 import { useState, type ReactElement } from "react";
 import { IconBuilding, IconTools, IconTruck, IconRecycle } from "./SystemIcons";
 import type { IconProps } from "@/components/ui/icon";
 
 // Único servicio de la empresa (mudanza de vivienda) desglosado en sus 4 partes.
 // Cada una tiene su icono, su nombre y la imagen que se mostrará arriba al
-// seleccionarla. `img` queda listo para la imagen real (aún marcador).
+// seleccionarla. Cuando existe imagen real se define `img` + `alt`; mientras no
+// exista, ambos quedan a undefined y la zona superior muestra el marcador gris.
 type Servicio = {
   id: string;
   nombre: string;
   Icon: (p: IconProps) => ReactElement;
-  img: string; // ruta de la imagen final (16:9, 1920x1080)
+  img?: string; // ruta de la imagen final (16:9, 1376x768); undefined = aún marcador
+  alt?: string; // texto alternativo; solo presente cuando hay imagen real
 };
 
 const SERVICIOS: Servicio[] = [
-  { id: "montaje", nombre: "Montaje, desmontaje y protección", Icon: IconTools, img: "/servicio-montaje.webp" },
-  { id: "transporte", nombre: "Transporte, carga y descarga", Icon: IconTruck, img: "/servicio-transporte.webp" },
-  { id: "permisos", nombre: "Gestión de permisos municipales", Icon: IconBuilding, img: "/servicio-permisos.webp" },
-  { id: "retirada", nombre: "Retirada a punto limpio", Icon: IconRecycle, img: "/servicio-retirada.webp" },
+  // Sin imagen real todavía: al añadir public/servicio-montaje.webp, define aquí
+  // img + alt igual que transporte/permisos y el marcador pasa a <Image> solo.
+  { id: "montaje", nombre: "Montaje, desmontaje y protección", Icon: IconTools },
+  {
+    id: "transporte",
+    nombre: "Transporte, carga y descarga",
+    Icon: IconTruck,
+    img: "/servicio-transporte.webp",
+    alt: "Camión de mudanzas de Mudanzas X preparado para carga y transporte",
+  },
+  {
+    id: "permisos",
+    nombre: "Gestión de permisos municipales",
+    Icon: IconBuilding,
+    img: "/servicio-permisos.webp",
+    alt: "Señalización de reserva de estacionamiento para una mudanza de Mudanzas X",
+  },
+  // Sin imagen real todavía: al añadir public/servicio-retirada.webp, define aquí
+  // img + alt igual que transporte/permisos y el marcador pasa a <Image> solo.
+  { id: "retirada", nombre: "Retirada a punto limpio", Icon: IconRecycle },
 ];
 
 export default function Servicios() {
@@ -36,11 +55,12 @@ export default function Servicios() {
 
           {/* Zona de imagen (16:9): las 4 capas se apilan y solo la activa está
               a opacidad 1 (crossfade discreto). aspect-ratio fija la altura para
-              no provocar CLS cuando lleguen las imágenes reales. Para pasar a
-              imagen real, sustituir el <span> marcador por:
-                <Image src={s.img} alt={s.nombre} fill loading="lazy"
-                  sizes="(min-width: 1008px) 960px, calc(100vw - 48px)"
-                  className="object-cover" />  */}
+              no provocar CLS. De momento conviven imágenes reales (transporte,
+              permisos) y marcadores grises (montaje, retirada): coherente porque
+              ambos comparten proporción, fondo gris y esquinas. Cuando existan
+              public/servicio-montaje.webp y public/servicio-retirada.webp, basta
+              con definir su img + alt en SERVICIOS y estas dos capas restantes
+              renderizarán <Image> igual que las otras, sin tocar este bloque. */}
           <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-card border border-hairline bg-gris shadow-card md:mt-12">
             {SERVICIOS.map((s, i) => (
               <div
@@ -50,11 +70,22 @@ export default function Servicios() {
                   activo === i ? "opacity-100" : "opacity-0"
                 }`}
               >
-                {/* Marcador de posición (mismo tamaño/proporción que la imagen
-                    final); el nombre del servicio, discreto y centrado. */}
-                <span className="px-6 text-center text-sm font-medium tracking-tight text-black/40">
-                  {s.nombre}
-                </span>
+                {s.img && s.alt ? (
+                  <Image
+                    src={s.img}
+                    alt={s.alt}
+                    fill
+                    loading="lazy"
+                    sizes="(min-width: 1008px) 960px, calc(100vw - 48px)"
+                    className="object-cover"
+                  />
+                ) : (
+                  // Marcador de posición (mismo tamaño/proporción que la imagen
+                  // final); el nombre del servicio, discreto y centrado.
+                  <span className="px-6 text-center text-sm font-medium tracking-tight text-black/40">
+                    {s.nombre}
+                  </span>
+                )}
               </div>
             ))}
           </div>
