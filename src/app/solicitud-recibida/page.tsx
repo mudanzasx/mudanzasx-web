@@ -3,6 +3,7 @@ import Link from "next/link";
 import Topbar from "@/components/Topbar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PasosProceso from "@/components/PasosProceso";
 import { btn } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -10,13 +11,6 @@ export const metadata: Metadata = {
   description: "Hemos recibido tu solicitud de presupuesto.",
   robots: { index: false, follow: false },
 };
-
-// Próximos pasos del proceso, en secuencia breve.
-const PASOS = [
-  "Hemos recibido tu solicitud.",
-  "Te llamamos para conocer los detalles de tu mudanza: inventario, accesos y fechas.",
-  "Cerramos tu presupuesto y, si te encaja, reservas tu fecha.",
-];
 
 export default function SolicitudRecibida() {
   return (
@@ -51,8 +45,9 @@ export default function SolicitudRecibida() {
             Te contactamos el mismo día laborable con tu presupuesto.
           </p>
 
-          {/* Próximos pasos: secuencia numerada sobria, círculos grises unidos
-              por una fina línea de progresión. */}
+          {/* Qué pasa ahora: mismos pasos que "Cómo funciona" (componente
+              compartido), pero con el contacto ya marcado como hecho — el
+              cliente ve "ya he contactado, ahora vienen estos tres pasos". */}
           <div
             className="mx-fade-up mt-14 w-full max-w-sm"
             style={{ animationDelay: "0.35s" }}
@@ -60,24 +55,9 @@ export default function SolicitudRecibida() {
             <p className="text-left text-xs font-medium uppercase tracking-[0.15em] text-black/40">
               Qué pasa ahora
             </p>
-            <ol className="mt-6 text-left">
-              {PASOS.map((paso, i) => (
-                <li key={paso} className="relative flex gap-4 pb-7 last:pb-0">
-                  {i < PASOS.length - 1 && (
-                    <span
-                      aria-hidden
-                      className="absolute bottom-0 left-[15px] top-8 w-px bg-black/10"
-                    />
-                  )}
-                  <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-pill bg-gris text-xs font-medium tabular-nums text-black">
-                    {i + 1}
-                  </span>
-                  <p className="pt-[5px] text-[15px] leading-[1.55] text-black/70">
-                    {paso}
-                  </p>
-                </li>
-              ))}
-            </ol>
+            <div className="mt-6">
+              <PasosProceso completado="Solicitud recibida" />
+            </div>
           </div>
 
           <Link

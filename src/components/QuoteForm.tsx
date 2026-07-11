@@ -257,7 +257,7 @@ export default function QuoteForm() {
     <section
       id="presupuesto"
       ref={sectionRef}
-      className="relative w-full overflow-hidden border-t border-hairline bg-gris"
+      className="relative w-full overflow-hidden border-t border-hairline bg-white"
     >
       {/* Ondas de marca detrás de la tarjeta: estáticas, monocromas, sin
           capturar clics. Origen en el centro de la sección (tras la tarjeta),

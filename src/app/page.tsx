@@ -98,8 +98,8 @@ export default function Home() {
         <main className="flex-1">
           <Hero />
           <Manifiesto />
-          <HowItWorks />
           <Servicios />
+          <HowItWorks />
           <Faq />
           <QuoteForm />
         </main>

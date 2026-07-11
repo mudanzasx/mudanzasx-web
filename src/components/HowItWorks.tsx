@@ -1,11 +1,5 @@
 import SectionImage from "./SectionImage";
-
-const PASOS = [
-  { titulo: "Contacto" },
-  { titulo: "Presupuesto" },
-  { titulo: "Reserva" },
-  { titulo: "Vida nueva" },
-];
+import PasosProceso from "./PasosProceso";
 
 export default function HowItWorks() {
   return (
@@ -28,37 +22,11 @@ export default function HowItWorks() {
               Cómo funciona
             </h2>
 
-            {/* Pasos del proceso: secuencia encadenada con conector vertical. */}
-            <ol className="mt-10 flex flex-col md:mt-12">
-            {PASOS.map((paso, i) => {
-              const ultimo = i === PASOS.length - 1;
-              return (
-                <li
-                  key={paso.titulo}
-                  className={`relative flex items-center gap-4 ${ultimo ? "" : "pb-6"}`}
-                >
-                  {/* Conector hacia el siguiente paso (une el centro de los
-                      círculos, mostrando la progresión). */}
-                  {!ultimo && (
-                    <span
-                      aria-hidden
-                      className="absolute bottom-0 left-[22px] top-11 w-px -translate-x-1/2 bg-black/15"
-                    />
-                  )}
-                  <div className="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-pill bg-gris text-black">
-                    <span className="text-base font-semibold tabular-nums">
-                      {i + 1}
-                    </span>
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-lg font-medium tracking-tight text-black">
-                      {paso.titulo}
-                    </h3>
-                  </div>
-                </li>
-              );
-            })}
-            </ol>
+            {/* Pasos del proceso (componente compartido con la confirmación).
+                En la landing son una promesa: los tres sin nada completado. */}
+            <div className="mt-10 md:mt-12">
+              <PasosProceso />
+            </div>
           </div>
         </div>
       </div>

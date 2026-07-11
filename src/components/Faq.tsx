@@ -8,7 +8,7 @@ export default function Faq() {
   const [abierta, setAbierta] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="w-full border-t border-hairline bg-white">
+    <section id="faq" className="w-full border-t border-hairline bg-gris">
       {/* Sin imagen: el acordeón se centra a un ancho cómodo de lectura (800px)
           en lugar de encajonarse en media rejilla. */}
       <div className="mx-auto max-w-[800px] px-6 py-14 md:py-24">

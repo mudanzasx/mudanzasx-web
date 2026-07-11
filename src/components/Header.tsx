@@ -11,8 +11,8 @@ import { TELEFONO } from "@/lib/config";
 // 360px. "Comenzar" nunca se abrevia ni se corta.
 const SECTIONS = [
   { id: "top", label: "Inicio", short: "Inicio" },
-  { id: "como-funciona", label: "Cómo funciona", short: "Proceso" },
   { id: "servicios", label: "Servicios", short: "Servicios" },
+  { id: "como-funciona", label: "Cómo funciona", short: "Proceso" },
   { id: "faq", label: "Preguntas", short: "FAQ" },
   { id: "presupuesto", label: "Comenzar", short: "Comenzar" },
 ] as const;
