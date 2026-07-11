@@ -5,22 +5,24 @@ import { useState } from "react";
 import { Truck, Wrench, Landmark, Recycle, type LucideIcon } from "lucide-react";
 
 // Único servicio de la empresa (mudanza de vivienda) desglosado en sus 4 partes.
-// Cada una tiene su icono (lucide-react), su nombre y la imagen que se mostrará
-// arriba al seleccionarla. Cuando existe imagen real se define `img` + `alt`;
-// mientras no exista, ambos quedan a undefined y la zona superior muestra el
-// marcador gris.
+// Cada una tiene su icono (lucide-react), su nombre y la imagen (16:9, estudio
+// monocromo) que se muestra arriba al seleccionarla.
 type Servicio = {
   id: string;
   nombre: string;
   Icon: LucideIcon;
-  img?: string; // ruta de la imagen final (16:9, 1376x768); undefined = aún marcador
-  alt?: string; // texto alternativo; solo presente cuando hay imagen real
+  img: string; // ruta de la imagen (16:9, 1376x768)
+  alt: string;
 };
 
 const SERVICIOS: Servicio[] = [
-  // Sin imagen real todavía: al añadir public/servicio-montaje.webp, define aquí
-  // img + alt igual que transporte/permisos y el marcador pasa a <Image> solo.
-  { id: "montaje", nombre: "Montaje, desmontaje y protección", Icon: Wrench },
+  {
+    id: "montaje",
+    nombre: "Montaje, desmontaje y protección",
+    Icon: Wrench,
+    img: "/servicio-montaje.webp",
+    alt: "Armario listo para montaje y desmontaje en una mudanza de Mudanzas X",
+  },
   {
     id: "transporte",
     nombre: "Transporte, carga y descarga",
@@ -35,9 +37,13 @@ const SERVICIOS: Servicio[] = [
     img: "/servicio-permisos.webp",
     alt: "Señalización de reserva de estacionamiento para una mudanza de Mudanzas X",
   },
-  // Sin imagen real todavía: al añadir public/servicio-retirada.webp, define aquí
-  // img + alt igual que transporte/permisos y el marcador pasa a <Image> solo.
-  { id: "retirada", nombre: "Retirada a punto limpio", Icon: Recycle },
+  {
+    id: "retirada",
+    nombre: "Retirada a punto limpio",
+    Icon: Recycle,
+    img: "/servicio-retirada.webp",
+    alt: "Cajas preparadas para retirada a punto limpio por Mudanzas X",
+  },
 ];
 
 export default function Servicios() {
@@ -55,37 +61,24 @@ export default function Servicios() {
 
           {/* Zona de imagen (16:9): las 4 capas se apilan y solo la activa está
               a opacidad 1 (crossfade discreto). aspect-ratio fija la altura para
-              no provocar CLS. De momento conviven imágenes reales (transporte,
-              permisos) y marcadores grises (montaje, retirada): coherente porque
-              ambos comparten proporción, fondo gris y esquinas. Cuando existan
-              public/servicio-montaje.webp y public/servicio-retirada.webp, basta
-              con definir su img + alt en SERVICIOS y estas dos capas restantes
-              renderizarán <Image> igual que las otras, sin tocar este bloque. */}
+              no provocar CLS. */}
           <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-card border border-hairline bg-gris shadow-card md:mt-12">
             {SERVICIOS.map((s, i) => (
               <div
                 key={s.id}
                 aria-hidden={activo !== i}
-                className={`absolute inset-0 flex items-center justify-center bg-gris transition-opacity duration-200 ease-out motion-reduce:transition-none ${
+                className={`absolute inset-0 bg-gris transition-opacity duration-200 ease-out motion-reduce:transition-none ${
                   activo === i ? "opacity-100" : "opacity-0"
                 }`}
               >
-                {s.img && s.alt ? (
-                  <Image
-                    src={s.img}
-                    alt={s.alt}
-                    fill
-                    loading="lazy"
-                    sizes="(min-width: 1008px) 960px, calc(100vw - 48px)"
-                    className="object-cover"
-                  />
-                ) : (
-                  // Marcador de posición (mismo tamaño/proporción que la imagen
-                  // final); el nombre del servicio, discreto y centrado.
-                  <span className="px-6 text-center text-sm font-medium tracking-tight text-black/40">
-                    {s.nombre}
-                  </span>
-                )}
+                <Image
+                  src={s.img}
+                  alt={s.alt}
+                  fill
+                  loading="lazy"
+                  sizes="(min-width: 1008px) 960px, calc(100vw - 48px)"
+                  className="object-cover"
+                />
               </div>
             ))}
           </div>
