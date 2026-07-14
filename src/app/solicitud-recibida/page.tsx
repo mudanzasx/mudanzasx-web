@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Topbar from "@/components/Topbar";
-import Header from "@/components/Header";
+import Image from "next/image";
 import Footer from "@/components/Footer";
 import PasosProceso from "@/components/PasosProceso";
 import { btn } from "@/components/ui/button";
@@ -15,8 +14,38 @@ export const metadata: Metadata = {
 export default function SolicitudRecibida() {
   return (
     <>
-      <Topbar />
-      <Header />
+      {/* Destino final tras enviar el formulario: sin topbar del descuento ni
+          navegación de secciones (scrollspy). Solo una cabecera mínima con el
+          logo, enlazado al inicio, para orientar y poder volver. */}
+      <header className="border-b border-hairline">
+        <div className="mx-auto flex max-w-[1200px] items-center px-6 py-2.5">
+          <Link
+            href="/"
+            aria-label="Mudanzas X — inicio"
+            className="flex items-center rounded-field outline-none focus-visible:ring-2 focus-visible:ring-black/40"
+          >
+            {/* Móvil: solo el icono (la X). Escritorio: logo completo. */}
+            <Image
+              src="/icon-black.svg"
+              alt="Mudanzas X"
+              width={512}
+              height={512}
+              priority
+              unoptimized
+              className="h-7 w-auto md:hidden"
+            />
+            <Image
+              src="/logo-black.svg"
+              alt="Mudanzas X"
+              width={2453}
+              height={512}
+              priority
+              unoptimized
+              className="hidden h-7 w-auto md:block"
+            />
+          </Link>
+        </div>
+      </header>
 
       <main className="flex-1">
         <section className="mx-auto flex max-w-[560px] flex-col items-center px-6 py-20 text-center md:py-28">
@@ -38,32 +67,20 @@ export default function SolicitudRecibida() {
           >
             Solicitud recibida
           </h1>
-          <p
-            className="mx-fade-up mt-4 text-lg leading-[1.6] text-black/60"
+
+          {/* Lo esencial: el contacto ya marcado como hecho y los tres pasos de
+              lo que viene ahora (componente compartido con "Cómo funciona"). */}
+          <div
+            className="mx-fade-up mt-12 w-full max-w-sm"
             style={{ animationDelay: "0.25s" }}
           >
-            Te contactamos el mismo día laborable con tu presupuesto.
-          </p>
-
-          {/* Qué pasa ahora: mismos pasos que "Cómo funciona" (componente
-              compartido), pero con el contacto ya marcado como hecho — el
-              cliente ve "ya he contactado, ahora vienen estos tres pasos". */}
-          <div
-            className="mx-fade-up mt-14 w-full max-w-sm"
-            style={{ animationDelay: "0.35s" }}
-          >
-            <p className="text-left text-xs font-medium uppercase tracking-[0.15em] text-black/40">
-              Qué pasa ahora
-            </p>
-            <div className="mt-6">
-              <PasosProceso completado="Solicitud recibida" />
-            </div>
+            <PasosProceso completado="Solicitud recibida" />
           </div>
 
           <Link
             href="/"
             className={btn({ variant: "secondary", size: "md", className: "mx-fade-up mt-14" })}
-            style={{ animationDelay: "0.45s" }}
+            style={{ animationDelay: "0.35s" }}
           >
             Volver al inicio
           </Link>

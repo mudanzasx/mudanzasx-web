@@ -111,7 +111,10 @@ const Turnstile = forwardRef<
         onLoad={() => setReady(true)}
         onError={() => onErrorRef.current?.()}
       />
-      <div ref={containerRef} />
+      {/* flex justify-center centra el widget/iframe que Cloudflare inyecta
+          aquí (ancho fijo ~300px en el estado de error) en todos los tamaños;
+          en tamaño flexible el hijo ocupa el 100% y queda igual. */}
+      <div ref={containerRef} className="flex justify-center" />
     </>
   );
 });

@@ -531,7 +531,7 @@ export default function QuoteForm() {
                     }}
                   />
                   {turnstileError && (
-                    <p className={`${errorClass} text-black`} role="alert">
+                    <p className={`${errorClass} text-center text-black`} role="alert">
                       {turnstileError}
                     </p>
                   )}
