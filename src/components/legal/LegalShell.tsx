@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
 import Footer from "@/components/Footer";
 import { LEGAL_ACTUALIZADO } from "@/lib/config";
 
@@ -15,9 +16,24 @@ export default function LegalShell({
 }) {
   return (
     <>
+      {/* Rejilla de 3 columnas [1fr auto 1fr]: el logo queda centrado con
+          precisión mientras el botón "Volver al inicio" ocupa el lado izquierdo
+          y un hueco simétrico equilibra la derecha. */}
       <header className="w-full bg-black">
-        <div className="mx-auto flex max-w-[1200px] items-center justify-center px-6 py-4">
-          <Link href="/" aria-label="Mudanzas X — inicio" className="flex items-center">
+        <div className="mx-auto grid max-w-[1200px] grid-cols-[1fr_auto_1fr] items-center px-6 py-4">
+          <Link
+            href="/"
+            aria-label="Volver al inicio"
+            className="inline-flex h-9 w-9 items-center justify-center justify-self-start rounded-pill text-white outline-none transition-colors duration-150 hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white/50"
+          >
+            <ArrowLeft size={20} strokeWidth={1.5} aria-hidden />
+          </Link>
+
+          <Link
+            href="/"
+            aria-label="Mudanzas X — inicio"
+            className="flex items-center justify-self-center rounded-field outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+          >
             {/* Móvil: solo el icono (la X en blanco). Escritorio: logo completo. */}
             <Image
               src="/icon-white.svg"
@@ -38,6 +54,9 @@ export default function LegalShell({
               className="hidden h-8 w-auto md:block"
             />
           </Link>
+
+          {/* Hueco simétrico para mantener el logo centrado. */}
+          <span aria-hidden className="justify-self-end" />
         </div>
       </header>
 

@@ -285,11 +285,11 @@ export default function QuoteForm() {
       </svg>
 
       <div className="relative z-10 mx-auto max-w-[460px] px-6 py-14 md:py-24">
-        {/* Tarjeta tipo panel de login con vidrio esmerilado sutil: fondo
-            blanco traslúcido + desenfoque del fondo (ondas), hairline y sombra
-            única. La clase mx-glass-card gestiona el fallback a blanco sólido y
-            prefers-reduced-transparency. Los campos y textos van sólidos. */}
-        <div className="mx-glass-card relative overflow-hidden rounded-card border border-hairline">
+        {/* Tarjeta gris de marca (#F3F3F3) sólida sobre la sección blanca, con
+            hairline sutil y la sombra única de marca. Opaca: las ondas del fondo
+            quedan detrás (se intuyen en los márgenes de la sección) sin ensuciar
+            la tarjeta. Los campos y elementos van en blanco para destacar. */}
+        <div className="relative overflow-hidden rounded-card border border-hairline bg-gris shadow-card">
           {/* Barra de progreso fina (3px) pegada al borde superior interior
               (como la barra de carga de una app). Sin pista: con progreso 0 el
               canto superior se ve limpio. El relleno es una línea NEGRA plena
@@ -315,31 +315,69 @@ export default function QuoteForm() {
                 <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] text-black">
                   Te llamamos
                 </h2>
-                <span className="inline-flex items-center gap-1.5 rounded-pill bg-gris px-2.5 py-1 text-xs font-medium text-black">
+                <span className="inline-flex items-center gap-1.5 rounded-pill border border-hairline bg-white px-2.5 py-1 text-xs font-medium text-black">
                   <Clock size={14} strokeWidth={1.5} />
                   10 min
                 </span>
               </div>
 
               <div className="flex flex-col gap-4">
-                {/* Origen */}
+                {/* Origen y destino: mismo bloque blanco que el hero (carril
+                    con marcadores circulares, conector vertical y campos
+                    transparentes), idéntico para coherencia; destaca en blanco
+                    sobre la tarjeta gris. */}
                 <div>
-                  <div className="relative">
-                    <AddressAutocomplete
-                      id="origen"
-                      inputRef={origenRef}
-                      value={form.origen}
-                      onChange={(v, hasNumber) => {
-                        setForm((prev) => ({ ...prev, origen: v }));
-                        setOrigenNum(hasNumber);
-                      }}
-                      required
-                      placeholder="Dirección de origen"
-                      ariaLabel="Dirección de origen"
-                      className={fieldClass}
+                  <div className="relative rounded-card border border-hairline bg-white px-4 py-2 shadow-card md:px-5">
+                    {/* Conector que une el centro de ambos marcadores (36px→92px). */}
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute top-[36px] left-[26px] h-[56px] w-px -translate-x-1/2 bg-black/30 md:left-[30px]"
                     />
-                    <CheckMark show={origenOk} />
+
+                    {/* Fila Origen */}
+                    <div className="grid h-14 grid-cols-[20px_1fr] items-center">
+                      <span className="flex items-center justify-center">
+                        <span className="block h-2.5 w-2.5 rounded-pill bg-black" />
+                      </span>
+                      <AddressAutocomplete
+                        id="origen"
+                        inputRef={origenRef}
+                        value={form.origen}
+                        onChange={(v, hasNumber) => {
+                          setForm((prev) => ({ ...prev, origen: v }));
+                          setOrigenNum(hasNumber);
+                        }}
+                        required
+                        placeholder="Dirección de origen"
+                        ariaLabel="Dirección de origen"
+                        wrapperClassName="col-start-2"
+                        className="w-full border-b border-hairline bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
+                      />
+                    </div>
+
+                    {/* Fila Destino */}
+                    <div className="grid h-14 grid-cols-[20px_1fr] items-center">
+                      <span className="flex items-center justify-center">
+                        <span className="block h-2.5 w-2.5 rounded-pill bg-black" />
+                      </span>
+                      <AddressAutocomplete
+                        id="destino"
+                        inputRef={destinoRef}
+                        value={form.destino}
+                        onChange={(v, hasNumber) => {
+                          setForm((prev) => ({ ...prev, destino: v }));
+                          setDestinoNum(hasNumber);
+                        }}
+                        required
+                        placeholder="Dirección de destino"
+                        ariaLabel="Dirección de destino"
+                        wrapperClassName="col-start-2"
+                        className="w-full bg-transparent py-3 pl-1 text-base text-black placeholder-black/40 outline-none"
+                      />
+                    </div>
                   </div>
+
+                  {/* Errores de dirección (validación intacta). */}
                   {intentado && form.origen.trim() === "" ? (
                     <p className={`${errorClass} text-black`}>
                       Indica la dirección de origen.
@@ -349,26 +387,6 @@ export default function QuoteForm() {
                       Indica el número de la calle.
                     </p>
                   ) : null}
-                </div>
-
-                {/* Destino */}
-                <div>
-                  <div className="relative">
-                    <AddressAutocomplete
-                      id="destino"
-                      inputRef={destinoRef}
-                      value={form.destino}
-                      onChange={(v, hasNumber) => {
-                        setForm((prev) => ({ ...prev, destino: v }));
-                        setDestinoNum(hasNumber);
-                      }}
-                      required
-                      placeholder="Dirección de destino"
-                      ariaLabel="Dirección de destino"
-                      className={fieldClass}
-                    />
-                    <CheckMark show={destinoOk} />
-                  </div>
                   {intentado && form.destino.trim() === "" ? (
                     <p className={`${errorClass} text-black`}>
                       Indica la dirección de destino.
@@ -510,11 +528,11 @@ export default function QuoteForm() {
               )}
             </div>
 
-            {/* Pie sólido anclado (zona de acción): blanco puro, sin vidrio ni
-                transparencia; separado del cuerpo por una hairline y siguiendo el
-                radio inferior de la tarjeta (overflow-hidden del contenedor). El
-                ojo cae de forma natural aquí. Contiene Turnstile y el botón. */}
-            <div className="flex flex-col gap-4 border-t border-hairline bg-white px-6 py-5 md:px-8 md:py-6">
+            {/* Pie anclado (zona de acción): parte de la tarjeta gris, separado
+                del cuerpo por una hairline y siguiendo el radio inferior de la
+                tarjeta (overflow-hidden del contenedor). El ojo cae de forma
+                natural aquí. Contiene Turnstile y el botón. */}
+            <div className="flex flex-col gap-4 border-t border-hairline px-6 py-5 md:px-8 md:py-6">
               {turnstileHabilitado && (
                 <div>
                   <Turnstile

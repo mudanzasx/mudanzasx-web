@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { Phone } from "lucide-react";
 import Footer from "@/components/Footer";
 import PasosProceso from "@/components/PasosProceso";
 import { btn } from "@/components/ui/button";
+import { TELEFONO } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Solicitud recibida",
@@ -15,10 +17,11 @@ export default function SolicitudRecibida() {
   return (
     <>
       {/* Destino final tras enviar el formulario: sin topbar del descuento ni
-          navegación de secciones (scrollspy). Solo una cabecera mínima con el
-          logo, enlazado al inicio, para orientar y poder volver. */}
+          navegación de secciones (scrollspy). Cabecera mínima con el logo
+          (enlazado al inicio) y, al lado opuesto, el botón "Llamar" por si el
+          cliente quiere contactar directamente. */}
       <header className="border-b border-hairline">
-        <div className="mx-auto flex max-w-[1200px] items-center px-6 py-2.5">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-2.5">
           <Link
             href="/"
             aria-label="Mudanzas X — inicio"
@@ -44,6 +47,19 @@ export default function SolicitudRecibida() {
               className="hidden h-7 w-auto md:block"
             />
           </Link>
+
+          {/* Botón Llamar con ondas (pulse ring), igual que en la landing. */}
+          <span className="mx-call relative inline-flex">
+            <a
+              href={`tel:${TELEFONO}`}
+              aria-label="Llamar"
+              className="relative z-[1] inline-flex items-center justify-center gap-2 rounded-pill bg-black p-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 md:px-5 md:py-2.5"
+            >
+              <Phone size={16} strokeWidth={1.5} />
+              {/* En móvil solo el icono; el texto aparece en escritorio. */}
+              <span className="hidden md:inline">Llamar</span>
+            </a>
+          </span>
         </div>
       </header>
 
@@ -65,7 +81,7 @@ export default function SolicitudRecibida() {
             className="mx-fade-up mt-8 text-[clamp(2rem,5vw,3rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black"
             style={{ animationDelay: "0.15s" }}
           >
-            Solicitud recibida
+            ¡Gracias!
           </h1>
 
           {/* Lo esencial: el contacto ya marcado como hecho y los tres pasos de

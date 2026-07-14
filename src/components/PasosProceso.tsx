@@ -1,11 +1,9 @@
-import { Check } from "lucide-react";
-
 // Los tres pasos del proceso, los que vienen DESPUÉS de contactar (en la landing
 // el contacto lo resuelve el propio formulario, por eso no es un paso). Se
 // definen una sola vez y se comparten en dos sitios:
 //   · "Cómo funciona" (landing): promesa del proceso, sin nada completado.
 //   · "¿Qué pasa ahora?" (confirmación): hoja de ruta del cliente, con el
-//     contacto ya marcado como hecho mediante la prop `completado`.
+//     contacto ya hecho como paso previo (número 0) mediante la prop `completado`.
 const PASOS = [
   {
     titulo: "Presupuesto",
@@ -22,12 +20,12 @@ const PASOS = [
 ];
 
 export default function PasosProceso({ completado }: { completado?: string }) {
-  // Si se pasa `completado`, se antepone una fila ya resuelta (check monocromo
-  // negro, nunca verde) con ese texto; los tres pasos se numeran 1·2·3 igual en
-  // ambos casos. Sin `completado`, solo se ven los tres pasos numerados.
+  // Si se pasa `completado`, se antepone el paso previo ya hecho (número 0) con
+  // ese texto; los tres pasos se numeran 1·2·3 igual en ambos casos. Sin
+  // `completado`, solo se ven los tres pasos numerados.
   const filas = [
-    ...(completado ? [{ titulo: completado, descripcion: null, hecho: true }] : []),
-    ...PASOS.map((p) => ({ ...p, hecho: false })),
+    ...(completado ? [{ titulo: completado, descripcion: null }] : []),
+    ...PASOS,
   ];
 
   return (
@@ -36,8 +34,8 @@ export default function PasosProceso({ completado }: { completado?: string }) {
     <ol className="flex flex-col text-left">
       {filas.map((fila, i) => {
         const ultimo = i === filas.length - 1;
-        // La fila completada no cuenta para la numeración: con `completado`
-        // presente, el primer paso (i = 1) es el número 1.
+        // El paso previo hecho lleva el número 0 (no un icono, para no duplicar
+        // el check del título/badge); los tres pasos siguientes son 1·2·3.
         const numero = completado ? i : i + 1;
         return (
           <li
@@ -52,13 +50,9 @@ export default function PasosProceso({ completado }: { completado?: string }) {
               />
             )}
             <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-pill bg-gris text-black">
-              {fila.hecho ? (
-                <Check size={18} strokeWidth={1.5} aria-hidden />
-              ) : (
-                <span className="text-base font-semibold tabular-nums">
-                  {numero}
-                </span>
-              )}
+              <span className="text-base font-semibold tabular-nums">
+                {numero}
+              </span>
             </div>
             <div className="min-w-0 pt-1.5">
               <h3 className="text-base font-medium tracking-tight text-black md:text-lg">
