@@ -45,25 +45,27 @@ export default function PasosProceso({ completado }: { completado?: string }) {
         return (
           <li
             key={fila.titulo}
-            className={`relative flex gap-4 ${ultimo ? "" : "pb-8"}`}
+            className={`relative flex gap-4 ${ultimo ? "" : "pb-10"}`}
           >
-            {/* Conector vertical hacia el siguiente círculo (progresión). */}
+            {/* Conector vertical hacia el siguiente círculo (progresión). El
+                offset horizontal (left-6 = 24px) coincide con el centro del
+                círculo (h-12/w-12 = 48px) y top-12 arranca justo bajo él. */}
             {!ultimo && (
               <span
                 aria-hidden
-                className="absolute bottom-0 left-5 top-11 w-px -translate-x-1/2 bg-black/15"
+                className="absolute bottom-0 left-6 top-12 w-px -translate-x-1/2 bg-black/15"
               />
             )}
             <div
-              className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-pill ${
+              className={`relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-pill ${
                 hecho ? "bg-black text-white" : "bg-gris text-black"
               }`}
             >
-              <span className="text-base font-semibold tabular-nums">
+              <span className="text-lg font-semibold tabular-nums">
                 {numero}
               </span>
             </div>
-            <div className="min-w-0 pt-1.5">
+            <div className="min-w-0 pt-2">
               <h3 className="text-[clamp(1rem,0.95rem+0.3vw,1.125rem)] font-medium tracking-tight text-black">
                 {fila.titulo}
               </h3>
