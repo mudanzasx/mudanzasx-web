@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Phone } from "lucide-react";
-import { TELEFONO } from "@/lib/config";
+import { TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 
 // Secciones de la landing en orden de aparición (scrollspy). El id coincide con
 // el del <section> en el DOM ("top" es el hero). `short` es la etiqueta
@@ -158,20 +158,35 @@ export default function Header() {
           </ul>
         </nav>
 
-        {/* Botón Llamar con ondas (pulse ring): los anillos son pseudo-elementos
-            de `.mx-call`, detrás del botón y sin capturar clics. El botón va con
-            z-[1] por encima. Zona pulsable ≥40px. */}
-        <span className="mx-call relative inline-flex md:justify-self-end">
+        {/* Contacto (columna derecha del grid). Dos versiones excluyentes:
+            móvil = botón; escritorio = número visible. */}
+        <div className="md:justify-self-end">
+          {/* Móvil: botón compacto negro con solo el icono y ondas (pulse ring):
+              los anillos son pseudo-elementos de `.mx-call`, detrás del botón y
+              sin capturar clics. Al ser `md:hidden`, ni el botón ni las ondas se
+              renderizan en escritorio (sin rastro ni overflow). Zona pulsable ≥40px. */}
+          <span className="mx-call relative inline-flex md:hidden">
+            <a
+              href={`tel:${TELEFONO}`}
+              aria-label="Llamar"
+              className="relative z-[1] inline-flex items-center justify-center gap-2 rounded-pill bg-black p-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85"
+            >
+              <Phone size={16} strokeWidth={1.5} />
+            </a>
+          </span>
+
+          {/* Escritorio: el número como información de contacto legible, no un
+              botón (sin fondo ni píldora). Icono fino a la izquierda; el propio
+              número es el texto del enlace (accesible sin aria-label). Hover
+              sutil (subrayado) para indicar que es pulsable. */}
           <a
             href={`tel:${TELEFONO}`}
-            aria-label="Llamar"
-            className="relative z-[1] inline-flex items-center justify-center gap-2 rounded-pill bg-black p-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-black/85 md:px-5 md:py-2.5"
+            className="hidden items-center gap-2 rounded-field text-[13px] font-medium tracking-tight text-black underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-black/40 md:inline-flex"
           >
-            <Phone size={16} strokeWidth={1.5} />
-            {/* En móvil solo el icono; el texto aparece en escritorio. */}
-            <span className="hidden md:inline">Llamar</span>
+            <Phone size={16} strokeWidth={1.5} aria-hidden />
+            {TELEFONO_TEXTO}
           </a>
-        </span>
+        </div>
       </div>
 
       {/* Fila de navegación ultrafina — solo móvil. Las 5 etiquetas cortas se
