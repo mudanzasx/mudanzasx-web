@@ -9,12 +9,11 @@ export default function HowItWorks() {
             derecha), alineadas verticalmente al centro. Móvil: se apilan con la
             imagen arriba y el contenido debajo. */}
         <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-12 lg:gap-16">
-          {/* Imagen destacada (ya trae su fondo gris de marca integrado). */}
+          {/* Imagen destacada: misma serie de estudio (fondo negro) que las de
+              "Mudanza de vivienda"; mismo tratamiento de caja 16:9. */}
           <SectionImage
             src="/comofunciona.webp"
             alt="La web de Mudanzas X en el móvil para pedir presupuesto de mudanza en Barcelona"
-            width={1024}
-            height={1024}
           />
 
           <div>

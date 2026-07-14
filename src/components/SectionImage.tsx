@@ -1,42 +1,39 @@
 import Image from "next/image";
 
-// Imagen destacada de sección: patrón único y reutilizable para las tres
-// secciones (Cómo funciona, FAQs, Servicios).
+// Imagen destacada de sección (hoy: "Cómo funciona").
 //
-// Las WebP ya traen su propio fondo gris de marca (#F3F3F3) integrado, con el
-// sujeto centrado y margen uniforme. Por eso el contenedor NO añade otro fondo
-// ni padding (evita el doble marco/gris): solo aplica esquinas redondeadas a la
-// propia imagen y unifica el ancho.
+// Las WebP son parte de una misma serie fotográfica: estudio monocromo, fondo
+// negro, suelo y sombra de contacto (hermanas de las 4 de "Mudanza de vivienda").
+// Por eso se presentan EXACTAMENTE igual que aquellas: caja 16:9 con esquinas
+// redondeadas (--radius-card), borde hairline y sombra de tarjeta. La imagen
+// trae su fondo integrado, así que el contenedor NO añade padding ni marco extra
+// (nada de doble cuadro); el fill + object-cover la encaja sin deformar.
 //
-// Ahora vive dentro de una de las dos columnas de la sección (escritorio) o
-// apilada arriba del contenido (móvil). El componente solo se ocupa de la
-// imagen en sí (proporción, esquinas, tamaño contenido) y deja que la sección
-// decida su lado y alineación mediante el grid.
-// - Ancho contenido (máx. 440px), centrado dentro de su columna.
-// - La imagen rellena el ancho sin deformar; el alto sigue su proporción real
-//   (width/height evitan el layout shift).
+// La sección decide su lado y alineación mediante el grid; el componente solo se
+// ocupa de la imagen (proporción fija 16:9 → sin layout shift, ancho contenido).
 export default function SectionImage({
   src,
   alt,
-  width,
-  height,
 }: {
   src: string;
   alt: string;
-  width: number;
-  height: number;
 }) {
   return (
     <div className="mx-auto w-full max-w-[440px]">
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        sizes="(min-width: 768px) 440px, calc(100vw - 48px)"
-        loading="lazy"
-        className="h-auto w-full rounded-card border border-hairline"
-      />
+      {/* Mismo tratamiento que las imágenes de "Mudanza de vivienda": aspect-ratio
+          fija la altura (sin CLS) y coincide con la 16:9 real de la imagen, así
+          object-cover muestra el teléfono completo y centrado en cualquier ancho
+          (no recorta por los lados). bg-gris solo como respaldo mientras carga. */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-card border border-hairline bg-gris shadow-card">
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(min-width: 768px) 440px, calc(100vw - 48px)"
+          loading="lazy"
+          className="object-cover object-center"
+        />
+      </div>
     </div>
   );
 }
