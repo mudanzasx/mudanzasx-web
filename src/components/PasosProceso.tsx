@@ -64,11 +64,11 @@ export default function PasosProceso({ completado }: { completado?: string }) {
               </span>
             </div>
             <div className="min-w-0 pt-1.5">
-              <h3 className="text-base font-medium tracking-tight text-black md:text-lg">
+              <h3 className="text-[clamp(1rem,0.95rem+0.3vw,1.125rem)] font-medium tracking-tight text-black">
                 {fila.titulo}
               </h3>
               {fila.descripcion && (
-                <p className="mt-1 text-[15px] leading-[1.5] text-black/60">
+                <p className="mt-1 text-body leading-[1.5] text-black/60">
                   {fila.descripcion}
                 </p>
               )}

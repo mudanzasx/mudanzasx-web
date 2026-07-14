@@ -19,10 +19,13 @@ const VARIANTS: Record<Variant, string> = {
   secondary: "border border-hairline bg-transparent hover:bg-black/5",
 };
 
+// El tamaño de texto es fluido (clamp) pero con el MÁXIMO igual al fijo previo
+// (text-sm/text-base): en escritorio se ve idéntico; solo se reduce, sin bajar
+// del mínimo legible, en pantallas estrechas.
 const SIZES: Record<Size, string> = {
-  sm: "px-4 py-2 text-sm",
-  md: "px-5 py-2.5 text-sm",
-  lg: "px-8 py-4 text-base",
+  sm: "px-4 py-2 text-small",
+  md: "px-5 py-2.5 text-small",
+  lg: "px-8 py-4 text-[clamp(0.9375rem,0.9rem+0.3vw,1rem)]",
 };
 
 export function btn(

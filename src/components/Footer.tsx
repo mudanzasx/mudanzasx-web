@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { MapPin, Mail, Phone } from "lucide-react";
 import { TELEFONO, TELEFONO_TEXTO } from "@/lib/config";
 import {
   FacebookIcon,
@@ -41,30 +40,27 @@ export default function Footer() {
               unoptimized
               className="h-7 w-auto"
             />
-            <p className="mt-5 flex items-start gap-2 text-sm leading-[1.6] text-white/70">
-              <MapPin size={16} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+            <p className="mt-5 text-small leading-[1.6] text-white/70">
               Calle Unió, 15, 08420 Canovelles, Barcelona
             </p>
             <a
               href="mailto:info@mudanzasx.com"
-              className="mt-3 flex items-center gap-2 text-sm text-white/70 transition-colors duration-150 hover:text-white"
+              className="mt-3 block w-fit text-small text-white/70 transition-colors duration-150 hover:text-white"
             >
-              <Mail size={16} strokeWidth={1.5} className="shrink-0" />
               info@mudanzasx.com
             </a>
             <a
               href={`tel:${TELEFONO}`}
-              className="mt-3 flex items-center gap-2 text-sm text-white/70 transition-colors duration-150 hover:text-white"
+              className="mt-3 block w-fit text-small text-white/70 transition-colors duration-150 hover:text-white"
             >
-              <Phone size={16} strokeWidth={1.5} className="shrink-0" />
               {TELEFONO_TEXTO}
             </a>
           </div>
 
           {/* Horario */}
           <div>
-            <p className="text-sm font-medium">Horario comercial</p>
-            <p className="mt-4 text-sm leading-[1.7] text-white/70">
+            <p className="text-small font-medium">Horario comercial</p>
+            <p className="mt-4 text-small leading-[1.7] text-white/70">
               Lunes a viernes 9:00-21:00
               <br />
               Sábado 9:00-17:00
@@ -75,27 +71,27 @@ export default function Footer() {
 
           {/* Legales */}
           <div>
-            <p className="text-sm font-medium">Legal</p>
+            <p className="text-small font-medium">Legal</p>
             <ul className="mt-4 flex flex-col gap-2.5">
               {LEGALES.map((l) => (
                 <li key={l.href}>
                   <a
                     href={l.href}
-                    className="text-sm text-white/70 transition-colors duration-150 hover:text-white"
+                    className="text-small text-white/70 transition-colors duration-150 hover:text-white"
                   >
                     {l.label}
                   </a>
                 </li>
               ))}
               <li>
-                <ConfigurarCookiesButton className="text-left text-sm text-white/70 transition-colors duration-150 hover:text-white" />
+                <ConfigurarCookiesButton className="text-left text-small text-white/70 transition-colors duration-150 hover:text-white" />
               </li>
             </ul>
           </div>
 
           {/* Redes */}
           <div>
-            <p className="text-sm font-medium">Síguenos</p>
+            <p className="text-small font-medium">Síguenos</p>
             <div className="mt-4 flex flex-wrap gap-4">
               {REDES.map(({ Icon, label, href }) => (
                 <a
@@ -114,7 +110,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 border-t border-white/15 pt-6">
-          <p className="text-sm text-white/60">© 2026 Mudanzas X</p>
+          <p className="text-small text-white/60">© 2026 Mudanzas X</p>
         </div>
       </div>
     </footer>

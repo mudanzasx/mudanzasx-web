@@ -19,7 +19,7 @@ export default function SectionImage({
   alt: string;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[440px]">
+    <div className="mx-auto w-full max-w-[400px]">
       {/* Mismo tratamiento que las imágenes de "Mudanza de vivienda": aspect-ratio
           fija la altura (sin CLS) y coincide con la 16:9 real de la imagen, así
           object-cover muestra el teléfono completo y centrado en cualquier ancho
@@ -29,7 +29,7 @@ export default function SectionImage({
           src={src}
           alt={alt}
           fill
-          sizes="(min-width: 768px) 440px, calc(100vw - 48px)"
+          sizes="(min-width: 768px) 400px, calc(100vw - 48px)"
           loading="lazy"
           className="object-cover object-center"
         />

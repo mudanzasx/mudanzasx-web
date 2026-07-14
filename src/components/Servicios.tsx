@@ -54,7 +54,7 @@ export default function Servicios() {
   return (
     <section id="servicios" className="w-full border-t border-hairline bg-gris">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
-        <div className="mx-auto max-w-[960px]">
+        <div className="mx-auto max-w-[720px]">
           <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
             Mudanza de vivienda
           </h2>
@@ -76,7 +76,7 @@ export default function Servicios() {
                   alt={s.alt}
                   fill
                   loading="lazy"
-                  sizes="(min-width: 1008px) 960px, calc(100vw - 48px)"
+                  sizes="(min-width: 768px) 720px, calc(100vw - 48px)"
                   className="object-cover"
                 />
               </div>
@@ -102,7 +102,7 @@ export default function Servicios() {
                   }`}
                 >
                   <s.Icon size={24} strokeWidth={1.5} className="shrink-0" />
-                  <span className="text-sm font-medium leading-snug tracking-tight">
+                  <span className="text-small font-medium leading-snug tracking-tight">
                     {s.nombre}
                   </span>
                   {/* Marca de estado "activo": se AÑADE al icono del servicio

@@ -24,6 +24,16 @@
   /* Elevación sutil única de marca para tarjetas (`shadow-card`). */
   --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.04),
     0 2px 10px -3px rgba(0, 0, 0, 0.08);
+
+  /* Tipografía fluida: escalado inteligente con clamp() (mín. legible · valor
+     fluido en vw · máx. razonable), en lugar de tamaños fijos por breakpoint.
+     Se exponen como utilidades `text-body` / `text-small` / `text-nav`.
+     Mínimos innegociables: cuerpo ≥ 14px, secundarios (nav/etiquetas) ≥ 12px.
+     Los máximos coinciden con los tamaños fijos previos para no alterar el
+     escritorio; solo se reducen (hasta el mínimo) en pantallas estrechas. */
+  --text-body: clamp(0.875rem, 0.84rem + 0.22vw, 1rem); /* 14 → 16 */
+  --text-small: clamp(0.8125rem, 0.78rem + 0.18vw, 0.875rem); /* 13 → 14 */
+  --text-nav: clamp(0.75rem, 0.68rem + 0.35vw, 0.875rem); /* 12 → 14 */
 }
 
 * {
@@ -45,10 +55,11 @@ html {
   --fixed-top: 112px;
 }
 @media (min-width: 768px) {
-  /* Escritorio: topbar (~32px) + header en 1 fila (~60px) con la navegación
-     integrada, sin fila extra. */
+  /* Escritorio: topbar (~31px) + header en 1 fila más alto (~72px, py-5 + logo
+     h-8) con la navegación integrada, sin fila extra. Total ~104px; el margen
+     deja unos px de aire para que el título no quede pegado a la barra. */
   :root {
-    --fixed-top: 96px;
+    --fixed-top: 112px;
   }
 }
 #como-funciona,

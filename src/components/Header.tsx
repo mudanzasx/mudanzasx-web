@@ -49,7 +49,7 @@ export default function Header() {
     const build = () => {
       observer?.disconnect();
       const fixed = document.getElementById("mx-fixed-top");
-      const top = fixed ? Math.round(fixed.getBoundingClientRect().height) : 110;
+      const top = fixed ? Math.round(fixed.getBoundingClientRect().height) : 112;
       observer = new IntersectionObserver(
         (entries) => {
           for (const e of entries) {
@@ -121,7 +121,7 @@ export default function Header() {
       {/* Fila principal, compacta. Móvil = flex (icono + botón Llamar).
           Escritorio = grid de 3 columnas [1fr auto 1fr] para centrar con
           precisión la navegación entre el logo y el botón. */}
-      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-1.5 md:grid md:grid-cols-[1fr_auto_1fr] md:py-2.5">
+      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-1.5 md:grid md:grid-cols-[1fr_auto_1fr] md:py-5">
         <a
           href="#top"
           className="flex items-center md:justify-self-start"
@@ -144,7 +144,7 @@ export default function Header() {
             height={512}
             priority
             unoptimized
-            className="hidden h-7 w-auto md:block"
+            className="hidden h-7 w-auto md:block md:h-8"
           />
         </a>
 
@@ -153,7 +153,7 @@ export default function Header() {
           aria-label="Secciones de la página"
           className="hidden md:block md:justify-self-center"
         >
-          <ul className="flex items-center gap-6 text-[13px] tracking-tight">
+          <ul className="flex items-center gap-6 text-nav tracking-tight">
             {navLinks("desktop")}
           </ul>
         </nav>
@@ -181,7 +181,7 @@ export default function Header() {
               sutil (subrayado) para indicar que es pulsable. */}
           <a
             href={`tel:${TELEFONO}`}
-            className="hidden items-center gap-2 rounded-field text-[13px] font-medium tracking-tight text-black underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-black/40 md:inline-flex"
+            className="hidden items-center gap-2 rounded-field text-small font-medium tracking-tight text-black underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-black/40 md:inline-flex"
           >
             <Phone size={16} strokeWidth={1.5} aria-hidden />
             {TELEFONO_TEXTO}
@@ -196,7 +196,7 @@ export default function Header() {
         aria-label="Secciones de la página"
         className="border-t border-hairline md:hidden"
       >
-        <ul className="mx-auto flex max-w-[1200px] items-center justify-between gap-1 px-3 py-1.5 text-[11px] tracking-tight">
+        <ul className="mx-auto flex max-w-[1200px] items-center justify-between gap-1 px-3 py-1.5 text-nav tracking-tight">
           {navLinks("mobile")}
         </ul>
       </nav>
