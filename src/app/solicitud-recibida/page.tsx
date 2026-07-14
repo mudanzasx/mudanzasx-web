@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Phone } from "lucide-react";
@@ -13,7 +14,19 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function SolicitudRecibida() {
+export default async function SolicitudRecibida({
+  searchParams,
+}: {
+  searchParams: Promise<{ ok?: string }>;
+}) {
+  // Solo se llega aquí tras enviar el formulario, que redirige con ?ok=1. Un
+  // acceso directo por URL (sin esa marca) se manda a la home: no hay datos ni
+  // acciones, pero ver "¡Gracias!" sin haber solicitado nada es incoherente.
+  const { ok } = await searchParams;
+  if (ok !== "1") {
+    redirect("/");
+  }
+
   return (
     <>
       {/* Destino final tras enviar el formulario: sin topbar del descuento ni

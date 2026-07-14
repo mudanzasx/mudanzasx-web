@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Truck, Wrench, Landmark, Recycle, type LucideIcon } from "lucide-react";
+import { Truck, Wrench, Landmark, Recycle, Check, type LucideIcon } from "lucide-react";
 
 // Único servicio de la empresa (mudanza de vivienda) desglosado en sus 4 partes.
 // Cada una tiene su icono (lucide-react), su nombre y la imagen (16:9, estudio
@@ -105,6 +105,19 @@ export default function Servicios() {
                   <span className="text-sm font-medium leading-snug tracking-tight">
                     {s.nombre}
                   </span>
+                  {/* Marca de estado "activo": se AÑADE al icono del servicio
+                      (que sigue identificándolo). Monocromo estricto: hereda el
+                      color del botón (blanco sobre el activo en negro). Aparece
+                      con la misma transición breve que el crossfade de la imagen
+                      y respeta prefers-reduced-motion. */}
+                  <Check
+                    size={18}
+                    strokeWidth={2}
+                    aria-hidden
+                    className={`ml-auto shrink-0 transition-opacity duration-200 ease-out motion-reduce:transition-none ${
+                      on ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
                 </button>
               );
             })}

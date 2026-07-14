@@ -6,8 +6,6 @@ import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
 import { btn } from "@/components/ui/button";
 import Image from "next/image";
-// Punto de confianza: refuerzo discreto bajo el botón.
-const CONFIANZA = [{ texto: "Operativa 365 días" }];
 
 export default function Hero() {
   const { requestQuote } = useQuote();
@@ -140,18 +138,6 @@ export default function Hero() {
             >
               Solicitar presupuesto
             </button>
-
-            {/* Puntos de confianza (reubicados desde la antigua TrustBand). */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 md:justify-start">
-              {CONFIANZA.map(({ texto }) => (
-                <span
-                  key={texto}
-                  className="text-[13px] font-medium tracking-tight text-black/70"
-                >
-                  {texto}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </div>

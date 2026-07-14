@@ -240,8 +240,10 @@ export default function QuoteForm() {
       if (!res.ok) {
         throw new Error("No se pudo enviar la solicitud.");
       }
-      // Redirige a la página propia de confirmación (URL medible).
-      router.push("/solicitud-recibida");
+      // Redirige a la página propia de confirmación (URL medible). El parámetro
+      // marca el envío legítimo: la página lo comprueba y, si falta (acceso
+      // directo por URL), redirige a la home.
+      router.push("/solicitud-recibida?ok=1");
     } catch {
       setError(
         "No se pudo enviar la solicitud. Revisa los datos e inténtalo de nuevo."

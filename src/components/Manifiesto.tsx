@@ -52,8 +52,8 @@ export default function Manifiesto() {
           izquierda donde los arcos son más tenues y espaciados, así el titular
           se lee perfectamente. */}
       <div className="relative z-10 mx-auto max-w-[1200px] px-6 py-16 md:py-28">
-        <h2 className="max-w-3xl text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-white">
-          Cada mudanza se calcula. Ninguna se improvisa.
+        <h2 className="max-w-3xl text-[clamp(2rem,4.5vw,3rem)] font-medium leading-tight tracking-[-0.02em] text-white">
+          Cada mudanza se calcula.
         </h2>
       </div>
     </section>
