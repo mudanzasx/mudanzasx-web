@@ -55,9 +55,6 @@ export default function Manifiesto() {
         <h2 className="max-w-3xl text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-white">
           Cada mudanza se calcula. Ninguna se improvisa.
         </h2>
-        <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/70 md:text-base">
-          Volumen, distancia, accesos y equipo. Precio cerrado antes de reservar.
-        </p>
       </div>
     </section>
   );

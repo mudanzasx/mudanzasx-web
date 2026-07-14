@@ -37,6 +37,11 @@ export default function PasosProceso({ completado }: { completado?: string }) {
         // El paso previo hecho lleva el número 0 (no un icono, para no duplicar
         // el check del título/badge); los tres pasos siguientes son 1·2·3.
         const numero = completado ? i : i + 1;
+        // Solo el paso 0 (contacto ya hecho, en la confirmación) se ve
+        // completado: círculo negro sólido con el "0" en blanco. Los pendientes
+        // (1·2·3) llevan el círculo gris con número negro. En la landing no hay
+        // paso 0, así que todos quedan pendientes.
+        const hecho = Boolean(completado) && i === 0;
         return (
           <li
             key={fila.titulo}
@@ -49,7 +54,11 @@ export default function PasosProceso({ completado }: { completado?: string }) {
                 className="absolute bottom-0 left-5 top-11 w-px -translate-x-1/2 bg-black/15"
               />
             )}
-            <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-pill bg-gris text-black">
+            <div
+              className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-pill ${
+                hecho ? "bg-black text-white" : "bg-gris text-black"
+              }`}
+            >
               <span className="text-base font-semibold tabular-nums">
                 {numero}
               </span>

@@ -16,17 +16,20 @@ export default function Faq() {
           Preguntas frecuentes
         </h2>
 
-        {/* Acordeón: cada pregunta en un cuadro con radio de marca (rounded-card). */}
-        <div className="mt-10 flex flex-col gap-3 md:mt-12">
+        {/* Acordeón atenuado: gris sobre gris (se difumina y cede protagonismo
+            al formulario que viene después). Sin cajas ni color: cada pregunta
+            se delimita solo con una hairline sutil, lo justo para leerse como
+            fila pulsable. El chevron refuerza que es desplegable. */}
+        <div className="mt-10 border-t border-hairline md:mt-12">
           {PREGUNTAS.map((item, i) => {
             const open = abierta === i;
             return (
-              <div key={item.q} className="rounded-card border border-hairline bg-white shadow-card">
+              <div key={item.q} className="border-b border-hairline">
                 <button
                   type="button"
                   onClick={() => setAbierta(open ? null : i)}
                   aria-expanded={open}
-                  className="flex w-full items-center justify-between gap-6 px-5 py-4 text-left"
+                  className="flex w-full items-center justify-between gap-6 py-5 text-left outline-none focus-visible:ring-2 focus-visible:ring-black/40"
                 >
                   <span className="text-base font-medium tracking-tight text-black md:text-lg">
                     {item.q}
@@ -47,7 +50,7 @@ export default function Faq() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="px-5 pb-5 text-[15px] leading-[1.6] text-black/70">
+                    <p className="pb-5 text-[15px] leading-[1.6] text-black/70">
                       {item.a}
                     </p>
                   </div>
