@@ -52,14 +52,15 @@ export default function Hero() {
           className="object-cover object-[68%_center] md:object-[center_78%]"
         />
         {/* Velo para situar la imagen en segundo plano: es fondo, no protagonista.
-            La imagen ya es muy oscura de origen (brillo medio ~8%), así que el
-            velo es muy contenido para NO perder las rutas ni el nodo de origen.
-            Degradado vertical (no uniforme): tenue arriba (negro 10%, la imagen
-            respira) e intenso abajo (negro 30%, donde el panel gris se solapa),
-            reforzando esa transición. Tope 30% << 35%. Pura CSS, sin imagen extra. */}
+            Degradado vertical (no uniforme): más tenue arriba (negro 40%, la
+            imagen respira) e intenso abajo (negro 55%, donde el panel gris se
+            solapa), reforzando esa transición. Intensidad general ~45-55%: la
+            imagen queda claramente atenuada, pero las rutas y el nodo de origen
+            aún se intuyen como textura de fondo (sin llegar a negro liso).
+            Pura CSS, sin imagen extra. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/10 to-black/30"
+          className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/40 to-black/55"
         />
       </div>
 
