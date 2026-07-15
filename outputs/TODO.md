@@ -19,21 +19,20 @@
 ## 🔴 CRÍTICOS
 
 ### Copy
-- [ ] **C1** — Unificar el significado del "5% de descuento": estacional en el Topbar vs pago anticipado en FAQ/pasos/email. `Topbar.tsx:8` vs `faq.ts:15`, `PasosProceso.tsx:14`, `condiciones/page.tsx:51`, `email.ts:68`. *Nota: es una promesa sobre dinero; no puede leerse como dos cosas distintas. Decidir un único mensaje.*
+_C1 completada (2026-07-15) → ✅ HECHO. Sin tareas críticas pendientes._
 
 ---
 
 ## 🟠 IMPORTANTES
 
 ### UX / Operativa
-- [ ] **I1** — Notificar al negocio cuando entra un lead (email vía Resend, opcional WhatsApp/Telegram). `api/lead/route.ts:156-174`. *Hoy el lead solo se ve abriendo el panel → riesgo de leads perdidos. (= idea B1.)*
 - [ ] **I2** — Evitar el duplicado al reguardar un presupuesto nuevo: adoptar `res.id` tras guardar (modo "Actualizar") o deshabilitar hasta que cambie un campo. `PresupuestoForm.tsx:346-367`, `PresupuestoPanel.tsx:72-75`.
 - [ ] **I3** — Turnstile: no enmascarar el fallo duro como "espera un momento"; mantener el mensaje de recarga (flag `turnstileFailed`). `QuoteForm.tsx:225-230`.
 - [ ] **I4** — Al enviar con error, llevar foco/scroll al primer campo inválido (o resumen `aria-live` sobre el botón). `QuoteForm.tsx:191-221`. *En móvil el botón está abajo y el toque "parece muerto".*
 - [ ] **I5** — Vista móvil (tarjetas apiladas) para la lista de leads en vez de tabla con scroll horizontal. `admin/(panel)/page.tsx:100-101`. *(= idea B3.)*
 
 ### Copy
-- [ ] **I6** — Unificar el plazo de contacto: "10 min" (form) vs "el mismo día laborable" (FAQ). `QuoteForm.tsx:324-328` vs `faq.ts:23`.
+_I6 completada (2026-07-15) → ✅ HECHO._
 
 ### Rendimiento
 - [ ] **I7** — Cargar Google Maps solo al primer foco/tecla del campo de dirección, no en el montaje del Hero. `googleMaps.ts:132`, `Hero.tsx:13`.
@@ -124,7 +123,7 @@
 
 Priorizadas por impacto/esfuerzo (mayor a menor).
 
-- [ ] **B1** — [ALTO / BAJO] Notificación instantánea de lead al negocio (email Resend + opcional WhatsApp/Telegram). *La más rentable; hoy no se avisa. (= I1.)*
+_B1 completada (2026-07-15) → ✅ HECHO (misma entrega que I1)._
 - [ ] **B2** — [MEDIO-ALTO / BAJO] Email de acuse inmediato al cliente ("recibido, te llamamos hoy"). *Refuerza la promesa, baja no-shows; reutiliza `emailLayout`.*
 - [ ] **B3** — [MEDIO / MEDIO] Vista móvil de la lista de leads para operar desde el móvil. *(= I5.)*
 - [ ] **B4** — [MEDIO / BAJO] Capturar origen/UTM del lead (campos ocultos + columna) para atribución de canal.
@@ -136,4 +135,8 @@ Priorizadas por impacto/esfuerzo (mayor a menor).
 
 ## ✅ HECHO
 
+- [x] **C1** — 2026-07-15 — [Copy] Un solo significado para el "5%": eliminado el descuento estacional; la topbar pasa a "5% de descuento por pago anticipado". El único 5% (pago anticipado del 100%) es coherente en web, emails y panel. `Topbar.tsx`.
+- [x] **I6** — 2026-07-15 — [Copy] Badge del formulario "10 min" → "Llamada de 10 min" (duración de la llamada, no plazo); fila con `flex-wrap` para no desbordar en móvil. El plazo real sigue siendo "el mismo día laborable" (FAQ). `QuoteForm.tsx`.
+- [x] **I1 · B1** — 2026-07-15 — [UX/Operativa] Notificación instantánea al negocio al entrar un lead por la web: email vía Resend (teléfono como enlace `tel:`, datos del lead y botón a la ficha). Envío no bloqueante para la creación del lead; solo la vía web (el alta manual no notifica). `api/lead/route.ts`, `lib/email.ts`.
+- [x] **B8** — 2026-07-15 — [Idea/Operativa] Aviso en tiempo real en el panel al entrar un lead (Supabase Realtime + sonido + toast). Implementado tras la auditoría a petición del propietario. `components/admin/AvisosLead.tsx`.
 - [x] **M39** — 2026-07-15 — [UX] Header de las páginas legales sticky, para que el botón de volver esté siempre accesible en páginas largas. `LegalShell`. *(Hallazgo del propietario, no de la auditoría.)*
