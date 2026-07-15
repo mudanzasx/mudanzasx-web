@@ -18,9 +18,12 @@ export default function LegalShell({
     <>
       {/* Rejilla de 3 columnas [1fr auto 1fr]: el logo queda centrado con
           precisión mientras el botón "Volver al inicio" ocupa el lado izquierdo
-          y un hueco simétrico equilibra la derecha. */}
-      <header className="w-full bg-black">
-        <div className="mx-auto grid max-w-[1200px] grid-cols-[1fr_auto_1fr] items-center px-6 py-4">
+          y un hueco simétrico equilibra la derecha. Sticky (top-0): acompaña al
+          scroll para que el logo y el botón de volver estén siempre accesibles
+          en las páginas largas. Al ser sticky va en el flujo, reserva su hueco →
+          sin CLS y sin tapar el contenido al cargar (no hace falta offset). */}
+      <header className="sticky top-0 z-40 w-full bg-black">
+        <div className="mx-auto grid max-w-[1200px] grid-cols-[1fr_auto_1fr] items-center px-6 py-3 md:py-4">
           <Link
             href="/"
             aria-label="Volver al inicio"
