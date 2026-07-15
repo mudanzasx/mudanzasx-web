@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Phone } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
   type Lead,
@@ -97,7 +98,9 @@ export default async function AdminDashboard({
       ) : leads.length === 0 ? (
         <EmptyState filtrado={Boolean(term || estado)} />
       ) : (
-        <div className="overflow-x-auto rounded-card border border-hairline bg-white shadow-card">
+        <>
+          {/* Escritorio: tabla (igual que antes; funciona bien con ese ancho). */}
+          <div className="hidden overflow-x-auto rounded-card border border-hairline bg-white shadow-card md:block">
           <table className="w-full min-w-[860px] border-collapse text-sm">
             <thead>
               <tr className="border-b border-hairline text-left text-xs uppercase tracking-wide text-black/50">
@@ -143,8 +146,86 @@ export default async function AdminDashboard({
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+
+          {/* Móvil: tarjetas apiladas (sin scroll horizontal). Misma lista de
+              leads del servidor, así que el buscador, el filtro por estado y el
+              aviso en tiempo real (router.refresh) afectan también a esta vista. */}
+          <ul className="flex flex-col gap-3 md:hidden">
+            {leads.map((lead) => (
+              <li key={lead.id}>
+                <LeadCard
+                  lead={lead}
+                  pagoPendiente={pagosPendientes.has(lead.id)}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
       )}
+    </div>
+  );
+}
+
+// Tarjeta de lead para MÓVIL: blanca sobre el gris del panel, escaneable. Toda la
+// tarjeta navega a la ficha (enlace estirado con ::after). El teléfono es una
+// acción propia (tel:) por encima del overlay (relative z-10), para que llamar
+// NO abra también la ficha: dos acciones bien diferenciadas.
+function LeadCard({
+  lead,
+  pagoPendiente,
+}: {
+  lead: Lead;
+  pagoPendiente: boolean;
+}) {
+  const tel = (lead.telefono ?? "").replace(/\s+/g, "");
+  return (
+    <div className="relative rounded-card border border-hairline bg-white shadow-card">
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="min-w-0 flex-1 truncate text-base font-medium text-black">
+            <Link
+              href={`/admin/leads/${lead.id}`}
+              className="rounded-field outline-none after:absolute after:inset-0 after:content-[''] hover:underline focus-visible:underline"
+            >
+              {textoODash(lead.nombre)}
+            </Link>
+          </h3>
+          <div className="shrink-0">
+            <EstadoPill estado={lead.estado_comercial} colorize />
+          </div>
+        </div>
+
+        <p className="mt-1.5 truncate text-sm text-black/60">
+          {formatRuta(lead.origen_direccion, lead.destino_direccion, 28)}
+        </p>
+
+        {pagoPendiente && (
+          <div className="mt-2">
+            <BadgePagoPendiente />
+          </div>
+        )}
+      </div>
+
+      {/* Pie: teléfono pulsable (acción propia) + fecha de entrada discreta. */}
+      <div className="flex items-center justify-between gap-2 border-t border-hairline px-4">
+        {tel ? (
+          <a
+            href={`tel:${tel}`}
+            className="relative z-10 inline-flex min-h-[44px] items-center gap-2 rounded-field pr-2 text-sm font-medium text-black outline-none hover:underline focus-visible:ring-2 focus-visible:ring-black/40"
+          >
+            <Phone size={16} strokeWidth={1.5} aria-hidden />
+            {textoODash(lead.telefono)}
+          </a>
+        ) : (
+          <span className="inline-flex min-h-[44px] items-center text-sm text-black/40">
+            Sin teléfono
+          </span>
+        )}
+        <span className="shrink-0 text-xs text-black/40">
+          {formatFechaHora(lead.creado_en)}
+        </span>
+      </div>
     </div>
   );
 }
