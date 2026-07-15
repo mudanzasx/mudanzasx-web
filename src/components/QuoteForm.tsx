@@ -318,14 +318,18 @@ export default function QuoteForm() {
           <form onSubmit={handleSubmit} noValidate>
             {/* Cuerpo traslúcido: cabecera y campos sobre el vidrio. */}
             <div className="p-6 md:p-8">
-              {/* Cabecera: titular corto + badge del tiempo estimado. Sin párrafo. */}
-              <div className="mb-6 flex items-center gap-3">
+              {/* Cabecera: titular corto + badge de la DURACIÓN de la llamada
+                  (no del plazo de contacto, que es "el mismo día laborable").
+                  flex-wrap: en móvil estrecho (~360px) la píldora baja a su
+                  propia línea en vez de desbordar; whitespace-nowrap la mantiene
+                  en una sola línea. */}
+              <div className="mb-6 flex flex-wrap items-center gap-3">
                 <h2 className="text-2xl font-medium leading-tight tracking-[-0.02em] text-black">
                   Te llamamos
                 </h2>
-                <span className="inline-flex items-center gap-1.5 rounded-pill border border-hairline bg-white px-2.5 py-1 text-xs font-medium text-black">
+                <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-pill border border-hairline bg-white px-2.5 py-1 text-xs font-medium text-black">
                   <Clock size={14} strokeWidth={1.5} />
-                  10 min
+                  Llamada de 10 min
                 </span>
               </div>
 
