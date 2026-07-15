@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/anon";
 import { esTelefonoEsValido, esEmailValido } from "@/lib/validaciones";
+import { enviarEmailAvisoLead } from "@/lib/email";
 
 type LeadPayload = {
   nombre?: unknown;
@@ -153,14 +154,23 @@ export async function POST(request: Request) {
     );
   }
 
-  const { error } = await supabase.from("leads").insert({
-    nombre,
-    telefono,
-    email,
-    origen_direccion: origen,
-    destino_direccion: destino,
-    via_entrada: "web",
-  });
+  // `.select("id").maybeSingle()` intenta recuperar el id del lead recién creado
+  // para enlazar su ficha en el aviso. Si la RLS del cliente anónimo no permite
+  // leer la fila devuelta, PostgREST responde 201 igualmente (sin error) y `data`
+  // llega null: el lead queda creado y el aviso enlaza a la lista. maybeSingle no
+  // convierte "0 filas devueltas" en error, así que NO compromete la creación.
+  const { data: nuevoLead, error } = await supabase
+    .from("leads")
+    .insert({
+      nombre,
+      telefono,
+      email,
+      origen_direccion: origen,
+      destino_direccion: destino,
+      via_entrada: "web",
+    })
+    .select("id")
+    .maybeSingle();
 
   if (error) {
     // Si falla por RLS/permisos, se ajusta aparte en Supabase.
@@ -169,6 +179,40 @@ export async function POST(request: Request) {
       { error: "No se pudo guardar la solicitud." },
       { status: 500 }
     );
+  }
+
+  // Aviso interno al negocio (solo esta vía web; el alta manual del panel no
+  // pasa por aquí). CRÍTICO: el aviso NUNCA compromete la creación del lead ni
+  // la respuesta de éxito al cliente — va en su propio try/catch y, si falla, se
+  // registra y se continúa. Se AWAITa a propósito antes de responder: en
+  // serverless una promesa "fire-and-forget" puede cortarse al enviar la
+  // respuesta, así que unas décimas de más garantizan que el email se envía.
+  try {
+    const base = (
+      process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.mudanzasx.com"
+    ).replace(/\/$/, "");
+    const fichaUrl = nuevoLead?.id
+      ? `${base}/admin/leads/${nuevoLead.id}`
+      : `${base}/admin`;
+    const fechaHoraTexto = new Date().toLocaleString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Europe/Madrid",
+    });
+    await enviarEmailAvisoLead({
+      nombre,
+      telefono,
+      email,
+      origen,
+      destino,
+      fichaUrl,
+      fechaHoraTexto,
+    });
+  } catch (e) {
+    console.error("[aviso-lead] No se pudo enviar el aviso del lead:", e);
   }
 
   return NextResponse.json({ ok: true }, { status: 201 });

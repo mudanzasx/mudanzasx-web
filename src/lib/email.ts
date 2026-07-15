@@ -227,3 +227,54 @@ ${emailBoton(REVIEW_URL, "Dejar mi valoración")}
     html,
   });
 }
+
+// ============================================================================
+// 4) AVISO INTERNO AL NEGOCIO DE UN NUEVO LEAD (email a la empresa)
+// ============================================================================
+
+// Destinatario de los avisos de leads nuevos. Cámbialo aquí (o añade más
+// direcciones separadas por comas) si en el futuro los recibe otra persona.
+export const EMAIL_AVISOS = "info@mudanzasx.com";
+
+// Email interno de aviso: directo y sin copy comercial. Lo importante es poder
+// actuar desde la notificación del móvil: el teléfono va como enlace tel: y bien
+// visible (acción principal), y un botón lleva a la ficha del lead en el panel.
+export async function enviarEmailAvisoLead(params: {
+  nombre: string;
+  telefono: string; // tal cual llega del formulario (p. ej. "+34 612 34 56 78")
+  email: string; // "" si el cliente no lo dejó
+  origen: string;
+  destino: string;
+  fichaUrl: string; // URL absoluta a la ficha (o a la lista si no se conoce el id)
+  fechaHoraTexto: string;
+}): Promise<EnvioResultado> {
+  const nombre = esc(params.nombre);
+  const telefono = esc(params.telefono);
+  const telHref = params.telefono.replace(/\s+/g, ""); // tel: sin espacios
+
+  const filas =
+    (params.email ? filaResumen("Email", params.email) : "") +
+    filaResumen("Origen", params.origen) +
+    filaResumen("Destino", params.destino) +
+    filaResumen("Entrada", params.fechaHoraTexto);
+
+  const cuerpo = `<p style="margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:rgba(0,0,0,0.45);">Nuevo lead desde la web</p>
+<p style="margin:0 0 2px;font-size:22px;line-height:1.25;font-weight:700;color:#000000;">${nombre}</p>
+<p style="margin:0 0 22px;font-size:20px;line-height:1.3;font-weight:700;">
+<a href="tel:${telHref}" style="color:#000000;text-decoration:none;">${telefono}</a>
+</p>
+${panelResumen(filas)}
+<div style="margin:22px 0 0;">${emailBoton(params.fichaUrl, "Abrir ficha en el panel")}</div>`;
+
+  const html = emailLayout({
+    titulo: "Nuevo lead · Mudanzas X",
+    preheader: `${params.origen} → ${params.destino}`,
+    cuerpo,
+  });
+  // Asunto escaneable desde el móvil: nombre y teléfono delante (texto plano).
+  return enviar({
+    para: EMAIL_AVISOS,
+    asunto: `Nuevo lead: ${params.nombre} · ${params.telefono}`,
+    html,
+  });
+}
