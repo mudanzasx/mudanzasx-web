@@ -21,13 +21,15 @@ export default function Faq() {
 
         {/* Acordeón atenuado sobre negro: sin cajas ni fondo propio (cada
             pregunta se funde con el negro de la sección), delimitado solo por una
-            hairline blanca sutil, lo justo para leerse como fila pulsable. El
-            chevron refuerza que es desplegable. */}
-        <div className="mt-10 border-t border-white/[0.12] md:mt-12">
+            hairline blanca (20%), lo justo para leerse como fila pulsable
+            independiente. La línea superior del bloque (border-t) y la inferior
+            del último item (border-b) lo cierran limpiamente. El chevron refuerza
+            que es desplegable. */}
+        <div className="mt-10 border-t border-white/20 md:mt-12">
           {PREGUNTAS.map((item, i) => {
             const open = abierta === i;
             return (
-              <div key={item.q} className="border-b border-white/[0.12]">
+              <div key={item.q} className="border-b border-white/20">
                 <button
                   type="button"
                   onClick={() => setAbierta(open ? null : i)}
