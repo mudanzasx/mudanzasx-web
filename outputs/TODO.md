@@ -32,8 +32,7 @@ _C1 completada (2026-07-15) → ✅ HECHO. Sin tareas críticas pendientes._
 _I6 completada (2026-07-15) → ✅ HECHO._
 
 ### Rendimiento
-- [ ] **I7** — Cargar Google Maps solo al primer foco/tecla del campo de dirección, no en el montaje del Hero. `googleMaps.ts:132`, `Hero.tsx:13`.
-- [ ] **I8** — Cargar Turnstile bajo demanda (IntersectionObserver al acercarse el formulario, o `strategy="lazyOnload"`). `Turnstile.tsx:108`, `QuoteForm.tsx:544`.
+_I7 e I8 completadas (2026-07-15) → ✅ HECHO._
 
 ### SEO
 - [ ] **I9** — Apuntar el `image` del JSON-LD MovingCompany a una imagen real y visible (`og.png` o `servicio-transporte.webp`) y corregir el comentario erróneo ("la del camión"). `page.tsx:15,25`.
@@ -132,6 +131,8 @@ _B1 completada (2026-07-15) → ✅ HECHO (misma entrega que I1)._
 
 ## ✅ HECHO
 
+- [x] **I7** — 2026-07-15 — [Rendimiento] Google Maps (Places) ya no carga en el montaje: `usePlaces` expone `ensureLoaded()` (carga única compartida) y `AddressAutocomplete` la dispara en el primer `onFocus` de un campo de dirección (hero o formulario). Salvaguardas: campo usable mientras carga, re-búsqueda al llegar la librería sin perder texto, y degradación si falla. `googleMaps.ts`, `AddressAutocomplete.tsx`.
+- [x] **I8** — 2026-07-15 — [Rendimiento] Turnstile se monta bajo demanda vía IntersectionObserver cuando el formulario está a ~2 pantallas (`rootMargin 0px 0px 200% 0px`), una sola vez. Salvaguardas: fallback sin IO y montaje en el submit con mensaje "en curso" (lógica I3 intacta). Server-side sin cambios. `QuoteForm.tsx`.
 - [x] **I2** — 2026-07-15 — [UX/Panel] Al guardar un presupuesto nuevo, el panel adopta el `id` devuelto y pasa a modo "Actualizar" (un segundo guardado actualiza esa fila, no duplica). "+ Nuevo presupuesto" sigue empezando en blanco. `PresupuestoPanel.tsx`.
 - [x] **I3** — 2026-07-15 — [UX] Turnstile: flag `turnstileFailed` (error/expired) → al enviar sin token se muestra "Recarga la página" en fallo duro y "Espera un momento" solo mientras resuelve. Server-side intacto. `QuoteForm.tsx`.
 - [x] **I4** — 2026-07-15 — [UX] Al enviar con errores, foco + scroll suave al primer campo inválido (orden visual, incl. número de calle y consentimiento) + resumen `role="alert"` junto al botón. Respeta `prefers-reduced-motion`; el botón no se deshabilita. `QuoteForm.tsx`.
