@@ -88,6 +88,9 @@ export default function QuoteForm() {
   );
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileError, setTurnstileError] = useState<string | null>(null);
+  // Fallo DURO del widget (error/expiración/no carga): distingue "recargar" de
+  // "espera un momento" al intentar enviar sin token (I3).
+  const [turnstileFailed, setTurnstileFailed] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
 
   // Validación del número de calle (Google Places). Si Google no está
@@ -102,6 +105,9 @@ export default function QuoteForm() {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [nombreError, setNombreError] = useState<string | null>(null);
   const [aceptaError, setAceptaError] = useState<string | null>(null);
+  // Resumen accesible (aria-live) al enviar con errores (I4).
+  const [resumenError, setResumenError] = useState<string | null>(null);
+  const aceptaRef = useRef<HTMLInputElement>(null);
 
   // Teléfono: 9 dígitos válidos (el prefijo +34 lo pone el propio campo).
   const validarTelefono = (v: string) =>
@@ -191,6 +197,7 @@ export default function QuoteForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIntentado(true);
+    setResumenError(null);
 
     // Validación propia (sin globos nativos): contacto, nombre y aceptación.
     const telErr = validarTelefono(form.telefono);
@@ -207,24 +214,48 @@ export default function QuoteForm() {
     const origenVacio = form.origen.trim() === "";
     const destinoVacio = form.destino.trim() === "";
 
-    // La dirección de origen y destino es obligatoria y debe incluir número.
-    if (
-      origenVacio ||
-      destinoVacio ||
-      (exigirNumero && (!origenNum || !destinoNum)) ||
-      telErr ||
-      emErr ||
-      nomErr ||
-      aceptaErr
-    ) {
+    // Primer campo inválido en ORDEN VISUAL. La dirección exige texto y número
+    // de calle (cuando Google está disponible).
+    const camposInvalidos: { malo: boolean; el: () => HTMLElement | null }[] = [
+      { malo: origenVacio || faltaOrigenNum, el: () => origenRef.current },
+      { malo: destinoVacio || faltaDestinoNum, el: () => destinoRef.current },
+      { malo: Boolean(nomErr), el: () => nombreRef.current },
+      { malo: Boolean(telErr), el: () => telefonoRef.current },
+      { malo: Boolean(emErr), el: () => emailRef.current },
+      { malo: Boolean(aceptaErr), el: () => aceptaRef.current },
+    ];
+    const primero = camposInvalidos.find((c) => c.malo);
+    if (primero) {
+      // I4: foco + scroll suave al primer campo con error, para que el usuario
+      // (sobre todo en móvil, con el botón al final) vea al instante qué falta.
+      // block:"center" lo deja a media pantalla, despejado del bloque fijo
+      // superior. Se respeta prefers-reduced-motion (salto directo).
+      const el = primero.el();
+      if (el) {
+        const reduce =
+          typeof window !== "undefined" &&
+          window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({
+          behavior: reduce ? "auto" : "smooth",
+          block: "center",
+        });
+      }
+      // Resumen anunciado por lectores de pantalla al pulsar.
+      setResumenError(
+        "Faltan campos por completar. Revisa lo marcado y vuelve a enviar."
+      );
       return;
     }
 
-    // Verificación de seguridad: si el widget aún no ha resuelto el desafío, no
-    // se envía (el servidor también lo rechazaría).
+    // Verificación de seguridad. Se distingue el fallo DURO del widget (hay que
+    // recargar) del estado "aún resolviendo" (esperar), para no dejar al usuario
+    // esperando algo que no se va a resolver solo.
     if (turnstileHabilitado && !turnstileToken) {
       setTurnstileError(
-        "Verificación de seguridad pendiente. Espera un momento e inténtalo de nuevo."
+        turnstileFailed
+          ? "No se pudo cargar la verificación de seguridad. Recarga la página e inténtalo de nuevo."
+          : "Verificación de seguridad pendiente. Espera un momento e inténtalo de nuevo."
       );
       return;
     }
@@ -513,6 +544,7 @@ export default function QuoteForm() {
 
               <label className="mt-5 flex items-start gap-3 text-[14px] leading-[1.5] text-black/70">
                 <input
+                  ref={aceptaRef}
                   type="checkbox"
                   checked={form.acepta}
                   onChange={(e) => {
@@ -552,9 +584,11 @@ export default function QuoteForm() {
                     onToken={(t) => {
                       setTurnstileToken(t);
                       setTurnstileError(null);
+                      setTurnstileFailed(false);
                     }}
                     onError={() => {
                       setTurnstileToken(null);
+                      setTurnstileFailed(true);
                       setTurnstileError(
                         "No se pudo cargar la verificación de seguridad. Recarga la página e inténtalo de nuevo."
                       );
@@ -571,6 +605,18 @@ export default function QuoteForm() {
               {error && (
                 <p className="text-[15px] font-medium text-black" role="alert">
                   {error}
+                </p>
+              )}
+
+              {/* Resumen accesible al enviar con errores (I4): role="alert" lo
+                  anuncia al insertarse. Se oculta en cuanto el formulario está
+                  completo, para no quedar obsoleto. Monocromo y centrado. */}
+              {resumenError && !(listo && form.acepta) && (
+                <p
+                  role="alert"
+                  className="text-center text-[13px] font-medium text-black"
+                >
+                  {resumenError}
                 </p>
               )}
 

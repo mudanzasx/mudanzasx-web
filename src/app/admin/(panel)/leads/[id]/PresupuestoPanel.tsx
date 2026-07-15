@@ -69,8 +69,15 @@ export default function PresupuestoPanel({
     setFormOpen(true);
   }
 
-  function onSaved() {
-    // La lista se recarga desde el servidor; el formulario mantiene su estado.
+  function onSaved(id: string) {
+    // Tras guardar un presupuesto NUEVO, adoptamos su id → el formulario pasa a
+    // modo "Actualizar" y un segundo guardado actualiza esa MISMA fila en vez de
+    // insertar un duplicado. No se remonta (formKey no cambia), así se conservan
+    // los valores para seguir editándolo. Si ya se estaba editando uno guardado,
+    // editId no cambia (sigue actualizando el mismo). "+ Nuevo presupuesto"
+    // vuelve a poner editId a null y empieza en blanco.
+    if (editId === null) setEditId(id);
+    // La lista se recarga desde el servidor; el estado del formulario se mantiene.
     router.refresh();
   }
 
