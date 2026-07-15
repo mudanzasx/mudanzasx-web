@@ -12,6 +12,7 @@ import {
   AVISO_EMAIL,
 } from "@/lib/validaciones";
 import { btn } from "@/components/ui/button";
+import { useRipple } from "@/components/ui/useRipple";
 import { field } from "@/components/ui/field";
 import { Clock } from "lucide-react";
 import Turnstile, { type TurnstileHandle } from "./Turnstile";
@@ -75,6 +76,11 @@ export default function QuoteForm() {
   });
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const {
+    ref: rippleRef,
+    onPointerDown: onRipplePointerDown,
+    onKeyDown: onRippleKeyDown,
+  } = useRipple<HTMLButtonElement>();
 
   // Cloudflare Turnstile (captcha). Activo solo si hay site key configurada.
   const turnstileHabilitado = Boolean(
@@ -569,11 +575,14 @@ export default function QuoteForm() {
                   ocupa el ancho del pie, como una app bancaria. */}
               <button
                 type="submit"
+                ref={rippleRef}
+                onPointerDown={onRipplePointerDown}
+                onKeyDown={onRippleKeyDown}
                 disabled={enviando}
                 className={btn({
                   variant: "primary",
                   size: "lg",
-                  className: "w-full",
+                  className: "relative isolate w-full overflow-hidden",
                 })}
               >
                 {enviando ? (

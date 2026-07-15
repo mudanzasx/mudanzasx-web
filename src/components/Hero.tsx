@@ -5,6 +5,7 @@ import { useQuote } from "./QuoteContext";
 import AddressAutocomplete from "./AddressAutocomplete";
 import { usePlaces } from "@/lib/googleMaps";
 import { btn } from "@/components/ui/button";
+import { useRipple } from "@/components/ui/useRipple";
 import Image from "next/image";
 
 export default function Hero() {
@@ -15,6 +16,11 @@ export default function Hero() {
   const [origenNum, setOrigenNum] = useState(false);
   const [destinoNum, setDestinoNum] = useState(false);
   const [intentado, setIntentado] = useState(false);
+  const {
+    ref: rippleRef,
+    onPointerDown: onRipplePointerDown,
+    onKeyDown: onRippleKeyDown,
+  } = useRipple<HTMLButtonElement>();
 
   // Si Google no está disponible, no bloqueamos por el número (degradación).
   const exigirNumero = !mapsFailed;
@@ -140,11 +146,15 @@ export default function Hero() {
 
             <button
               type="button"
+              ref={rippleRef}
+              onPointerDown={onRipplePointerDown}
+              onKeyDown={onRippleKeyDown}
               onClick={handleCalcular}
               className={btn({
                 variant: "primary",
                 size: "lg",
-                className: "mt-4 w-full active:scale-[0.98] sm:w-auto",
+                className:
+                  "relative isolate mt-4 w-full overflow-hidden active:scale-[0.98] sm:w-auto",
               })}
             >
               Solicitar presupuesto

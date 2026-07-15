@@ -291,3 +291,38 @@ body {
     opacity: 0;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Ripple al pulsar botones primarios (negros) — ver useRipple.ts.
+   Cada onda es un <span> cuadrado (con border-radius pill) cuyo centro se coloca
+   en el punto de la pulsación; solo se animan transform (scale 0→1) y opacity
+   (0.30→0), nunca width/height. z-index negativo → por debajo del texto (el botón
+   crea su contexto con `isolate`); pointer-events:none → no captura clics.
+   --------------------------------------------------------------------------- */
+.mx-ripple {
+  position: absolute;
+  z-index: -1;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  transform: scale(0);
+  will-change: transform, opacity;
+  animation: mx-ripple 560ms ease-out forwards;
+}
+@keyframes mx-ripple {
+  from {
+    transform: scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+/* Movimiento reducido: sin onda (el botón funciona igual). */
+@media (prefers-reduced-motion: reduce) {
+  .mx-ripple {
+    display: none;
+    animation: none;
+  }
+}
