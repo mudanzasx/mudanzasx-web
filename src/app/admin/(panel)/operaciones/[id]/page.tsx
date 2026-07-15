@@ -58,7 +58,7 @@ export default async function OperacionDetallePage({
 
   if (error) {
     return (
-      <div className="rounded-card border border-hairline bg-gris px-4 py-6 text-sm text-black/70">
+      <div className="rounded-card border border-hairline bg-white shadow-card px-4 py-6 text-sm text-black/70">
         No se pudo cargar la operación.{" "}
         <Link href="/admin/calendario" className="underline underline-offset-2">
           Volver al calendario
@@ -232,7 +232,7 @@ export default async function OperacionDetallePage({
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Cliente (solo lectura) */}
-        <section className="rounded-card border border-hairline p-5">
+        <section className="rounded-card border border-hairline bg-white shadow-card p-5">
           <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-black/50">
             Cliente
           </h2>

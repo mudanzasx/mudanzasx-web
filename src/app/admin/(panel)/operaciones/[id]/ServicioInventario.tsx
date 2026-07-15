@@ -66,7 +66,7 @@ export default function ServicioInventario({
   const accesos = detalle?.accesos ?? null;
 
   return (
-    <section className="rounded-card border border-hairline p-5">
+    <section className="rounded-card border border-hairline bg-white shadow-card p-5">
       <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-black/50">
         Servicio e inventario
       </h2>

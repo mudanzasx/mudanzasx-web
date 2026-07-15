@@ -20,7 +20,7 @@ export default async function PanelLayout({
   }
 
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-gris text-black">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-black">
         <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-6">

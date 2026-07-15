@@ -39,7 +39,7 @@ export default async function LeadDetailPage({
 
   if (error) {
     return (
-      <div className="rounded-card border border-hairline bg-gris px-4 py-6 text-sm text-black/70">
+      <div className="rounded-card border border-hairline bg-white shadow-card px-4 py-6 text-sm text-black/70">
         No se pudo cargar el cliente.{" "}
         <Link href="/admin" className="underline underline-offset-2">
           Volver a la lista
@@ -160,13 +160,13 @@ export default async function LeadDetailPage({
       </div>
 
       {pagoParam === "ok" && (
-        <div className="mb-6 rounded-card border border-hairline bg-gris px-4 py-3 text-sm">
+        <div className="mb-6 rounded-card border border-hairline bg-white shadow-card px-4 py-3 text-sm">
           Pago recibido. La reserva se ha confirmado y el cliente está marcado
           como Reservado.
         </div>
       )}
       {pagoParam === "cancelado" && (
-        <div className="mb-6 rounded-card border border-hairline px-4 py-3 text-sm text-black/60">
+        <div className="mb-6 rounded-card border border-hairline bg-white shadow-card px-4 py-3 text-sm text-black/60">
           El cliente canceló o cerró el pago sin completarlo.
         </div>
       )}
@@ -285,7 +285,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-card border border-hairline p-5">
+    <section className="rounded-card border border-hairline bg-white shadow-card p-5">
       <h2 className="mb-4 text-xs font-medium uppercase tracking-wide text-black/50">
         {title}
       </h2>

@@ -82,7 +82,7 @@ export default async function DiaCalendarioPage({
       </p>
 
       {filas.length === 0 ? (
-        <p className="mt-6 rounded-card border border-hairline bg-gris px-4 py-6 text-center text-sm text-black/50">
+        <p className="mt-6 rounded-card border border-hairline bg-white px-4 py-6 text-center text-sm text-black/50 shadow-card">
           No hay operaciones este día.
         </p>
       ) : (

@@ -22,8 +22,12 @@ const ESTADO_TONO: Record<string, Tono> = {
 };
 
 const TONO_CLASES: Record<Tono, { badge: string; dot: string }> = {
-  neutro: { badge: "bg-gris text-black", dot: "" },
-  gris: { badge: "bg-gris text-black/70", dot: "bg-black/30" },
+  // Tonos neutros con relleno blanco + hairline: se leen como pastilla nítida
+  // tanto sobre la tarjeta blanca como sobre el fondo gris del panel (un relleno
+  // gris se fundiría con el gris de la página). Los tonos del semáforo con color
+  // (ámbar/verde/azul/rojo) usan tintes claros que ya contrastan y no se tocan.
+  neutro: { badge: "border border-hairline bg-white text-black", dot: "" },
+  gris: { badge: "border border-hairline bg-white text-black/70", dot: "bg-black/30" },
   ambar: { badge: "bg-amber-50 text-amber-700", dot: "bg-amber-500" },
   verde: { badge: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" },
   azul: { badge: "bg-slate-100 text-slate-700", dot: "bg-slate-600" },

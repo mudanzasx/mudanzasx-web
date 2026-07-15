@@ -10,7 +10,9 @@ type Variant = "admin" | "public";
 type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
-  admin: "bg-gris border-transparent",
+  // Panel: relleno gris suave + hairline definida, para que el campo se
+  // distinga con claridad sobre la tarjeta blanca (dónde se escribe).
+  admin: "bg-gris border-hairline",
   public: "bg-white border-hairline",
 };
 

@@ -174,7 +174,7 @@ export default async function CalendarioPage({
       </div>
 
       {error && (
-        <div className="mb-6 rounded-card border border-hairline bg-gris px-4 py-3 text-sm text-black/70">
+        <div className="mb-6 rounded-card border border-hairline bg-white px-4 py-3 text-sm text-black/70 shadow-card">
           No se pudieron cargar las operaciones de este mes.
         </div>
       )}
@@ -184,7 +184,7 @@ export default async function CalendarioPage({
           lista todas. */}
       <div className="md:hidden">
         {diasConOps.length === 0 ? (
-          <p className="rounded-card border border-hairline bg-gris px-4 py-6 text-center text-sm text-black/50">
+          <p className="rounded-card border border-hairline bg-white px-4 py-6 text-center text-sm text-black/50 shadow-card">
             No hay operaciones programadas este mes.
           </p>
         ) : (
@@ -216,8 +216,12 @@ export default async function CalendarioPage({
         )}
       </div>
 
-      {/* Escritorio: cuadrícula mensual. */}
-      <div className="hidden md:block">
+      {/* Escritorio: cuadrícula mensual como tarjeta blanca. El borde exterior lo
+          dibuja la propia rejilla (border-l/t del contenedor + border-r/b de las
+          celdas); overflow-hidden recorta esas líneas contra las esquinas
+          redondeadas, así que el contenedor no añade su propio borde (evita la
+          línea doble en los cuatro lados). */}
+      <div className="hidden overflow-hidden rounded-card bg-white shadow-card md:block">
       {/* Cabecera de días de la semana */}
       <div className="grid grid-cols-7 border-l border-t border-hairline text-xs font-medium uppercase tracking-wide text-black/50">
         {DIAS_SEMANA.map((d) => (

@@ -91,13 +91,13 @@ export default async function AdminDashboard({
       </div>
 
       {error ? (
-        <div className="rounded-card border border-hairline bg-gris px-4 py-6 text-sm text-black/70">
+        <div className="rounded-card border border-hairline bg-white px-4 py-6 text-sm text-black/70 shadow-card">
           No se pudieron cargar los clientes. Inténtalo de nuevo más tarde.
         </div>
       ) : leads.length === 0 ? (
         <EmptyState filtrado={Boolean(term || estado)} />
       ) : (
-        <div className="overflow-x-auto rounded-card border border-hairline shadow-card">
+        <div className="overflow-x-auto rounded-card border border-hairline bg-white shadow-card">
           <table className="w-full min-w-[860px] border-collapse text-sm">
             <thead>
               <tr className="border-b border-hairline text-left text-xs uppercase tracking-wide text-black/50">
@@ -175,7 +175,7 @@ function Td({
 
 function EmptyState({ filtrado }: { filtrado: boolean }) {
   return (
-    <div className="rounded-card border border-dashed border-hairline px-6 py-16 text-center">
+    <div className="rounded-card border border-dashed border-hairline bg-white px-6 py-16 text-center shadow-card">
       <p className="text-base font-medium text-black">
         {filtrado ? "Sin resultados" : "Aún no hay clientes"}
       </p>

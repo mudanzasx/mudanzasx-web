@@ -87,7 +87,7 @@ export default function PresupuestoPanel({
             return (
               <div
                 key={p.id}
-                className={`rounded-card border transition-colors ${
+                className={`rounded-card border bg-white shadow-card transition-colors ${
                   activo ? "border-black" : "border-hairline"
                 }`}
               >
@@ -131,7 +131,7 @@ export default function PresupuestoPanel({
       {/* Acordeón: formulario de crear/editar presupuesto. Plegado por defecto
           para no ocupar espacio; se abre al pulsar la cabecera, al reabrir un
           presupuesto guardado o al pulsar "+ Nuevo presupuesto". */}
-      <div className="rounded-card border border-hairline">
+      <div className="rounded-card border border-hairline bg-white shadow-card">
         <button
           type="button"
           onClick={() => setFormOpen((o) => !o)}
