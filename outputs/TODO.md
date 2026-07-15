@@ -26,9 +26,6 @@ _C1 completada (2026-07-15) → ✅ HECHO. Sin tareas críticas pendientes._
 ## 🟠 IMPORTANTES
 
 ### UX / Operativa
-- [ ] **I2** — Evitar el duplicado al reguardar un presupuesto nuevo: adoptar `res.id` tras guardar (modo "Actualizar") o deshabilitar hasta que cambie un campo. `PresupuestoForm.tsx:346-367`, `PresupuestoPanel.tsx:72-75`.
-- [ ] **I3** — Turnstile: no enmascarar el fallo duro como "espera un momento"; mantener el mensaje de recarga (flag `turnstileFailed`). `QuoteForm.tsx:225-230`.
-- [ ] **I4** — Al enviar con error, llevar foco/scroll al primer campo inválido (o resumen `aria-live` sobre el botón). `QuoteForm.tsx:191-221`. *En móvil el botón está abajo y el toque "parece muerto".*
 - [ ] **I5** — Vista móvil (tarjetas apiladas) para la lista de leads en vez de tabla con scroll horizontal. `admin/(panel)/page.tsx:100-101`. *(= idea B3.)*
 
 ### Copy
@@ -135,6 +132,9 @@ _B1 completada (2026-07-15) → ✅ HECHO (misma entrega que I1)._
 
 ## ✅ HECHO
 
+- [x] **I2** — 2026-07-15 — [UX/Panel] Al guardar un presupuesto nuevo, el panel adopta el `id` devuelto y pasa a modo "Actualizar" (un segundo guardado actualiza esa fila, no duplica). "+ Nuevo presupuesto" sigue empezando en blanco. `PresupuestoPanel.tsx`.
+- [x] **I3** — 2026-07-15 — [UX] Turnstile: flag `turnstileFailed` (error/expired) → al enviar sin token se muestra "Recarga la página" en fallo duro y "Espera un momento" solo mientras resuelve. Server-side intacto. `QuoteForm.tsx`.
+- [x] **I4** — 2026-07-15 — [UX] Al enviar con errores, foco + scroll suave al primer campo inválido (orden visual, incl. número de calle y consentimiento) + resumen `role="alert"` junto al botón. Respeta `prefers-reduced-motion`; el botón no se deshabilita. `QuoteForm.tsx`.
 - [x] **C1** — 2026-07-15 — [Copy] Un solo significado para el "5%": eliminado el descuento estacional; la topbar pasa a "5% de descuento por pago anticipado". El único 5% (pago anticipado del 100%) es coherente en web, emails y panel. `Topbar.tsx`.
 - [x] **I6** — 2026-07-15 — [Copy] Badge del formulario "10 min" → "Llamada de 10 min" (duración de la llamada, no plazo); fila con `flex-wrap` para no desbordar en móvil. El plazo real sigue siendo "el mismo día laborable" (FAQ). `QuoteForm.tsx`.
 - [x] **I1 · B1** — 2026-07-15 — [UX/Operativa] Notificación instantánea al negocio al entrar un lead por la web: email vía Resend (teléfono como enlace `tel:`, datos del lead y botón a la ficha). Envío no bloqueante para la creación del lead; solo la vía web (el alta manual no notifica). `api/lead/route.ts`, `lib/email.ts`.
