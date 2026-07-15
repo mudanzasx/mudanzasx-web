@@ -11,7 +11,7 @@ export default function Faq() {
     // Sección en NEGRO pleno: descanso visual rotundo antes del formulario y
     // hermana de la banda del manifiesto (también negra). Todo el contenido se
     // invierte para leerse sobre negro; las hairlines pasan a blanco muy sutil.
-    <section id="faq" className="w-full border-t border-white/[0.12] bg-black">
+    <section id="faq" className="w-full border-t border-white/40 bg-black">
       {/* Sin imagen: el acordeón se centra a un ancho cómodo de lectura (800px)
           en lugar de encajonarse en media rejilla. */}
       <div className="mx-auto max-w-[800px] px-6 py-14 md:py-24">
@@ -21,15 +21,16 @@ export default function Faq() {
 
         {/* Acordeón atenuado sobre negro: sin cajas ni fondo propio (cada
             pregunta se funde con el negro de la sección), delimitado solo por una
-            hairline blanca (20%), lo justo para leerse como fila pulsable
-            independiente. La línea superior del bloque (border-t) y la inferior
-            del último item (border-b) lo cierran limpiamente. El chevron refuerza
-            que es desplegable. */}
-        <div className="mt-10 border-t border-white/20 md:mt-12">
+            hairline blanca. Sobre negro puro hace falta bastante más opacidad
+            (40%) que sobre fondos claros para que la línea de 1px se lea nítida y
+            delimite cada pregunta como fila pulsable independiente. La línea
+            superior del bloque (border-t) y la inferior del último item (border-b)
+            lo cierran limpiamente. El chevron refuerza que es desplegable. */}
+        <div className="mt-10 border-t border-white/40 md:mt-12">
           {PREGUNTAS.map((item, i) => {
             const open = abierta === i;
             return (
-              <div key={item.q} className="border-b border-white/20">
+              <div key={item.q} className="border-b border-white/40">
                 <button
                   type="button"
                   onClick={() => setAbierta(open ? null : i)}
