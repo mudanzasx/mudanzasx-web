@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import AvisosLead from "@/components/admin/AvisosLead";
 
 // Cabecera del panel + barrera de autenticación de segundo nivel (crítica):
 // aunque el proxy ya redirige, revalidamos la sesión antes de renderizar
@@ -47,14 +48,19 @@ export default async function PanelLayout({
             </nav>
           </div>
 
-          <form action="/admin/logout" method="post">
-            <button
-              type="submit"
-              className="rounded-pill px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
-            >
-              Cerrar sesión
-            </button>
-          </form>
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Aviso en tiempo real de leads nuevos (sonido + toast) + control de
+                sonido. Cliente; se monta aquí para estar activo en todo el panel. */}
+            <AvisosLead />
+            <form action="/admin/logout" method="post">
+              <button
+                type="submit"
+                className="rounded-pill px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
+              >
+                Cerrar sesión
+              </button>
+            </form>
+          </div>
         </div>
       </header>
 
