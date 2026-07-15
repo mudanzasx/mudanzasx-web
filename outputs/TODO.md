@@ -136,4 +136,4 @@ Priorizadas por impacto/esfuerzo (mayor a menor).
 
 ## ✅ HECHO
 
-_(Vacío. Al completar una tarea, moverla aquí con su ID y la fecha, p. ej. `- [x] M34 — 2026-07-16`.)_
+- [x] **M39** — 2026-07-15 — [UX] Header de las páginas legales sticky, para que el botón de volver esté siempre accesible en páginas largas. `LegalShell`. *(Hallazgo del propietario, no de la auditoría.)*
