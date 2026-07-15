@@ -54,15 +54,23 @@ export default function Servicios() {
   return (
     <section id="servicios" className="w-full border-t border-hairline bg-gris">
       <div className="mx-auto max-w-[1200px] px-6 py-14 md:py-24">
-        <div className="mx-auto max-w-[720px]">
-          <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
-            Mudanza de vivienda
-          </h2>
+        {/* Titular arriba, a ancho completo — misma composición que "Cómo
+            funciona". */}
+        <h2 className="text-[clamp(1.75rem,3.5vw,2.5rem)] font-medium leading-tight tracking-[-0.02em] text-black">
+          Mudanza de vivienda
+        </h2>
 
+        {/* Escritorio (lg+): dos columnas — los 4 servicios a la IZQUIERDA (uno
+            debajo de otro) y la imagen a la DERECHA, ópticamente centrados entre
+            sí (items-center). Mismo reparto (imagen 720px · lista mín. 300px) y
+            mismos anchos que "Cómo funciona". La imagen va primera en el DOM
+            (lg:order-2 la lleva a la derecha) para que, al apilarse por debajo de
+            lg, quede arriba y los servicios debajo. */}
+        <div className="mt-10 grid grid-cols-1 items-center gap-10 md:mt-12 lg:grid-cols-[minmax(300px,1fr)_minmax(0,720px)] lg:gap-16">
           {/* Zona de imagen (16:9): las 4 capas se apilan y solo la activa está
               a opacidad 1 (crossfade discreto). aspect-ratio fija la altura para
-              no provocar CLS. */}
-          <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-card border border-hairline bg-gris shadow-card md:mt-12">
+              no provocar CLS. Máx. 720px (mismo tamaño que "Cómo funciona"). */}
+          <div className="relative mx-auto aspect-[16/9] w-full max-w-[720px] overflow-hidden rounded-card border border-hairline bg-gris shadow-card lg:order-2">
             {SERVICIOS.map((s, i) => (
               <div
                 key={s.id}
@@ -83,10 +91,10 @@ export default function Servicios() {
             ))}
           </div>
 
-          {/* Los 4 servicios como botones reales: hover, clic y teclado (Tab +
-              Enter/Espacio) cambian el activo. aria-pressed comunica cuál lo
-              está. Móvil: apilados. Escritorio: dos columnas de dos. */}
-          <div className="mt-3 grid grid-cols-1 gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4">
+          {/* Los 4 servicios como botones reales, en una única columna vertical:
+              hover, clic y teclado (Tab + Enter/Espacio) cambian el activo.
+              aria-pressed comunica cuál lo está. */}
+          <div className="flex flex-col gap-3 sm:gap-4 lg:order-1">
             {SERVICIOS.map((s, i) => {
               const on = activo === i;
               return (

@@ -11,24 +11,27 @@ export default function HowItWorks() {
           Cómo funciona
         </h2>
 
-        {/* Escritorio (lg+): dos columnas — la imagen al MISMO tamaño (720px) que
-            la de servicios y los tres pasos ópticamente centrados a su lado
-            (items-center). La columna de imagen se limita a 720px y la de pasos
-            toma el resto (mín. 300px). Por debajo de lg se apila: imagen arriba
-            (720px, centrada) y los pasos debajo, como en móvil. */}
-        <div className="mt-10 grid grid-cols-1 items-center gap-10 md:mt-12 lg:grid-cols-[minmax(0,720px)_minmax(300px,1fr)] lg:gap-16">
+        {/* Escritorio (lg+): dos columnas — los tres pasos a la IZQUIERDA (uno
+            debajo de otro) y la imagen a la DERECHA, ópticamente centrados entre
+            sí (items-center). MISMA estructura, reparto (imagen 720px · lista
+            mín. 300px) y espaciado que "Mudanza de vivienda". La imagen va
+            primera en el DOM (lg:order-2 la lleva a la derecha) para que, al
+            apilarse por debajo de lg, quede arriba y los pasos debajo. */}
+        <div className="mt-10 grid grid-cols-1 items-center gap-10 md:mt-12 lg:grid-cols-[minmax(300px,1fr)_minmax(0,720px)] lg:gap-16">
           {/* Imagen destacada: misma serie de estudio (fondo negro) y mismo
               tratamiento de caja 16:9 que las de "Mudanza de vivienda". */}
-          <SectionImage
-            src="/comofunciona.webp"
-            alt="La web de Mudanzas X en el móvil para pedir presupuesto de mudanza en Barcelona"
-          />
+          <div className="lg:order-2">
+            <SectionImage
+              src="/comofunciona.webp"
+              alt="La web de Mudanzas X en el móvil para pedir presupuesto de mudanza en Barcelona"
+            />
+          </div>
 
           {/* Pasos del proceso (componente compartido con la confirmación). En la
               landing son una promesa: los tres sin nada completado. Se acotan
               (max-w-md) para una longitud de línea cómoda cuando se apilan bajo
               la imagen ancha; en dos columnas llenan su columna. */}
-          <div className="w-full max-w-md">
+          <div className="w-full max-w-md lg:order-1">
             <PasosProceso />
           </div>
         </div>
