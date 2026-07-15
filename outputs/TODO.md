@@ -26,7 +26,7 @@ _C1 completada (2026-07-15) → ✅ HECHO. Sin tareas críticas pendientes._
 ## 🟠 IMPORTANTES
 
 ### UX / Operativa
-- [ ] **I5** — Vista móvil (tarjetas apiladas) para la lista de leads en vez de tabla con scroll horizontal. `admin/(panel)/page.tsx:100-101`. *(= idea B3.)*
+_I5 completada (2026-07-15) → ✅ HECHO. Sin importantes de UX/Operativa pendientes._
 
 ### Copy
 _I6 completada (2026-07-15) → ✅ HECHO._
@@ -121,7 +121,7 @@ Priorizadas por impacto/esfuerzo (mayor a menor).
 
 _B1 completada (2026-07-15) → ✅ HECHO (misma entrega que I1)._
 - [ ] **B2** — [MEDIO-ALTO / BAJO] Email de acuse inmediato al cliente ("recibido, te llamamos hoy"). *Refuerza la promesa, baja no-shows; reutiliza `emailLayout`.*
-- [ ] **B3** — [MEDIO / MEDIO] Vista móvil de la lista de leads para operar desde el móvil. *(= I5.)*
+_B3 completada (2026-07-15) → ✅ HECHO (misma entrega que I5)._
 - [ ] **B4** — [MEDIO / BAJO] Capturar origen/UTM del lead (campos ocultos + columna) para atribución de canal.
 - [ ] **B5** — [MEDIO / MEDIO] Prueba social sobria a partir del email "valóranos" (enlace a reseñas de Google, tono antimarketing).
 - [ ] **B6** — [MEDIO / BAJO] WhatsApp como canal de contacto (enlace `wa.me` discreto junto al teléfono).
@@ -131,6 +131,7 @@ _B1 completada (2026-07-15) → ✅ HECHO (misma entrega que I1)._
 
 ## ✅ HECHO
 
+- [x] **I5 · B3** — 2026-07-15 — [UX/Panel] Lista de leads con vista de tarjetas apiladas en móvil (tabla `hidden md:block`, tarjetas `md:hidden`) sobre la misma lista del servidor: nombre, pill de estado, ruta, pago pendiente, teléfono `tel:` (≥44px) y fecha. Tarjeta navega a la ficha (enlace estirado); el teléfono es acción propia. Buscador/filtro/realtime afectan a ambas vistas. `admin/(panel)/page.tsx`.
 - [x] **I7** — 2026-07-15 — [Rendimiento] Google Maps (Places) ya no carga en el montaje: `usePlaces` expone `ensureLoaded()` (carga única compartida) y `AddressAutocomplete` la dispara en el primer `onFocus` de un campo de dirección (hero o formulario). Salvaguardas: campo usable mientras carga, re-búsqueda al llegar la librería sin perder texto, y degradación si falla. `googleMaps.ts`, `AddressAutocomplete.tsx`.
 - [x] **I8** — 2026-07-15 — [Rendimiento] Turnstile se monta bajo demanda vía IntersectionObserver cuando el formulario está a ~2 pantallas (`rootMargin 0px 0px 200% 0px`), una sola vez. Salvaguardas: fallback sin IO y montaje en el submit con mensaje "en curso" (lógica I3 intacta). Server-side sin cambios. `QuoteForm.tsx`.
 - [x] **I2** — 2026-07-15 — [UX/Panel] Al guardar un presupuesto nuevo, el panel adopta el `id` devuelto y pasa a modo "Actualizar" (un segundo guardado actualiza esa fila, no duplica). "+ Nuevo presupuesto" sigue empezando en blanco. `PresupuestoPanel.tsx`.
