@@ -34,7 +34,7 @@ export default function AddressAutocomplete({
   ariaLabel?: string;
   required?: boolean;
 }) {
-  const { lib, failed } = usePlaces();
+  const { lib, failed, ensureLoaded } = usePlaces();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -43,6 +43,7 @@ export default function AddressAutocomplete({
   const tokenRef = useRef<object | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reqIdRef = useRef(0);
+  const focusedRef = useRef(false);
 
   // Cierra el dropdown al hacer clic fuera.
   useEffect(() => {
@@ -54,6 +55,17 @@ export default function AddressAutocomplete({
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
+
+  // Caso "usuario rápido": si empezó a escribir ANTES de que Maps terminara de
+  // cargar, `buscar` no encontró librería y no sugirió nada. Cuando la librería
+  // llega, se busca sobre lo ya escrito (si el campo sigue enfocado), para que el
+  // autocompletado aparezca sin perder el texto ni el foco.
+  useEffect(() => {
+    if (lib && focusedRef.current && value.trim().length >= 3) {
+      buscar(value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lib]);
 
   function buscar(input: string) {
     if (!lib || input.trim().length < 3) {
@@ -142,7 +154,17 @@ export default function AddressAutocomplete({
         value={value}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
-        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onFocus={() => {
+          focusedRef.current = true;
+          // Intención de usar el campo → dispara la carga de Maps (una sola vez,
+          // compartida). Al ser en el foco (antes de escribir), la librería tiene
+          // tiempo de cargar mientras el usuario teclea las primeras letras.
+          ensureLoaded();
+          if (suggestions.length > 0) setOpen(true);
+        }}
+        onBlur={() => {
+          focusedRef.current = false;
+        }}
         placeholder={placeholder}
         aria-label={ariaLabel}
         required={required}

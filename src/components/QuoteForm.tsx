@@ -91,6 +91,9 @@ export default function QuoteForm() {
   // Fallo DURO del widget (error/expiración/no carga): distingue "recargar" de
   // "espera un momento" al intentar enviar sin token (I3).
   const [turnstileFailed, setTurnstileFailed] = useState(false);
+  // Carga perezosa del widget: no se monta hasta que el formulario se acerca al
+  // viewport (I8), para que esté resuelto cuando el usuario llegue a rellenarlo.
+  const [mostrarTurnstile, setMostrarTurnstile] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
 
   // Validación del número de calle (Google Places). Si Google no está
@@ -164,6 +167,34 @@ export default function QuoteForm() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefill.nonce]);
+
+  // I8 — Monta Turnstile cuando el formulario se acerca al viewport (rootMargin
+  // generoso: ~2 pantallas antes de entrar en vista), para que el widget esté
+  // cargado y resuelto al llegar el usuario. Se dispara una sola vez. Salvaguarda:
+  // si el navegador no soporta IntersectionObserver, se monta ya.
+  useEffect(() => {
+    if (!turnstileHabilitado) return;
+    const el = sectionRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      // Sin IntersectionObserver (navegador muy antiguo): se monta ya, para no
+      // quedarnos sin verificación. Es un fallback puntual, no un patrón.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMostrarTurnstile(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setMostrarTurnstile(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px 200% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [turnstileHabilitado]);
 
   // Validez por campo (en vivo) para la barra de progreso y las marcas de
   // validación. Un campo de dirección es válido si tiene texto y número de
@@ -252,6 +283,10 @@ export default function QuoteForm() {
     // recargar) del estado "aún resolviendo" (esperar), para no dejar al usuario
     // esperando algo que no se va a resolver solo.
     if (turnstileHabilitado && !turnstileToken) {
+      // Salvaguarda (I8): si el usuario llegó al formulario tan rápido que el
+      // widget aún no se había montado, se monta ahora para que resuelva cuanto
+      // antes; el mensaje de "en curso" acompaña mientras tanto.
+      if (!mostrarTurnstile) setMostrarTurnstile(true);
       setTurnstileError(
         turnstileFailed
           ? "No se pudo cargar la verificación de seguridad. Recarga la página e inténtalo de nuevo."
@@ -577,7 +612,7 @@ export default function QuoteForm() {
                 tarjeta (overflow-hidden del contenedor). El ojo cae de forma
                 natural aquí. Contiene Turnstile y el botón. */}
             <div className="flex flex-col gap-4 border-t border-hairline px-6 py-5 md:px-8 md:py-6">
-              {turnstileHabilitado && (
+              {turnstileHabilitado && mostrarTurnstile && (
                 <div>
                   <Turnstile
                     ref={turnstileRef}

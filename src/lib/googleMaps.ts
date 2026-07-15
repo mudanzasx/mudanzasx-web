@@ -123,25 +123,56 @@ export function loadPlacesLibrary(): Promise<PlacesLibrary> {
   return placesPromise;
 }
 
-// Hook: expone la librería cuando está lista y si la carga falló (para degradar
-// con elegancia y no bloquear el formulario si Google no está disponible).
-export function usePlaces(): { lib: PlacesLibrary | null; failed: boolean } {
+// Disparo perezoso de la carga: NO empieza en el montaje, sino cuando el usuario
+// muestra intención de usar un campo de dirección (primer foco). La carga es
+// única y compartida (singleton `placesPromise`), así que da igual qué campo la
+// dispare —hero o formulario—: todas las instancias de `usePlaces` montadas se
+// enteran a la vez a través de estos listeners.
+let loadingTriggered = false;
+const triggerListeners = new Set<() => void>();
+
+export function ensurePlacesLoading(): void {
+  if (loadingTriggered) return; // idempotente: una sola carga por página
+  loadingTriggered = true;
+  loadPlacesLibrary(); // arranca la carga (el singleton evita duplicados)
+  triggerListeners.forEach((fn) => fn());
+  triggerListeners.clear();
+}
+
+// Hook: expone la librería cuando está lista, si la carga falló (para degradar
+// con elegancia y no bloquear el formulario) y `ensureLoaded` para dispararla
+// bajo demanda desde el `onFocus` de un campo de dirección.
+export function usePlaces(): {
+  lib: PlacesLibrary | null;
+  failed: boolean;
+  ensureLoaded: () => void;
+} {
   const [lib, setLib] = useState<PlacesLibrary | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let activo = true;
-    loadPlacesLibrary()
-      .then((l) => {
-        if (activo) setLib(l);
-      })
-      .catch(() => {
-        if (activo) setFailed(true);
-      });
+    // Se suscribe al resultado de la carga compartida. Si la carga ya se disparó
+    // (otro campo la inició antes de montar este), se engancha de inmediato.
+    const attach = () => {
+      loadPlacesLibrary()
+        .then((l) => {
+          if (activo) setLib(l);
+        })
+        .catch(() => {
+          if (activo) setFailed(true);
+        });
+    };
+    if (loadingTriggered) {
+      attach();
+    } else {
+      triggerListeners.add(attach);
+    }
     return () => {
       activo = false;
+      triggerListeners.delete(attach);
     };
   }, []);
 
-  return { lib, failed };
+  return { lib, failed, ensureLoaded: ensurePlacesLoading };
 }
