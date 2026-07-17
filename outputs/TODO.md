@@ -35,15 +35,15 @@ _I6 completada (2026-07-15) → ✅ HECHO._
 _I7 e I8 completadas (2026-07-15) → ✅ HECHO._
 
 ### SEO
-- [ ] **I9** — Apuntar el `image` del JSON-LD MovingCompany a una imagen real y visible (`og.png` o `servicio-transporte.webp`) y corregir el comentario erróneo ("la del camión"). `page.tsx:15,25`.
+_I9 completada (2026-07-17) → ✅ HECHO._
 
 ### Marca / Diseño
-- [ ] **I10** — Sustituir los radios arbitrarios del panel del Hero por token (`rounded-t-card`, o nuevo `--radius-hero` documentado). `Hero.tsx:76`.
-- [ ] **I11** — Migrar la tipografía secundaria en px a tokens fluidos (`text-[13px]→text-small`, `[11px]→text-nav`, consolidar `[15px]`). `QuoteForm.tsx:24`, `Hero.tsx:136`, `QuoteForm.tsx:510,568`, `Faq.tsx:59`.
-- [ ] **I12** — Unificar el chevron del acordeón admin con el público: `strokeWidth={1.5}` y mismo tamaño. `PresupuestoPanel.tsx:144-149` (cf. `Faq.tsx:45`).
+_I10, I11 e I12 completadas (2026-07-17) → ✅ HECHO._
 
 ### Limpieza / Refactor
-- [ ] **I13** — Extraer un componente reutilizable `OndasConcentricas` y usarlo en Manifiesto y QuoteForm (algoritmo SVG duplicado). `Manifiesto.tsx:12-48`, `QuoteForm.tsx:26-34,274-293`.
+_I13 completada (2026-07-17) → ✅ HECHO._
+
+**No quedan tareas importantes pendientes.**
 
 ---
 
@@ -83,7 +83,7 @@ _I7 e I8 completadas (2026-07-15) → ✅ HECHO._
 ### Rendimiento
 - [ ] **M24** — (Opcional) Renderizar solo la imagen de servicio activa (+ prefetch de la siguiente) en vez de las 4 capas. `Servicios.tsx:74-91`.
 - [ ] **M25** — Quitar `priority` de los logos del header (el LCP es el hero). `Header.tsx:131-148`.
-- [ ] **M26** — Recomprimir o repuntar `embalaje-cuidado-mueble.jpg` (117KB, solo en JSON-LD). `page.tsx:25`. *(Ligado a I9.)*
+_M26 completada (2026-07-17) → ✅ HECHO (resuelta al eliminar la imagen con I9)._
 - [ ] **M27** — (Opcional) Usar `<Image unoptimized>` para los logos del panel (coherencia/lint). `admin/login/page.tsx:29`, `admin/(panel)/layout.tsx:30,32`.
 
 ### Motor (higiene — sin impacto en cifras de cliente)
@@ -111,7 +111,7 @@ _I7 e I8 completadas (2026-07-15) → ✅ HECHO._
 - [ ] Eliminar export `TELEFONO_DISPLAY` — `config.ts:9`. *(= M34.)*
 - [ ] Eliminar type `ConsentCategory` — `consent.ts:10`. *(= M35.)*
 - [ ] Quitar `export` de `CONSENT_STORAGE_KEY` — `consent.ts:27`. *(= M36.)*
-- ⚠️ **Precaución `public/embalaje-cuidado-mueble.jpg`:** NO borrar todavía — solo se referencia en el `image` del JSON-LD (`page.tsx:25`). Primero repuntar ese campo a una imagen visible (I9); una vez repuntado, es candidata a eliminar/recomprimir (M26).
+- [x] **`public/embalaje-cuidado-mueble.jpg`** — eliminada (2026-07-17). El `image` del JSON-LD ya apunta a `servicio-transporte.webp` (I9), así que la imagen quedó huérfana y se borró del disco. Precaución resuelta.
 
 ---
 
@@ -131,6 +131,11 @@ _B3 completada (2026-07-15) → ✅ HECHO (misma entrega que I5)._
 
 ## ✅ HECHO
 
+- [x] **I9 · M26** — 2026-07-17 — [SEO/Limpieza] `image` del JSON-LD MovingCompany repuntado a `servicio-transporte.webp` (el camión, visible en la web) y comentario corregido; la huérfana `embalaje-cuidado-mueble.jpg` (117 KB) eliminada del disco. `page.tsx`.
+- [x] **I10** — 2026-07-17 — [Marca] Radios arbitrarios del panel del hero tokenizados: nuevos `--radius-hero` (1.75rem) y `--radius-hero-lg` (2.5rem); `rounded-t-hero md:rounded-t-hero-lg`. Mismo aspecto. `globals.css`, `Hero.tsx`.
+- [x] **I11** — 2026-07-17 — [Marca] Tipografía secundaria en px → tokens fluidos (`text-[13px]/[14px]→text-small`, `text-[15px]→text-body`) en QuoteForm, Hero y Faq. `QuoteForm.tsx`, `Hero.tsx`, `Faq.tsx`.
+- [x] **I12** — 2026-07-17 — [Marca] Chevron del acordeón del panel unificado con el público: `size 20` + `strokeWidth 1.5`. `PresupuestoPanel.tsx`.
+- [x] **I13** — 2026-07-17 — [Refactor] Ondas concéntricas extraídas a `OndasConcentricas.tsx` (props para color/origen/viewBox/radio/opacidad), usado en Manifiesto y QuoteForm. Salida byte-idéntica. `OndasConcentricas.tsx`.
 - [x] **I5 · B3** — 2026-07-15 — [UX/Panel] Lista de leads con vista de tarjetas apiladas en móvil (tabla `hidden md:block`, tarjetas `md:hidden`) sobre la misma lista del servidor: nombre, pill de estado, ruta, pago pendiente, teléfono `tel:` (≥44px) y fecha. Tarjeta navega a la ficha (enlace estirado); el teléfono es acción propia. Buscador/filtro/realtime afectan a ambas vistas. `admin/(panel)/page.tsx`.
 - [x] **I7** — 2026-07-15 — [Rendimiento] Google Maps (Places) ya no carga en el montaje: `usePlaces` expone `ensureLoaded()` (carga única compartida) y `AddressAutocomplete` la dispara en el primer `onFocus` de un campo de dirección (hero o formulario). Salvaguardas: campo usable mientras carga, re-búsqueda al llegar la librería sin perder texto, y degradación si falla. `googleMaps.ts`, `AddressAutocomplete.tsx`.
 - [x] **I8** — 2026-07-15 — [Rendimiento] Turnstile se monta bajo demanda vía IntersectionObserver cuando el formulario está a ~2 pantallas (`rootMargin 0px 0px 200% 0px`), una sola vez. Salvaguardas: fallback sin IO y montaje en el submit con mensaje "en curso" (lógica I3 intacta). Server-side sin cambios. `QuoteForm.tsx`.
