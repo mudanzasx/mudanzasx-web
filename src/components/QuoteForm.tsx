@@ -24,9 +24,28 @@ import OndasConcentricas from "./OndasConcentricas";
 const fieldClass = field({ variant: "public", size: "lg", className: "pr-11" });
 const errorClass = "mt-1.5 text-small font-medium";
 
-// Marca de validación discreta dentro del campo (derecha): check de trazo fino
-// en negro (nunca verde; paleta estricta). Aparece/desaparece con una
-// transición breve; se anula con prefers-reduced-motion.
+// Glifo de check monocromo (path propio; nunca verde, paleta estricta de marca).
+// Compartido por la marca de validación de los campos y el botón de envío.
+function CheckGlyph({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.25"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12.5l4 4 10-11" />
+    </svg>
+  );
+}
+
+// Marca de validación dentro del campo: aparece con una transición breve que
+// respeta prefers-reduced-motion.
 function CheckMark({ show }: { show: boolean }) {
   return (
     <span
@@ -35,18 +54,7 @@ function CheckMark({ show }: { show: boolean }) {
         show ? "scale-100 opacity-100" : "scale-90 opacity-0"
       }`}
     >
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.25"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M5 12.5l4 4 10-11" />
-      </svg>
+      <CheckGlyph />
     </span>
   );
 }
@@ -653,21 +661,7 @@ export default function QuoteForm() {
                   "Enviando…"
                 ) : (
                   <>
-                    {listo && (
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M5 12.5l4 4 10-11" />
-                      </svg>
-                    )}
+                    {listo && <CheckGlyph />}
                     Solicitar presupuesto
                   </>
                 )}

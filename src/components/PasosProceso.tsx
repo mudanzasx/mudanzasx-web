@@ -19,7 +19,16 @@ const PASOS = [
   },
 ];
 
-export default function PasosProceso({ completado }: { completado?: string }) {
+// `tituloAs` fija el nivel del encabezado de cada paso según el contexto, para
+// no romper la jerarquía: en "Cómo funciona" va bajo un <h2> (por eso h3), y en
+// la confirmación va directo bajo el <h1> (h2, sin saltar de h1 a h3).
+export default function PasosProceso({
+  completado,
+  tituloAs: TituloTag = "h3",
+}: {
+  completado?: string;
+  tituloAs?: "h2" | "h3";
+}) {
   // Si se pasa `completado`, se antepone el paso previo ya hecho (número 0) con
   // ese texto; los tres pasos se numeran 1·2·3 igual en ambos casos. Sin
   // `completado`, solo se ven los tres pasos numerados.
@@ -66,9 +75,9 @@ export default function PasosProceso({ completado }: { completado?: string }) {
               </span>
             </div>
             <div className="min-w-0 pt-2">
-              <h3 className="text-[clamp(1rem,0.95rem+0.3vw,1.125rem)] font-medium tracking-tight text-black">
+              <TituloTag className="text-[clamp(1rem,0.95rem+0.3vw,1.125rem)] font-medium tracking-tight text-black">
                 {fila.titulo}
-              </h3>
+              </TituloTag>
               {fila.descripcion && (
                 <p className="mt-1 text-body leading-[1.5] text-black/60">
                   {fila.descripcion}

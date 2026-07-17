@@ -54,6 +54,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: "@mudanzasx_ai",
     title: "Mudanzas en Barcelona a toda la península | Mudanzas X",
     description: OG_DESCRIPTION,
     images: ["/og.png"],

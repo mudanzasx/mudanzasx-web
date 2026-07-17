@@ -1,12 +1,6 @@
-// Datos de contacto y constantes fáciles de cambiar en un único sitio.
-// TELEFONO: valor para los enlaces tel: (sin espacios).
-export const TELEFONO = "+34936942941";
-
-// Versión legible para mostrar al usuario (texto visible).
-export const TELEFONO_TEXTO = "+34 936 942 941";
-
-// Etiqueta del botón de llamada de la cabecera.
-export const TELEFONO_DISPLAY = "Llamar";
+// Datos de contacto y constantes de la empresa, en un único sitio.
+export const TELEFONO = "+34936942941"; // sin espacios, para enlaces tel:
+export const TELEFONO_TEXTO = "+34 936 942 941"; // versión legible
 
 // Datos identificativos del titular. Se usan literalmente en las páginas legales
 // (aviso legal, privacidad y cookies). Un único sitio para actualizarlos.

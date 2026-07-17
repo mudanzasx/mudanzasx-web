@@ -53,8 +53,6 @@ export type Lead = {
   notas: string | null;
 };
 
-// --- Helpers de formato (es-ES) ---
-
 export function formatFecha(value: string | null | undefined): string {
   if (!value) return "—";
   const d = new Date(value);

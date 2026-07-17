@@ -103,7 +103,7 @@ export default async function SolicitudRecibida({
             className="mx-fade-up mt-12 w-full max-w-sm"
             style={{ animationDelay: "0.25s" }}
           >
-            <PasosProceso completado="Solicitud recibida" />
+            <PasosProceso completado="Solicitud recibida" tituloAs="h2" />
           </div>
 
           <Link

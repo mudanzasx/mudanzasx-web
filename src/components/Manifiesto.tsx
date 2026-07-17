@@ -1,11 +1,6 @@
 // Banda de manifiesto: interrupción deliberada en negro dentro de la zebra
-// gris/blanca de la landing. Fondo negro, texto blanco y, detrás, un patrón
-// estático de ondas concéntricas de marca (componente OndasConcentricas).
-//
-// Las ondas nacen en el borde derecho a media altura (origen 1200,250) y se
-// expanden hacia la izquierda cruzando la banda por detrás del texto.
-// preserveAspectRatio="xMaxYMid slice" ancla el origen al borde derecho a media
-// altura en cualquier tamaño; overflow-hidden de la banda recorta los arcos.
+// gris/blanca de la landing (rompe el ritmo para dar énfasis). Detrás del texto,
+// ondas concéntricas de marca (OndasConcentricas) ancladas al borde derecho.
 
 import OndasConcentricas from "./OndasConcentricas";
 

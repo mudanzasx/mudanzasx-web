@@ -7,8 +7,6 @@
 // La elección se guarda en localStorage del propio navegador, de modo que se
 // recuerda entre visitas y puede reabrirse/modificarse cuando el usuario quiera.
 
-export type ConsentCategory = "necessary" | "analytics" | "marketing";
-
 export type ConsentState = {
   // Siempre true: cookies técnicas imprescindibles para el funcionamiento del sitio.
   necessary: true;
@@ -16,7 +14,7 @@ export type ConsentState = {
   marketing: boolean;
 };
 
-// Estructura persistida en localStorage (con versión para futuras migraciones).
+// Lo persistido en localStorage; `v` versiona el esquema (para migraciones).
 type StoredConsent = {
   v: number;
   analytics: boolean;
@@ -24,7 +22,7 @@ type StoredConsent = {
   ts: number; // marca de tiempo del consentimiento (epoch ms)
 };
 
-export const CONSENT_STORAGE_KEY = "mx_cookie_consent";
+const CONSENT_STORAGE_KEY = "mx_cookie_consent";
 const CONSENT_VERSION = 1;
 
 // Estado por defecto antes de que el usuario decida: todo lo opcional, denegado.
