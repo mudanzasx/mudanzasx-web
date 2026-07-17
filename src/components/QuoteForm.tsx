@@ -16,22 +16,13 @@ import { useRipple } from "@/components/ui/useRipple";
 import { field } from "@/components/ui/field";
 import { Clock } from "lucide-react";
 import Turnstile, { type TurnstileHandle } from "./Turnstile";
+import OndasConcentricas from "./OndasConcentricas";
 
 // Campo base dentro de la tarjeta: fondo blanco, borde sutil que se marca al
 // enfocar. `pr-11` reserva sitio a la derecha para la marca de validación, así
 // no hay salto de layout cuando el check aparece.
 const fieldClass = field({ variant: "public", size: "lg", className: "pr-11" });
-const errorClass = "mt-1.5 text-[13px] font-medium";
-
-// Ondas de marca del fondo de la sección (detrás de la tarjeta): 10 arcos
-// concéntricos negros con el mismo centro, espaciado geométrico (×1,35) y
-// opacidad interpolada 0.24 → 0.02. Reforzadas para que se perciban a través
-// del vidrio; los arcos interiores (los más marcados) cruzan por detrás de la
-// tarjeta y se atenúan hacia los bordes de la sección de forma natural.
-const ONDA_ARCOS = Array.from({ length: 10 }, (_, i) => ({
-  r: Math.round(70 * Math.pow(1.35, i)),
-  opacity: Math.round((0.24 - (0.22 * i) / 9) * 1000) / 1000,
-}));
+const errorClass = "mt-1.5 text-small font-medium";
 
 // Marca de validación discreta dentro del campo (derecha): check de trazo fino
 // en negro (nunca verde; paleta estricta). Aparece/desaparece con una
@@ -333,30 +324,18 @@ export default function QuoteForm() {
       ref={sectionRef}
       className="relative w-full overflow-hidden border-t border-hairline bg-white"
     >
-      {/* Ondas de marca detrás de la tarjeta: estáticas, monocromas, sin
-          capturar clics. Origen en el centro de la sección (tras la tarjeta),
-          arcos que se salen del encuadre; overflow-hidden de la sección los
-          recorta en los bordes. El trazo se mantiene fino y constante. */}
-      <svg
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full"
+      {/* Ondas de marca detrás de la tarjeta: origen en el centro de la sección
+          (tras la tarjeta), arcos negros sobre claro reforzados (opacidad
+          ~24% → 2%) para percibirse a través del vidrio; overflow-hidden de la
+          sección los recorta en los bordes. */}
+      <OndasConcentricas
         viewBox="0 0 1000 1000"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        {ONDA_ARCOS.map((a, i) => (
-          <circle
-            key={i}
-            cx={500}
-            cy={500}
-            r={a.r}
-            fill="none"
-            stroke="#000000"
-            strokeOpacity={a.opacity}
-            strokeWidth={1.25}
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </svg>
+        originX={500}
+        originY={500}
+        baseRadius={70}
+        stroke="#000000"
+        opacityStart={0.24}
+      />
 
       <div className="relative z-10 mx-auto max-w-[460px] px-6 py-14 md:py-24">
         {/* Tarjeta gris de marca (#F3F3F3) sólida sobre la sección blanca, con
@@ -577,7 +556,7 @@ export default function QuoteForm() {
                 </div>
               </div>
 
-              <label className="mt-5 flex items-start gap-3 text-[14px] leading-[1.5] text-black/70">
+              <label className="mt-5 flex items-start gap-3 text-small leading-[1.5] text-black/70">
                 <input
                   ref={aceptaRef}
                   type="checkbox"
@@ -638,7 +617,7 @@ export default function QuoteForm() {
               )}
 
               {error && (
-                <p className="text-[15px] font-medium text-black" role="alert">
+                <p className="text-body font-medium text-black" role="alert">
                   {error}
                 </p>
               )}
@@ -649,7 +628,7 @@ export default function QuoteForm() {
               {resumenError && !(listo && form.acepta) && (
                 <p
                   role="alert"
-                  className="text-center text-[13px] font-medium text-black"
+                  className="text-center text-small font-medium text-black"
                 >
                   {resumenError}
                 </p>

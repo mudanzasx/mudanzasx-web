@@ -20,6 +20,11 @@
   --radius-field: 0.5rem;
   --radius-card: 1rem;
   --radius-pill: 9999px;
+  /* Curva superior generosa del panel del hero (solapa sobre la franja). Es
+     mayor que --radius-card a propósito, y más marcada en escritorio, por
+     criterio de diseño. `rounded-t-hero` / `md:rounded-t-hero-lg`. */
+  --radius-hero: 1.75rem; /* 28px (móvil) */
+  --radius-hero-lg: 2.5rem; /* 40px (escritorio) */
 
   /* Elevación sutil única de marca para tarjetas (`shadow-card`). */
   --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.04),

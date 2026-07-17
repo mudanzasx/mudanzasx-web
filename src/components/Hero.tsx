@@ -73,7 +73,7 @@ export default function Hero() {
       {/* 2. PANEL DE CONTENIDO: sube sobre la franja (solape con margen superior
           negativo), esquinas superiores redondeadas generosas e inferiores
           rectas, fondo gris. z-10 para quedar por encima de la franja. */}
-      <div className="relative z-10 -mt-7 rounded-t-[28px] bg-gris md:-mt-10 md:rounded-t-[40px]">
+      <div className="relative z-10 -mt-7 rounded-t-hero bg-gris md:-mt-10 md:rounded-t-hero-lg">
         <div className="mx-auto max-w-[1200px] px-6 pb-14 pt-10 md:pb-24 md:pt-14">
           <div className="max-w-3xl">
             <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.02em] text-black">
@@ -133,7 +133,7 @@ export default function Hero() {
 
             {/* Aviso de número de calle obligatorio */}
             {intentado && (faltaOrigen || faltaDestino) && (
-              <p className="mt-2 text-[13px] font-medium text-black">
+              <p className="mt-2 text-small font-medium text-black">
                 Indica el número de la calle en{" "}
                 {faltaOrigen && faltaDestino
                   ? "el origen y el destino"

@@ -12,7 +12,8 @@ import { EMPRESA, TELEFONO } from "@/lib/config";
 import { PREGUNTAS } from "@/lib/faq";
 
 // Datos estructurados (JSON-LD) de la empresa para buscadores. Solo datos
-// reales; sin valoraciones ni precios inventados. La imagen es la del camión.
+// reales; sin valoraciones ni precios inventados. La imagen es la del camión
+// (servicio-transporte.webp), visible en la sección "Mudanza de vivienda".
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "MovingCompany",
@@ -22,7 +23,7 @@ const jsonLd = {
   url: "https://www.mudanzasx.com",
   telephone: TELEFONO,
   email: EMPRESA.email,
-  image: "https://www.mudanzasx.com/embalaje-cuidado-mueble.jpg",
+  image: "https://www.mudanzasx.com/servicio-transporte.webp",
   priceRange: "€€",
   address: {
     "@type": "PostalAddress",

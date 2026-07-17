@@ -149,7 +149,8 @@ export default function PresupuestoPanel({
             {editId ? "Editar presupuesto" : "Nuevo presupuesto"}
           </span>
           <ChevronDown
-            size={18}
+            size={20}
+            strokeWidth={1.5}
             className={`shrink-0 text-black/50 transition-transform duration-200 ${
               formOpen ? "rotate-180" : ""
             }`}
