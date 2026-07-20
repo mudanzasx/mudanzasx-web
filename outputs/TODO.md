@@ -50,10 +50,7 @@ _I13 completada (2026-07-17) → ✅ HECHO._
 ## 🟡 MENORES
 
 ### Marca / Diseño
-- [ ] **M1** — Alinear `field.ts` con `button.ts` usando tipografía fluida (`text-small`/clamp). `ui/field.ts:17-21`.
-- [ ] **M2** — Bajar el Check de Servicios a `strokeWidth={1.5}` (o anotar la excepción en `ui/icon.ts`). `Servicios.tsx:123`.
-- [ ] **M3** — Rehacer el icono de Instagram como glifo sólido (o trazo 1.5) para igualar al resto del set. `BrandIcons.tsx:34,41`.
-- [ ] **M4** — Documentar (o tokenizar como `--color-status-*`) la excepción de colores de estado del panel (amber/emerald/slate/red). `EstadoPill.tsx`, `PresupuestoForm.tsx`, `operaciones/[id]/page.tsx`.
+_M1, M2, M3 y M4 completadas (2026-07-20) → ✅ HECHO._
 
 ### UX
 - [ ] **M5** — Incluir la casilla de consentimiento en la señal de "completado" (barra de progreso y check del botón). `QuoteForm.tsx:177,314,592`.
@@ -124,6 +121,7 @@ _B3 completada (2026-07-15) → ✅ HECHO (misma entrega que I5)._
 
 ## ✅ HECHO
 
+- [x] **M1 · M2 · M3 · M4** — 2026-07-20 — [Marca/Diseño] Coherencia visual: (M1) `field.ts` adopta el criterio tipográfico fluido de `button.ts` (`sm`/`md`→`text-small`, `lg`→`text-body`, mín. 14px en el campo público; escritorio idéntico); (M2) el check "activo" de Servicios baja a `strokeWidth 1.5`; (M3) `InstagramIcon` rehecho como glifo sólido (`fill`, un solo path) como el resto de BrandIcons, sin trazos y aún reconocible; (M4) semáforo de estado del panel centralizado en tokens `--color-status-*` (warning/success/info/danger + danger-strong) en globals.css, documentado como excepción funcional a la paleta monocroma (interno, no visible al cliente); valores = paleta Tailwind, aspecto idéntico. Aplicado en `EstadoPill`, badge de pago pendiente de la lista, avisos de la ficha de operaciones y avisos de coste/margen del presupuesto. `ui/field.ts`, `Servicios.tsx`, `BrandIcons.tsx`, `globals.css`, `EstadoPill.tsx`, `page.tsx`, `operaciones/[id]/page.tsx`, `PresupuestoForm.tsx`.
 - [x] **M20 · M21 · M22 · M23** — 2026-07-20 — [SEO] `robots` con `disallow: "/admin"` (ruta exacta, sin barra); confirmación sin salto H1→H3 (nivel de encabezado ajustado en PasosProceso/H2 intermedio); `sitemap` con fecha estable para las legales en vez de `new Date()`; `twitter.site: "@mudanzasx_ai"` añadido. `robots.ts`, `solicitud-recibida/page.tsx`, `PasosProceso.tsx`, `sitemap.ts`, `layout.tsx`.
 - [x] **M34 · M35 · M36 · M37 · M38** — 2026-07-20 — [Limpieza] Eliminado el export muerto `TELEFONO_DISPLAY`; eliminado el type sin usar `ConsentCategory`; quitado el `export` innecesario de `CONSENT_STORAGE_KEY`; reutilizado `CheckMark`/`<Check>` en vez del path SVG duplicado del botón de envío; recortados comentarios verbosos/obvios sobre one-liners. `config.ts`, `consent.ts`, `QuoteForm.tsx`, `ui/icon.ts`, `leads.ts`, `Manifiesto.tsx`.
 - [x] **`public/servicios.webp`** — eliminada (2026-07-20). Huérfana, 0 referencias, ~51 KB (resto de la versión anterior de Servicios).
