@@ -75,10 +75,7 @@ _I13 completada (2026-07-17) → ✅ HECHO._
 - [ ] **M19** — Decidir y documentar el registro: privacidad/cookies (tú) vs contractuales (impersonal). `privacidad/page.tsx`, `cookies/page.tsx`.
 
 ### SEO
-- [ ] **M20** — `robots`: usar `disallow: "/admin"` (sin barra) para cubrir la ruta exacta. `robots.ts:5`.
-- [ ] **M21** — Evitar el salto H1→H3 en la confirmación (nivel de encabezado configurable en PasosProceso o H2 intermedio). `solicitud-recibida/page.tsx:93`, `PasosProceso.tsx:69`.
-- [ ] **M22** — `sitemap`: fecha estable para las legales en vez de `new Date()`. `sitemap.ts:17`.
-- [ ] **M23** — Añadir `twitter.site: "@mudanzasx_ai"`. `layout.tsx:55`.
+_M20, M21, M22 y M23 completadas (2026-07-20) → ✅ HECHO._
 
 ### Rendimiento
 - [ ] **M24** — (Opcional) Renderizar solo la imagen de servicio activa (+ prefetch de la siguiente) en vez de las 4 capas. `Servicios.tsx:74-91`.
@@ -97,17 +94,13 @@ _M26 completada (2026-07-17) → ✅ HECHO (resuelta al eliminar la imagen con I
 - [ ] **M33** — Deduplicar el webhook de Stripe por `event.id`. `stripe/webhook/route.ts:54-67`.
 
 ### Limpieza
-- [ ] **M34** — Eliminar el export muerto `TELEFONO_DISPLAY`. `config.ts:9`.
-- [ ] **M35** — Eliminar el type sin usar `ConsentCategory`. `consent.ts:10`.
-- [ ] **M36** — Quitar el `export` innecesario de `CONSENT_STORAGE_KEY`. `consent.ts:27`.
-- [ ] **M37** — Reutilizar `CheckMark`/`<Check>` en vez del path SVG duplicado en el botón de envío. `QuoteForm.tsx:47-58,593-605`.
-- [ ] **M38** — Recortar comentarios verbosos/obvios sobre one-liners. `config.ts:2,5`, `ui/icon.ts:3-5`, `consent.ts:19`, `leads.ts:56`, `Manifiesto.tsx:1-9`, `QuoteForm.tsx:36-38`.
+_M34, M35, M36, M37 y M38 completadas (2026-07-20) → ✅ HECHO._
 
 ---
 
 ## 🧹 LIMPIEZA — archivos / exports a eliminar
 
-- [ ] Eliminar `public/servicios.webp` — huérfana, 0 referencias, ~51 KB (resto de la versión anterior de Servicios).
+- [x] **`public/servicios.webp`** — eliminada (2026-07-20). Huérfana, 0 referencias, ~51 KB (resto de la versión anterior de Servicios).
 - [ ] Eliminar export `TELEFONO_DISPLAY` — `config.ts:9`. *(= M34.)*
 - [ ] Eliminar type `ConsentCategory` — `consent.ts:10`. *(= M35.)*
 - [ ] Quitar `export` de `CONSENT_STORAGE_KEY` — `consent.ts:27`. *(= M36.)*
@@ -131,6 +124,9 @@ _B3 completada (2026-07-15) → ✅ HECHO (misma entrega que I5)._
 
 ## ✅ HECHO
 
+- [x] **M20 · M21 · M22 · M23** — 2026-07-20 — [SEO] `robots` con `disallow: "/admin"` (ruta exacta, sin barra); confirmación sin salto H1→H3 (nivel de encabezado ajustado en PasosProceso/H2 intermedio); `sitemap` con fecha estable para las legales en vez de `new Date()`; `twitter.site: "@mudanzasx_ai"` añadido. `robots.ts`, `solicitud-recibida/page.tsx`, `PasosProceso.tsx`, `sitemap.ts`, `layout.tsx`.
+- [x] **M34 · M35 · M36 · M37 · M38** — 2026-07-20 — [Limpieza] Eliminado el export muerto `TELEFONO_DISPLAY`; eliminado el type sin usar `ConsentCategory`; quitado el `export` innecesario de `CONSENT_STORAGE_KEY`; reutilizado `CheckMark`/`<Check>` en vez del path SVG duplicado del botón de envío; recortados comentarios verbosos/obvios sobre one-liners. `config.ts`, `consent.ts`, `QuoteForm.tsx`, `ui/icon.ts`, `leads.ts`, `Manifiesto.tsx`.
+- [x] **`public/servicios.webp`** — eliminada (2026-07-20). Huérfana, 0 referencias, ~51 KB (resto de la versión anterior de Servicios).
 - [x] **I9 · M26** — 2026-07-17 — [SEO/Limpieza] `image` del JSON-LD MovingCompany repuntado a `servicio-transporte.webp` (el camión, visible en la web) y comentario corregido; la huérfana `embalaje-cuidado-mueble.jpg` (117 KB) eliminada del disco. `page.tsx`.
 - [x] **I10** — 2026-07-17 — [Marca] Radios arbitrarios del panel del hero tokenizados: nuevos `--radius-hero` (1.75rem) y `--radius-hero-lg` (2.5rem); `rounded-t-hero md:rounded-t-hero-lg`. Mismo aspecto. `globals.css`, `Hero.tsx`.
 - [x] **I11** — 2026-07-17 — [Marca] Tipografía secundaria en px → tokens fluidos (`text-[13px]/[14px]→text-small`, `text-[15px]→text-body`) en QuoteForm, Hero y Faq. `QuoteForm.tsx`, `Hero.tsx`, `Faq.tsx`.
