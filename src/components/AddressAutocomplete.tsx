@@ -44,6 +44,11 @@ export default function AddressAutocomplete({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reqIdRef = useRef(0);
   const focusedRef = useRef(false);
+  // Última sugerencia elegida: su `street_number` real es la fuente de verdad
+  // mientras el texto no se edite. Evita que dígitos ajenos al portal (p. ej. el
+  // código postal de la dirección formateada) den por válida una dirección sin
+  // número de portal (M6).
+  const chosenRef = useRef<{ address: string; hasNumber: boolean } | null>(null);
 
   // Cierra el dropdown al hacer clic fuera.
   useEffect(() => {
@@ -98,9 +103,20 @@ export default function AddressAutocomplete({
 
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     const v = e.target.value;
-    // Se da por válido el número si Maps degradó (failed) o si el texto escrito a
-    // mano ya incluye un número (no se obliga a elegir una sugerencia).
-    onChange(v, failed || /\d/.test(v));
+    // Prioridad de la fuente de verdad del número de portal:
+    //  1) Maps degradado (failed) → no se exige, se da por válido.
+    //  2) El texto coincide EXACTO con la sugerencia elegida → manda su
+    //     street_number real (aunque la dirección lleve código postal u otros
+    //     dígitos, no se da por válida si no tiene número de portal).
+    //  3) Escritura a mano / edición → fallback: se acepta un número tecleado
+    //     (no se obliga a elegir una sugerencia).
+    const chosen = chosenRef.current;
+    const hasNumber = failed
+      ? true
+      : chosen && chosen.address === v
+        ? chosen.hasNumber
+        : /\d/.test(v);
+    onChange(v, hasNumber);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => buscar(v), 200);
   }
@@ -119,8 +135,11 @@ export default function AddressAutocomplete({
       const hasNumber = Boolean(
         full.addressComponents?.some((c) => c.types.includes("street_number"))
       );
+      // Fuente de verdad para el número de portal de esta dirección elegida.
+      chosenRef.current = { address: formatted, hasNumber };
       onChange(formatted, hasNumber);
     } catch {
+      chosenRef.current = { address: pred.text.text, hasNumber: false };
       onChange(pred.text.text, false);
     } finally {
       tokenRef.current = null; // nueva sesión de facturación tras cada selección

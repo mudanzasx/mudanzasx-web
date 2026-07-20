@@ -47,9 +47,14 @@ const SERVICIOS: Servicio[] = [
 ];
 
 export default function Servicios() {
-  // Servicio activo (el primero por defecto): nada rota solo, lo controla el
-  // usuario con hover, clic o teclado.
-  const [activo, setActivo] = useState(0);
+  // Selección del servicio. Nada rota solo: lo controla el usuario.
+  //  · `fijado` es la selección FIJADA (por clic o teclado); persiste.
+  //  · `preview` es la previsualización por HOVER en escritorio; al salir con el
+  //    ratón vuelve a la fijada.
+  // El servicio mostrado es la previsualización si la hay, si no la fijada (M9).
+  const [fijado, setFijado] = useState(0);
+  const [preview, setPreview] = useState<number | null>(null);
+  const activo = preview ?? fijado;
 
   return (
     <section id="servicios" className="w-full border-t border-hairline bg-gris">
@@ -91,20 +96,28 @@ export default function Servicios() {
             ))}
           </div>
 
-          {/* Los 4 servicios como botones reales, en una única columna vertical:
-              hover, clic y teclado (Tab + Enter/Espacio) cambian el activo.
-              aria-pressed comunica cuál lo está. */}
-          <div className="flex flex-col gap-3 sm:gap-4 lg:order-1">
+          {/* Los 4 servicios como botones reales, en una única columna vertical.
+              En escritorio: el CLIC (o teclado: Tab + Enter/Espacio) FIJA el
+              servicio; el hover solo lo PREVISUALIZA y, al salir el ratón de la
+              lista, vuelve al fijado. En móvil el tap fija (sin hover).
+              aria-pressed comunica el fijado. */}
+          <div
+            className="flex flex-col gap-3 sm:gap-4 lg:order-1"
+            onMouseLeave={() => setPreview(null)}
+          >
             {SERVICIOS.map((s, i) => {
               const on = activo === i;
               return (
                 <button
                   key={s.id}
                   type="button"
-                  aria-pressed={on}
-                  onMouseEnter={() => setActivo(i)}
-                  onFocus={() => setActivo(i)}
-                  onClick={() => setActivo(i)}
+                  aria-pressed={fijado === i}
+                  onMouseEnter={() => setPreview(i)}
+                  onFocus={() => setFijado(i)}
+                  onClick={() => {
+                    setFijado(i);
+                    setPreview(null);
+                  }}
                   className={`flex min-h-[52px] items-center gap-3.5 rounded-card border border-hairline px-4 py-3.5 text-left shadow-card outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-black/40 ${
                     on ? "bg-black text-white" : "bg-white text-black hover:bg-black/[0.03]"
                   }`}

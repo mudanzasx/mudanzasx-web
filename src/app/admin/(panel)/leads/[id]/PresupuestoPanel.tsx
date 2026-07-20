@@ -88,9 +88,13 @@ export default function PresupuestoPanel({
     <div className="flex flex-col gap-4">
       {presupuestos.length > 0 && (
         <div className="flex flex-col gap-2">
-          {presupuestos.map((p) => {
+          {presupuestos.map((p, i) => {
             const activo = p.id === editId;
             const puede = reabrible(p);
+            // El vigente (el más reciente; la lista viene ordenada por fecha
+            // descendente) muestra sus bloques de cobro/envío abiertos; el resto
+            // van plegados por defecto para no saturar la ficha (M11).
+            const vigente = i === 0;
             return (
               <div
                 key={p.id}
@@ -102,6 +106,11 @@ export default function PresupuestoPanel({
                   type="button"
                   onClick={() => abrir(p)}
                   disabled={!puede}
+                  title={
+                    puede
+                      ? undefined
+                      : "Presupuesto en formato anterior: se puede consultar, pero no reabrir para recalcular."
+                  }
                   className={`flex w-full items-center justify-between gap-3 rounded-t-card px-3 py-2 text-left text-sm transition-colors ${
                     puede ? "hover:bg-gris" : "cursor-default"
                   } ${activo ? "bg-gris" : ""}`}
@@ -119,16 +128,20 @@ export default function PresupuestoPanel({
                   <EstadoPill estado={p.estado} />
                 </button>
 
-                <div className="px-3 pb-3">
-                  <div className="mb-2">
-                    <EnviarResumenBoton presupuestoId={p.id} />
-                  </div>
-                  <PagoPresupuesto
-                    presupuestoId={p.id}
-                    precioFinal={p.precio_final}
-                    pagoInicial={pagosPorPresupuesto[p.id] ?? null}
-                  />
-                </div>
+                {/* M12: por qué un presupuesto antiguo no se puede reabrir. */}
+                {!puede && (
+                  <p className="px-3 pb-1 text-xs text-black/40">
+                    Formato anterior: se puede consultar, pero no reabrir para
+                    recalcular.
+                  </p>
+                )}
+
+                <AccionesPresupuesto
+                  presupuestoId={p.id}
+                  precioFinal={p.precio_final}
+                  pago={pagosPorPresupuesto[p.id] ?? null}
+                  defaultOpen={vigente}
+                />
               </div>
             );
           })}
@@ -195,6 +208,56 @@ export default function PresupuestoPanel({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Bloque de cobro + envío de resumen de un presupuesto, plegable. El vigente lo
+// muestra abierto (defaultOpen); los demás van plegados por defecto pero se
+// pueden desplegar (M11). Cada tarjeta conserva su propio pliegue.
+function AccionesPresupuesto({
+  presupuestoId,
+  precioFinal,
+  pago,
+  defaultOpen,
+}: {
+  presupuestoId: string;
+  precioFinal: number | null;
+  pago: Pago | null;
+  defaultOpen: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="px-3 pb-3">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-2 rounded-field px-1 py-1.5 text-xs font-medium uppercase tracking-wide text-black/50 transition-colors hover:text-black"
+      >
+        Cobro y envío
+        <ChevronDown
+          size={16}
+          strokeWidth={1.5}
+          className={`shrink-0 transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="mt-1">
+          <div className="mb-2">
+            <EnviarResumenBoton presupuestoId={presupuestoId} />
+          </div>
+          <PagoPresupuesto
+            presupuestoId={presupuestoId}
+            precioFinal={precioFinal}
+            pagoInicial={pago}
+          />
+        </div>
+      )}
     </div>
   );
 }

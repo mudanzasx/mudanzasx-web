@@ -203,14 +203,20 @@ export default function QuoteForm() {
   const nombreOk = form.nombre.trim() !== "";
   const telefonoOk = esTelefonoEsValido(form.telefono);
   const emailOk = esEmailValido(form.email);
-  // 5 campos obligatorios = 5 tramos de la barra.
+  // 5 campos + la casilla de consentimiento = 6 requisitos = 6 tramos de la
+  // barra. El consentimiento cuenta como uno más: sin marcarlo el progreso no
+  // llega al 100% ni el botón muestra el check (M5). El botón nunca se
+  // deshabilita: al pulsarlo sin la casilla, la validación muestra el error y
+  // enfoca la casilla (I4).
+  const aceptaOk = form.acepta;
   const completos =
     Number(origenOk) +
     Number(destinoOk) +
     Number(nombreOk) +
     Number(telefonoOk) +
-    Number(emailOk);
-  const listo = completos === 5;
+    Number(emailOk) +
+    Number(aceptaOk);
+  const listo = completos === 6;
 
   const update =
     (key: keyof typeof form) =>
@@ -364,7 +370,7 @@ export default function QuoteForm() {
           >
             <div
               className="h-full w-full origin-left bg-black transition-transform duration-300 ease-out motion-reduce:transition-none"
-              style={{ transform: `scaleX(${completos / 5})` }}
+              style={{ transform: `scaleX(${completos / 6})` }}
             />
           </div>
 
@@ -633,7 +639,7 @@ export default function QuoteForm() {
               {/* Resumen accesible al enviar con errores (I4): role="alert" lo
                   anuncia al insertarse. Se oculta en cuanto el formulario está
                   completo, para no quedar obsoleto. Monocromo y centrado. */}
-              {resumenError && !(listo && form.acepta) && (
+              {resumenError && !listo && (
                 <p
                   role="alert"
                   className="text-center text-small font-medium text-black"

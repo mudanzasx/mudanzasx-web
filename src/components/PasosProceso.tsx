@@ -1,3 +1,5 @@
+import { Check } from "lucide-react";
+
 // Los tres pasos del proceso, los que vienen DESPUÉS de contactar (en la landing
 // el contacto lo resuelve el propio formulario, por eso no es un paso). Se
 // definen una sola vez y se comparten en dos sitios:
@@ -43,13 +45,15 @@ export default function PasosProceso({
     <ol className="flex flex-col text-left">
       {filas.map((fila, i) => {
         const ultimo = i === filas.length - 1;
-        // El paso previo hecho lleva el número 0 (no un icono, para no duplicar
-        // el check del título/badge); los tres pasos siguientes son 1·2·3.
+        // Los tres pasos del proceso se numeran 1·2·3 en ambos contextos. El paso
+        // previo (contacto ya hecho, solo en la confirmación) no se numera: se
+        // marca con un check.
         const numero = completado ? i : i + 1;
-        // Solo el paso 0 (contacto ya hecho, en la confirmación) se ve
-        // completado: círculo negro sólido con el "0" en blanco. Los pendientes
-        // (1·2·3) llevan el círculo gris con número negro. En la landing no hay
-        // paso 0, así que todos quedan pendientes.
+        // Solo el paso previo (contacto ya hecho, en la confirmación) se ve
+        // completado: círculo negro sólido con un CHECK blanco (en vez de un "0",
+        // que resultaba raro). Los pendientes (1·2·3) llevan el círculo gris con
+        // número negro. En la landing no hay paso previo, así que todos van
+        // numerados 1·2·3.
         const hecho = Boolean(completado) && i === 0;
         return (
           <li
@@ -70,9 +74,13 @@ export default function PasosProceso({
                 hecho ? "bg-black text-white" : "bg-gris text-black"
               }`}
             >
-              <span className="text-lg font-semibold tabular-nums">
-                {numero}
-              </span>
+              {hecho ? (
+                <Check size={22} strokeWidth={2.5} aria-hidden />
+              ) : (
+                <span className="text-lg font-semibold tabular-nums">
+                  {numero}
+                </span>
+              )}
             </div>
             <div className="min-w-0 pt-2">
               <TituloTag className="text-[clamp(1rem,0.95rem+0.3vw,1.125rem)] font-medium tracking-tight text-black">

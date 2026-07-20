@@ -97,6 +97,16 @@ export default async function SolicitudRecibida({
             ¡Gracias!
           </h1>
 
+          {/* Reitera el plazo real de contacto (mismo día laborable, coherente
+              con la FAQ; el "10 min" es la duración de la llamada, no el plazo).
+              Refuerza la promesa y reduce la incertidumbre justo tras enviar. */}
+          <p
+            className="mx-fade-up mt-4 text-body leading-[1.5] text-black/60"
+            style={{ animationDelay: "0.2s" }}
+          >
+            Hemos recibido tu solicitud. Te llamamos el mismo día laborable.
+          </p>
+
           {/* Lo esencial: el contacto ya marcado como hecho y los tres pasos de
               lo que viene ahora (componente compartido con "Cómo funciona"). */}
           <div

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
+import { Check } from "lucide-react";
 import { formatPrecio } from "@/lib/leads";
 import { round2 } from "@/lib/presupuesto";
 import EstadoPill from "@/components/admin/EstadoPill";
@@ -37,6 +38,11 @@ export default function PagoPresupuesto({
   const [urlTipo, setUrlTipo] = useState<TipoEnlace | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
+  // La copia al portapapeles puede fallar (permiso denegado, contexto no
+  // seguro): en ese caso se avisa y el enlace queda seleccionado para copiarlo
+  // a mano.
+  const [copiaFallo, setCopiaFallo] = useState(false);
+  const urlInputRef = useRef<HTMLInputElement>(null);
   const [creando, startCrear] = useTransition();
   const [enviando, startEnviar] = useTransition();
   const [emailMsg, setEmailMsg] = useState<
@@ -52,6 +58,7 @@ export default function PagoPresupuesto({
     setUrl(null);
     setUrlTipo(null);
     setCopiado(false);
+    setCopiaFallo(false);
     setEmailMsg(null);
   }
 
@@ -105,10 +112,16 @@ export default function PagoPresupuesto({
     if (!url) return;
     try {
       await navigator.clipboard.writeText(url);
+      setCopiaFallo(false);
       setCopiado(true);
-      setTimeout(() => setCopiado(false), 1500);
+      setTimeout(() => setCopiado(false), 2000);
     } catch {
+      // Sin acceso al portapapeles: se avisa y se selecciona el enlace para que
+      // el operario lo copie a mano (Ctrl/⌘+C).
       setCopiado(false);
+      setCopiaFallo(true);
+      urlInputRef.current?.focus();
+      urlInputRef.current?.select();
     }
   }
 
@@ -185,6 +198,7 @@ export default function PagoPresupuesto({
           </label>
           <div className="mt-1.5 flex items-center gap-2">
             <input
+              ref={urlInputRef}
               readOnly
               value={url}
               onFocus={(e) => e.currentTarget.select()}
@@ -193,11 +207,25 @@ export default function PagoPresupuesto({
             <button
               type="button"
               onClick={copiar}
+              aria-live="polite"
               className={btn({ variant: "primary", size: "sm", className: "shrink-0" })}
             >
-              {copiado ? "¡Copiado!" : "Copiar enlace"}
+              {copiado ? (
+                <>
+                  <Check size={14} strokeWidth={2} aria-hidden />
+                  Copiado
+                </>
+              ) : (
+                "Copiar enlace"
+              )}
             </button>
           </div>
+          {copiaFallo && (
+            <p className="mt-1.5 text-xs text-black/60" role="alert">
+              No se pudo copiar automáticamente. El enlace está seleccionado
+              arriba: cópialo a mano (Ctrl/⌘+C).
+            </p>
+          )}
 
           {/* Envío del enlace por email al cliente */}
           <div className="mt-2 flex flex-wrap items-center gap-3">
