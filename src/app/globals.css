@@ -41,6 +41,35 @@
   --text-nav: clamp(0.75rem, 0.68rem + 0.35vw, 0.875rem); /* 12 → 14 */
 }
 
+/* Semáforo de estado del PANEL: única excepción funcional a la paleta monocroma
+   de la marca. Señaliza el estado interno de leads, presupuestos y operaciones
+   para el operador; NO es visible para el cliente. Se centraliza aquí (en vez de
+   clases de color sueltas por componente) para que el criterio sea único y
+   mantenible. Los valores reutilizan la paleta de Tailwind (amber/emerald/slate/
+   red) para que el aspecto no cambie; cada tono tiene relleno (surface), texto
+   (text) y punto/acento (accent).
+     warning       → en proceso / pago pendiente   (amber  50 · 700 · 500)
+     success       → reservado / cobrado           (emerald 50 · 700 · 500)
+     info          → finalizado                    (slate 100 · 700 · 600)
+     danger        → perdido / cancelado           (red    50 · 700 · 500)
+     danger-strong → pérdidas / bajo mínimo        (red 600)
+   Utilidades resultantes: bg-/text-/border-status-*. */
+@theme {
+  --color-status-warning-surface: var(--color-amber-50);
+  --color-status-warning-text: var(--color-amber-700);
+  --color-status-warning-accent: var(--color-amber-500);
+  --color-status-success-surface: var(--color-emerald-50);
+  --color-status-success-text: var(--color-emerald-700);
+  --color-status-success-accent: var(--color-emerald-500);
+  --color-status-info-surface: var(--color-slate-100);
+  --color-status-info-text: var(--color-slate-700);
+  --color-status-info-accent: var(--color-slate-600);
+  --color-status-danger-surface: var(--color-red-50);
+  --color-status-danger-text: var(--color-red-700);
+  --color-status-danger-accent: var(--color-red-500);
+  --color-status-danger-strong: var(--color-red-600);
+}
+
 * {
   border-color: var(--color-hairline);
 }

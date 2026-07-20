@@ -237,8 +237,8 @@ function Th({ children }: { children: React.ReactNode }) {
 // Aviso sobrio (ámbar apagado) de que al lead le queda dinero por cobrar.
 function BadgePagoPendiente() {
   return (
-    <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-pill bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
-      <span className="h-1.5 w-1.5 rounded-pill bg-amber-500" aria-hidden />
+    <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-pill bg-status-warning-surface px-1.5 py-0.5 text-[11px] font-medium text-status-warning-text">
+      <span className="h-1.5 w-1.5 rounded-pill bg-status-warning-accent" aria-hidden />
       Pago pendiente
     </span>
   );

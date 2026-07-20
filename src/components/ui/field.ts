@@ -16,10 +16,15 @@ const VARIANTS: Record<Variant, string> = {
   public: "bg-white border-hairline",
 };
 
+// Mismo criterio tipográfico que button.ts: tamaño fluido (tokens con clamp),
+// con el MÁXIMO igual al fijo previo, así el escritorio se ve idéntico y solo se
+// reduce en pantallas estrechas. sm/md → `text-small` (14px máx, como en button);
+// lg → `text-body`, cuyo mínimo es 14px, para no bajar del cuerpo legible en el
+// campo público (QuoteForm), que es donde el usuario teclea (16px en escritorio).
 const SIZES: Record<Size, string> = {
-  sm: "px-3 py-2 text-sm",
-  md: "px-3 py-2.5 text-sm",
-  lg: "px-4 py-3 text-base",
+  sm: "px-3 py-2 text-small",
+  md: "px-3 py-2.5 text-small",
+  lg: "px-4 py-3 text-body",
 };
 
 export function field(

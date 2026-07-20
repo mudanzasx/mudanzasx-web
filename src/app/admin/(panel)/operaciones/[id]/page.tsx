@@ -319,11 +319,11 @@ function PagoEstado({ pago }: { pago: PagoResumen | null }) {
         />
       </div>
       {hayPendiente ? (
-        <p className="rounded-card bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+        <p className="rounded-card bg-status-warning-surface px-3 py-2 text-sm font-medium text-status-warning-text">
           Pago pendiente: {formatPrecio(pago.importe_pendiente)}
         </p>
       ) : (
-        <p className="rounded-card bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+        <p className="rounded-card bg-status-success-surface px-3 py-2 text-sm font-medium text-status-success-text">
           Pagado completo
         </p>
       )}

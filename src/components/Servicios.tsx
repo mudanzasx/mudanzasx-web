@@ -120,7 +120,7 @@ export default function Servicios() {
                       y respeta prefers-reduced-motion. */}
                   <Check
                     size={18}
-                    strokeWidth={2}
+                    strokeWidth={1.5}
                     aria-hidden
                     className={`ml-auto shrink-0 transition-opacity duration-200 ease-out motion-reduce:transition-none ${
                       on ? "opacity-100" : "opacity-0"

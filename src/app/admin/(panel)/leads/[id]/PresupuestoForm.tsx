@@ -823,11 +823,11 @@ function Resultado({
               </span>
             </p>
             {ajuste.bajo_coste ? (
-              <p className="mt-1 rounded-field bg-red-600 px-3 py-2 font-semibold text-white">
+              <p className="mt-1 rounded-field bg-status-danger-strong px-3 py-2 font-semibold text-white">
                 ⚠ Por debajo del coste base: vender a este precio da PÉRDIDAS.
               </p>
             ) : ajuste.bajo_minimo ? (
-              <p className="mt-1 rounded-field border border-red-600 px-3 py-2 font-medium text-red-600">
+              <p className="mt-1 rounded-field border border-status-danger-strong px-3 py-2 font-medium text-status-danger-strong">
                 ⚠ Margen por debajo del 10%. Revisa antes de cerrar.
               </p>
             ) : null}
