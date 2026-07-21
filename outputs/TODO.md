@@ -53,16 +53,8 @@ _I13 completada (2026-07-17) → ✅ HECHO._
 _M1, M2, M3 y M4 completadas (2026-07-20) → ✅ HECHO._
 
 ### UX
-- [ ] **M5** — Incluir la casilla de consentimiento en la señal de "completado" (barra de progreso y check del botón). `QuoteForm.tsx:177,314,592`.
-- [ ] **M6** — Validar el número de calle por el `street_number` de la sugerencia elegida, no por cualquier dígito. `AddressAutocomplete.tsx:91`.
+_M5, M6, M8, M9, M10, M11, M12, M13 y M14 completadas (2026-07-21) → ✅ HECHO._
 - [ ] **M7** — Sincronizar `--fixed-top` con la altura real que mide el scrollspy. `globals.css:63-69`, `Header.tsx:52`.
-- [ ] **M8** — (Opcional) Dar identidad al Manifiesto en el scrollspy o aceptar el hueco de "activo". `Header.tsx:12-18`.
-- [ ] **M9** — (Opcional) En escritorio, cambiar de servicio con click (o delay de hover) en vez de `onMouseEnter`. `Servicios.tsx:105`.
-- [ ] **M10** — Dar feedback si falla copiar el enlace de pago. `PagoPresupuesto.tsx:104-113`.
-- [ ] **M11** — Colapsar los bloques Cobro/Enviar-resumen de los presupuestos no activos. `PresupuestoPanel.tsx:115-124`.
-- [ ] **M12** — Explicar (title/nota) por qué un presupuesto "formato antiguo" no se puede reabrir. `PresupuestoPanel.tsx:97-109`.
-- [ ] **M13** — En la confirmación, mostrar un check en el paso completado en vez del numeral "0". `PasosProceso.tsx:39,44,64`.
-- [ ] **M14** — Reiterar el plazo prometido en la confirmación ("te llamamos en ~X"). `solicitud-recibida/page.tsx:93-107`.
 
 ### Copy
 - [ ] **M15** — Usar los rótulos exactos de `Servicios.tsx` en el email de resumen. `emailActions.ts:98-101` vs `Servicios.tsx:21-45`.
@@ -121,6 +113,7 @@ _B3 completada (2026-07-15) → ✅ HECHO (misma entrega que I5)._
 
 ## ✅ HECHO
 
+- [x] **M5 · M6 · M8 · M9 · M10 · M11 · M12 · M13 · M14** — 2026-07-21 — [UX] Formulario público: (M5) el consentimiento cuenta como 6.º requisito de la barra de progreso y del check del botón (el botón sigue sin deshabilitarse; error + foco a la casilla al enviar sin marcarla, I4); (M6) el número de portal de una dirección elegida se valida por su `street_number` real (fuente de verdad mientras no se edite; el código postal ya no la da por válida), con fallback de dígito tecleado para escritura a mano, sin tocar la carga bajo demanda de Maps (I7); (M9) en escritorio el clic/teclado fija el servicio y el hover solo previsualiza (al salir vuelve al fijado); móvil por tap. Panel: (M10) feedback al copiar el enlace de pago (check + "Copiado"; si falla, aviso y enlace seleccionado para copiar a mano); (M11) los bloques de cobro/envío de los presupuestos no vigentes se pliegan por defecto, el vigente los mantiene visibles; (M12) nota + title que explican que un presupuesto en formato anterior se consulta pero no se reabre. Confirmación: (M13) el paso completado muestra un check en vez del "0" (la landing sigue con 1·2·3, componente compartido intacto); (M14) se reitera el plazo ("Te llamamos el mismo día laborable"). (M8) verificado que el scrollspy conserva el enlace activo anterior al pasar por la banda del Manifiesto; sin cambios. `QuoteForm.tsx`, `AddressAutocomplete.tsx`, `Servicios.tsx`, `PagoPresupuesto.tsx`, `PresupuestoPanel.tsx`, `PasosProceso.tsx`, `solicitud-recibida/page.tsx`.
 - [x] **M1 · M2 · M3 · M4** — 2026-07-20 — [Marca/Diseño] Coherencia visual: (M1) `field.ts` adopta el criterio tipográfico fluido de `button.ts` (`sm`/`md`→`text-small`, `lg`→`text-body`, mín. 14px en el campo público; escritorio idéntico); (M2) el check "activo" de Servicios baja a `strokeWidth 1.5`; (M3) `InstagramIcon` rehecho como glifo sólido (`fill`, un solo path) como el resto de BrandIcons, sin trazos y aún reconocible; (M4) semáforo de estado del panel centralizado en tokens `--color-status-*` (warning/success/info/danger + danger-strong) en globals.css, documentado como excepción funcional a la paleta monocroma (interno, no visible al cliente); valores = paleta Tailwind, aspecto idéntico. Aplicado en `EstadoPill`, badge de pago pendiente de la lista, avisos de la ficha de operaciones y avisos de coste/margen del presupuesto. `ui/field.ts`, `Servicios.tsx`, `BrandIcons.tsx`, `globals.css`, `EstadoPill.tsx`, `page.tsx`, `operaciones/[id]/page.tsx`, `PresupuestoForm.tsx`.
 - [x] **M20 · M21 · M22 · M23** — 2026-07-20 — [SEO] `robots` con `disallow: "/admin"` (ruta exacta, sin barra); confirmación sin salto H1→H3 (nivel de encabezado ajustado en PasosProceso/H2 intermedio); `sitemap` con fecha estable para las legales en vez de `new Date()`; `twitter.site: "@mudanzasx_ai"` añadido. `robots.ts`, `solicitud-recibida/page.tsx`, `PasosProceso.tsx`, `sitemap.ts`, `layout.tsx`.
 - [x] **M34 · M35 · M36 · M37 · M38** — 2026-07-20 — [Limpieza] Eliminado el export muerto `TELEFONO_DISPLAY`; eliminado el type sin usar `ConsentCategory`; quitado el `export` innecesario de `CONSENT_STORAGE_KEY`; reutilizado `CheckMark`/`<Check>` en vez del path SVG duplicado del botón de envío; recortados comentarios verbosos/obvios sobre one-liners. `config.ts`, `consent.ts`, `QuoteForm.tsx`, `ui/icon.ts`, `leads.ts`, `Manifiesto.tsx`.
