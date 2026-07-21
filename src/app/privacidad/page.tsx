@@ -10,6 +10,11 @@ export const metadata: Metadata = {
     "Cómo trata Mudanzas X tus datos personales: responsable, finalidades, base jurídica, conservación, encargados, derechos y reclamación ante la AEPD.",
 };
 
+// Registro de voz (M19): esta es una página INFORMATIVA de cara al usuario, no el
+// contrato de servicio, así que usa el tono cercano de marca —"tú" para el
+// usuario, "nosotros" para la empresa— para explicar con claridad los derechos y
+// el trato de los datos. Las páginas CONTRACTUALES (aviso-legal, condiciones,
+// cancelación) van en impersonal; estas (privacidad y cookies) no.
 export default function Privacidad() {
   return (
     <LegalShell titulo="Política de privacidad">
@@ -63,7 +68,7 @@ export default function Privacidad() {
       </ul>
       <p>Utilizamos estos datos para las siguientes finalidades:</p>
       <ul>
-        <li>Atender tu solicitud de presupuesto y ponernos en contacto contigo.</li>
+        <li>Atender tu solicitud de presupuesto y llamarte.</li>
         <li>
           En su caso, gestionar la contratación y la prestación del servicio de
           mudanza, así como su facturación y cobro.

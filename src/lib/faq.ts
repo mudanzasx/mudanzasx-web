@@ -20,7 +20,7 @@ export const PREGUNTAS = [
   },
   {
     q: "¿Cuánto tardáis en darme el presupuesto?",
-    a: "Te contactamos el mismo día laborable para conocer los detalles y cerrar tu presupuesto.",
+    a: "Te llamamos el mismo día laborable para conocer los detalles y cerrar tu presupuesto.",
   },
   {
     q: "¿Puedo comprar cajas y material de embalaje?",

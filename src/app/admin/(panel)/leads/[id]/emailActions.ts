@@ -2,6 +2,7 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { formatFecha, formatPrecio, formatVolumen, textoODash } from "@/lib/leads";
+import { SERVICIO_LABEL } from "@/lib/servicios";
 import {
   enviarEmailResumen,
   enviarEmailValoracion,
@@ -95,10 +96,12 @@ export async function enviarResumenPresupuesto(
     if (sw?.film || sw?.burbujas) hayEmbalaje = true;
     if (sw?.punto_limpio) hayPuntoLimpio = true;
   }
-  const servicios = ["Carga, transporte y descarga"];
-  if (hayDesmontajeMontaje) servicios.push("Desmontaje y montaje de muebles");
-  if (hayEmbalaje) servicios.push("Embalaje y protección");
-  if (hayPuntoLimpio) servicios.push("Retirada a punto limpio");
+  // Rótulos EXACTOS de la web ("Mudanza de vivienda"), desde la fuente única
+  // SERVICIO_LABEL (M15). La web agrupa montaje/desmontaje y protección/embalaje
+  // en un solo servicio, así que aquí se unen esos dos interruptores en él.
+  const servicios: string[] = [SERVICIO_LABEL.transporte];
+  if (hayDesmontajeMontaje || hayEmbalaje) servicios.push(SERVICIO_LABEL.montaje);
+  if (hayPuntoLimpio) servicios.push(SERVICIO_LABEL.retirada);
 
   const res = await enviarEmailResumen({
     para: email,

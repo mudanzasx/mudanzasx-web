@@ -773,7 +773,7 @@ function Resultado({
       <div className="mt-4 border-t border-hairline pt-3">
         <Linea label="Vehículo" value={formatPrecio(round2(r.coste_vehiculo))} />
         <Linea label="Distancia" value={formatPrecio(round2(r.coste_distancia))} />
-        <Linea label="Personal" value={formatPrecio(round2(r.coste_personal))} />
+        <Linea label="Operarios" value={formatPrecio(round2(r.coste_personal))} />
         <Linea label="Embalaje" value={formatPrecio(round2(r.coste_embalaje))} />
         <Linea label="Productos" value={formatPrecio(round2(r.coste_productos))} />
         <Linea label="Extras (accesos)" value={formatPrecio(round2(r.coste_extras))} />

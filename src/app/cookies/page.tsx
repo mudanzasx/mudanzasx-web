@@ -11,6 +11,10 @@ export const metadata: Metadata = {
     "Qué cookies usa Mudanzas X (técnicas, analíticas y de marketing), para qué sirven y cómo aceptarlas, rechazarlas o configurarlas.",
 };
 
+// Registro de voz (M19): página INFORMATIVA de cara al usuario (no contractual),
+// en tono cercano de marca —"tú" para el usuario, "nosotros" para la empresa—.
+// Las páginas contractuales (aviso-legal, condiciones, cancelación) van en
+// impersonal; privacidad y cookies no.
 export default function Cookies() {
   return (
     <LegalShell titulo="Política de cookies">

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Truck, Wrench, Landmark, Recycle, Check, type LucideIcon } from "lucide-react";
+import { SERVICIO_LABEL } from "@/lib/servicios";
 
 // Único servicio de la empresa (mudanza de vivienda) desglosado en sus 4 partes.
 // Cada una tiene su icono (lucide-react), su nombre y la imagen (16:9, estudio
@@ -18,28 +19,28 @@ type Servicio = {
 const SERVICIOS: Servicio[] = [
   {
     id: "montaje",
-    nombre: "Montaje, desmontaje y protección",
+    nombre: SERVICIO_LABEL.montaje,
     Icon: Wrench,
     img: "/servicio-montaje.webp",
     alt: "Armario listo para montaje y desmontaje en una mudanza de Mudanzas X",
   },
   {
     id: "transporte",
-    nombre: "Transporte, carga y descarga",
+    nombre: SERVICIO_LABEL.transporte,
     Icon: Truck,
     img: "/servicio-transporte.webp",
     alt: "Camión de mudanzas de Mudanzas X preparado para carga y transporte",
   },
   {
     id: "permisos",
-    nombre: "Gestión de permisos municipales",
+    nombre: SERVICIO_LABEL.permisos,
     Icon: Landmark,
     img: "/servicio-permisos.webp",
     alt: "Señalización de reserva de estacionamiento para una mudanza de Mudanzas X",
   },
   {
     id: "retirada",
-    nombre: "Retirada a punto limpio",
+    nombre: SERVICIO_LABEL.retirada,
     Icon: Recycle,
     img: "/servicio-retirada.webp",
     alt: "Cajas preparadas para retirada a punto limpio por Mudanzas X",
